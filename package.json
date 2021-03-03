@@ -28,6 +28,7 @@
     "@nestjs/platform-express": "^7.6.13",
     "class-validator": "^0.13.1",
     "mongoose": "^5.11.18",
+    "nestjs-telegram": "^1.1.2",
     "reflect-metadata": "^0.1.13",
     "rimraf": "^3.0.2",
     "rxjs": "^6.6.6"
