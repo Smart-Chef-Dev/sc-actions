@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { Model } from 'mongoose';
+import { Model, UpdateQuery } from 'mongoose';
 
 import { Restaurant } from './schemas/restaurant.schema';
 import { RestaurantDto } from './dto/restaurant.dto';
@@ -20,5 +20,12 @@ export class RestaurantService {
     const restaurant = await new this.restaurantModel(dto);
 
     return restaurant.save();
+  }
+
+  public async updateById(
+    id: string,
+    changes: UpdateQuery<Restaurant>,
+  ): Promise<Restaurant> {
+    return this.restaurantModel.findByIdAndUpdate({ _id: id }, changes);
   }
 }

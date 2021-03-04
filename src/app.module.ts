@@ -6,6 +6,7 @@ import { TelegramModule } from 'nestjs-telegram';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { RestaurantModule } from './restaurant/restaurant.module';
+import { MessageModule } from './message/message.module';
 import configuration from './config/configuration';
 
 @Module({
@@ -20,14 +21,8 @@ import configuration from './config/configuration';
       }),
       inject: [ConfigService],
     }),
-    TelegramModule.forRootAsync({
-      imports: [ConfigModule],
-      useFactory: async (configService: ConfigService) => ({
-        botKey: configService.get('telegramBotKey'),
-      }),
-      inject: [ConfigService],
-    }),
     RestaurantModule,
+    MessageModule,
   ],
   controllers: [AppController],
   providers: [AppService],

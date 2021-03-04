@@ -13,5 +13,6 @@ import { RestaurantController } from './restaurant.controller';
   ],
   providers: [RestaurantService],
   controllers: [RestaurantController],
+  exports: [RestaurantService],
 })
 export class RestaurantModule {}
