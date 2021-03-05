@@ -1,8 +1,8 @@
 import { Injectable } from '@nestjs/common';
-// import * as TelegramBot from 'node-telegram-bot-api';
 import * as TelegramBot from 'telebot';
 import { ConfigService } from '@nestjs/config';
 import { RestaurantService } from '../restaurant/restaurant.service';
+import { CreateMessageDto } from './dto/create-message.dto';
 
 @Injectable()
 export class MessageService {
@@ -16,9 +16,11 @@ export class MessageService {
       token: configService.get('telegramBotKey'),
     });
 
-    this.bot.on(/^\/start (.+)$/, (...args: any[]) =>
-      this.handleRestaurantCommand.apply(this, args),
-    );
+    this.handleCallbackQuery = this.handleCallbackQuery.bind(this);
+    this.handleRestaurantCommand = this.handleRestaurantCommand.bind(this);
+
+    this.bot.on(/^\/start (.+)$/, this.handleRestaurantCommand);
+    this.bot.on('callbackQuery', this.handleCallbackQuery);
     this.bot.start();
   }
 
@@ -30,8 +32,31 @@ export class MessageService {
     });
   }
 
-  sendMessage(): Promise<any> {
-    return new Promise(() => {});
-    // return this.telegram.sendMessage('@pkarpovich', 'test');
+  handleCallbackQuery({ message }) {
+    this.bot.editMessageText(
+      {
+        chatId: message.chat.id,
+        messageId: message.message_id,
+      },
+      `${message.text} ✅`,
+    );
+  }
+
+  async sendMessage(dto: CreateMessageDto) {
+    const restaurant = await this.restaurantService.findById(dto.restaurantId);
+    const table = restaurant.tables.find((t) => t._id.equals(dto.tableId));
+    const action = restaurant.actions.find((a) => a._id.equals(dto.actionId));
+
+    const replyMarkup = this.bot.inlineKeyboard([
+      [this.bot.inlineButton('✅', { callback: 'this_is_data2' })],
+    ]);
+
+    for (const username of restaurant.usernames) {
+      await this.bot.sendMessage(
+        username,
+        `Table: ${table.name}. Action: ${action.message}`,
+        { replyMarkup },
+      );
+    }
   }
 }

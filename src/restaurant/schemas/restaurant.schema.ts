@@ -2,6 +2,7 @@ import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Document } from 'mongoose';
 
 import { Table } from './table.schema';
+import { Action } from './action.schema';
 
 @Schema()
 export class Restaurant extends Document {
@@ -13,6 +14,9 @@ export class Restaurant extends Document {
 
   @Prop()
   tables: Table[];
+
+  @Prop()
+  actions: Action[];
 }
 
 export const RestaurantSchema = SchemaFactory.createForClass(Restaurant);

@@ -3,21 +3,70 @@ import { InjectModel } from '@nestjs/mongoose';
 import { Model, UpdateQuery } from 'mongoose';
 
 import { Restaurant } from './schemas/restaurant.schema';
+import { Action } from './schemas/action.schema';
+import { Table } from './schemas/table.schema';
 import { RestaurantDto } from './dto/restaurant.dto';
+import { ActionDto } from './dto/action.dto';
+import { TableDto } from './dto/table.dto';
 
 @Injectable()
 export class RestaurantService {
   constructor(
     @InjectModel(Restaurant.name)
     private readonly restaurantModel: Model<Restaurant>,
+    @InjectModel(Action.name)
+    private readonly actionModel: Model<Action>,
+    @InjectModel(Table.name)
+    private readonly tableModel: Model<Table>,
   ) {}
 
   public async findAll(): Promise<Restaurant[]> {
-    return this.restaurantModel.find().exec();
+    return this.restaurantModel.find({});
+  }
+
+  public async findById(id: string): Promise<Restaurant> {
+    return this.restaurantModel.findById({ _id: id });
+  }
+
+  public async findAllActions(id: string): Promise<Action[]> {
+    const restaurant = await this.findById(id);
+
+    return restaurant.actions;
+  }
+
+  public async findAllTables(id: string): Promise<Table[]> {
+    const restaurant = await this.findById(id);
+
+    return restaurant.tables;
   }
 
   public async create(dto: RestaurantDto): Promise<Restaurant> {
-    const restaurant = await new this.restaurantModel(dto);
+    const tables = await Promise.all(
+      dto.tables?.map(
+        (t) =>
+          new this.tableModel({
+            name: t.name,
+            code: t.code,
+          }),
+      ) ?? [],
+    );
+
+    const actions = await Promise.all(
+      dto.actions?.map(
+        (a) =>
+          new this.actionModel({
+            name: a.name,
+            message: a.message,
+          }),
+      ) ?? [],
+    );
+
+    const restaurant = await new this.restaurantModel({
+      name: dto.name,
+      usernames: dto.usernames,
+      tables: tables,
+      actions: actions,
+    });
 
     return restaurant.save();
   }
@@ -27,5 +76,43 @@ export class RestaurantService {
     changes: UpdateQuery<Restaurant>,
   ): Promise<Restaurant> {
     return this.restaurantModel.findByIdAndUpdate({ _id: id }, changes);
+  }
+
+  public async addActionIntoRestaurant(
+    restaurantId: string,
+    dto: ActionDto,
+  ): Promise<Restaurant> {
+    const action = await new this.actionModel({
+      name: dto.name,
+      message: dto.message,
+    });
+
+    return this.restaurantModel.findByIdAndUpdate(
+      { _id: restaurantId },
+      {
+        $push: {
+          actions: action,
+        },
+      },
+    );
+  }
+
+  public async addTableIntoRestaurant(
+    restaurantId: string,
+    dto: TableDto,
+  ): Promise<Restaurant> {
+    const table = await new this.tableModel({
+      name: dto.name,
+      code: dto.code,
+    });
+
+    return this.restaurantModel.findByIdAndUpdate(
+      { _id: restaurantId },
+      {
+        $push: {
+          tables: table,
+        },
+      },
+    );
   }
 }
