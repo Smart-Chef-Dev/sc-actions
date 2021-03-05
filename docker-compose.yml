@@ -10,6 +10,19 @@ services:
       - mongodbdata:/data/db
     command: [--auth]
 
+  client:
+    image: docker.pkg.github.com/smart-chef-dev/sc-actions-client/sc-actions-client:latest
+    ports:
+      - "80:80"
+
+  server:
+    image: docker.pkg.github.com/smart-chef-dev/sc-actions/sc-actions:latest
+    environment:
+      - DATABASE_CONNECTION_STRING=<STRING>
+      - TELEGRAM_BOT_KEY=<API_KEY>
+    ports:
+      - "3000:3000"
+
 
 volumes:
   mongodbdata:

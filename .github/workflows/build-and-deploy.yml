@@ -1,10 +1,10 @@
-name: Docker
+name: Build image and diploy to DO
 
 on:
   push:
-    # Publish `main` as Docker `latest` image.
+    # Publish `master` as Docker `latest` image.
     branches:
-      - main
+      - master
 
     # Publish `v1.2.3` tags as releases.
     tags:
@@ -15,7 +15,7 @@ on:
 
 env:
   # TODO: Change variable to your image's name.
-  IMAGE_NAME: sc-actions
+  IMAGE_NAME: sc-actions-client
 
 jobs:
   # Run tests.
@@ -67,10 +67,33 @@ jobs:
           [[ "${{ github.ref }}" == "refs/tags/"* ]] && VERSION=$(echo $VERSION | sed -e 's/^v//')
 
           # Use Docker `latest` tag convention
-          [ "$VERSION" == "main" ] && VERSION=latest
+          [ "$VERSION" == "master" ] && VERSION=latest
 
           echo IMAGE_ID=$IMAGE_ID
           echo VERSION=$VERSION
 
           docker tag $IMAGE_NAME $IMAGE_ID:$VERSION
           docker push $IMAGE_ID:$VERSION
+
+  deploy-to-do:
+    needs: push
+    # The type of runner that the job will run on
+    runs-on: ubuntu-latest
+
+    # Steps represent a sequence of tasks that will be executed as part of the job
+    steps:
+      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
+      - uses: actions/checkout@v2
+
+      - name: Deploy to Digital Ocean droplet via SSH
+        uses: appleboy/ssh-action@v0.1.4
+        with:
+          host: ${{ secrets.HOST }}
+          username: ${{ secrets.USERNAME }}
+          password: ${{ secrets.PASSWORD }}
+          port: ${{ secrets.PORT }}
+          script: |
+            cd ./sc-actions/
+            docker-compose stop
+            docker pull docker.pkg.github.com/smart-chef-dev/sc-actions/sc-actions:latest
+            docker-compose up -d
