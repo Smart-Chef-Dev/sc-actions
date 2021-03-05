@@ -18,6 +18,7 @@ import configuration from './config/configuration';
       imports: [ConfigModule],
       useFactory: async (configService: ConfigService) => ({
         uri: configService.get<string>('database'),
+        useFindAndModify: false,
       }),
       inject: [ConfigService],
     }),
