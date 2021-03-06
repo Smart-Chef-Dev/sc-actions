@@ -53,9 +53,13 @@ jobs:
       - name: Log into registry
         run: echo "${{ secrets.GITHUB_TOKEN }}" | docker login docker.pkg.github.com -u ${{ github.actor }} --password-stdin
 
+      - name: Set the value
+        run: |
+          echo IMAGE_REPOSITORY=$(echo ${{ github.repository }} | tr '[:upper:]' '[:lower:]') >> $GITHUB_ENV
+
       - name: Push image
         run: |
-          IMAGE_ID=docker.pkg.github.com/${{ github.repository }}/$IMAGE_NAME
+          IMAGE_ID=docker.pkg.github.com/${{ env.IMAGE_REPOSITORY }}/$IMAGE_NAME
 
           # Change all uppercase to lowercase
           MAGE_ID=$(echo $IMAGE_ID | tr '[A-Z]' '[a-z]')
