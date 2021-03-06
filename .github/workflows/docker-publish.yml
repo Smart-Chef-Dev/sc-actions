@@ -18,9 +18,40 @@ env:
   IMAGE_NAME: sc-actions
 
 jobs:
-  # Run tests.
-  # See also https://docs.docker.com/docker-hub/builds/automated-testing/
+  lint:
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        node-version: [ 14.x ]
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Install modules
+        run: npm i
+
+      - name: Run ESLint
+        run: npm run lint
+
   test:
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        node-version: [ 14.x ]
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Install modules
+        run: npm i
+
+      - name: Run ESLint
+        run: npm run test
+
+  build:
+    needs: lint
     runs-on: ubuntu-latest
 
     steps:
@@ -38,8 +69,7 @@ jobs:
   # Push image to GitHub Packages.
   # See also https://docs.docker.com/docker-hub/builds/
   push:
-    # Ensure test job passes before pushing image.
-    needs: test
+    needs: build
 
     runs-on: ubuntu-latest
     if: github.event_name == 'push'
