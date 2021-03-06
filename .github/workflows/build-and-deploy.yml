@@ -14,8 +14,7 @@ on:
   pull_request:
 
 env:
-  # TODO: Change variable to your image's name.
-  IMAGE_NAME: sc-actions-client
+  IMAGE_NAME: sc-actions
 
 jobs:
   # Run tests.
