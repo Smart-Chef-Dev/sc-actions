@@ -27,10 +27,15 @@ export class MessageService implements OnModuleInit {
   @autobind
   async handleStartCommand(msg, props) {
     const restaurantId = props.match[1];
+    const restaurant = await this.restaurantService.findById(restaurantId);
 
     this.logger.log(
       `Add new chat into restaurant, restaurantId: ${restaurantId}`,
       loggerContext,
+    );
+
+    await msg.reply.text(
+      `You were added to the restaurant "${restaurant.name}" successfully`,
     );
 
     return this.restaurantService.updateById(restaurantId, {
