@@ -46,7 +46,6 @@ export class RestaurantService {
         (t) =>
           new this.tableModel({
             name: t.name,
-            code: t.code,
           }),
       ) ?? [],
     );
@@ -75,7 +74,9 @@ export class RestaurantService {
     id: string,
     changes: UpdateQuery<Restaurant>,
   ): Promise<Restaurant> {
-    return this.restaurantModel.findByIdAndUpdate({ _id: id }, changes);
+    return this.restaurantModel.findOneAndUpdate({ _id: id }, changes, {
+      new: true,
+    });
   }
 
   public async addActionIntoRestaurant(
@@ -87,14 +88,11 @@ export class RestaurantService {
       message: dto.message,
     });
 
-    return this.restaurantModel.findByIdAndUpdate(
-      { _id: restaurantId },
-      {
-        $push: {
-          actions: action,
-        },
+    return this.updateById(restaurantId, {
+      $push: {
+        actions: action,
       },
-    );
+    });
   }
 
   public async addTableIntoRestaurant(
@@ -103,16 +101,12 @@ export class RestaurantService {
   ): Promise<Restaurant> {
     const table = await new this.tableModel({
       name: dto.name,
-      code: dto.code,
     });
 
-    return this.restaurantModel.findByIdAndUpdate(
-      { _id: restaurantId },
-      {
-        $push: {
-          tables: table,
-        },
+    return this.updateById(restaurantId, {
+      $push: {
+        tables: table,
       },
-    );
+    });
   }
 }

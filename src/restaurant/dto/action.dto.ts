@@ -10,4 +10,8 @@ export class ActionDto {
   @MaxLength(300)
   @IsNotEmpty()
   readonly message: string;
+
+  public constructor(init?: Partial<ActionDto>) {
+    Object.assign(this, init);
+  }
 }

@@ -6,8 +6,7 @@ export class TableDto {
   @IsNotEmpty()
   readonly name: string;
 
-  @IsString()
-  @MaxLength(30)
-  @IsNotEmpty()
-  readonly code: string;
+  public constructor(init?: Partial<TableDto>) {
+    Object.assign(this, init);
+  }
 }

@@ -20,15 +20,27 @@
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
     "test:e2e": "jest --config ./test/jest-e2e.json"
   },
+  "lint-staged": {
+    "src/**/*.{ts,css,html}": [
+      "npm run format",
+      "npm run lint",
+      "npm run test"
+    ]
+  },
+  "husky": {
+    "hooks": {
+      "pre-commit": "lint-staged"
+    }
+  },
   "dependencies": {
     "@nestjs/common": "^7.6.13",
     "@nestjs/config": "^0.6.3",
     "@nestjs/core": "^7.6.13",
     "@nestjs/mongoose": "^7.2.4",
     "@nestjs/platform-express": "^7.6.13",
+    "autobind-decorator": "^2.4.0",
     "class-validator": "^0.13.1",
     "mongoose": "^5.11.18",
-    "nestjs-telegram": "^1.1.2",
     "reflect-metadata": "^0.1.13",
     "rimraf": "^3.0.2",
     "rxjs": "^6.6.6",
@@ -48,7 +60,10 @@
     "eslint": "^7.20.0",
     "eslint-config-prettier": "^8.1.0",
     "eslint-plugin-prettier": "^3.3.1",
+    "husky": "^5.1.3",
     "jest": "^26.6.3",
+    "lint-staged": "^10.5.4",
+    "mongodb-memory-server": "^6.9.3",
     "prettier": "^2.2.1",
     "supertest": "^6.1.3",
     "ts-jest": "^26.5.2",

@@ -5,9 +5,6 @@ import { Document } from 'mongoose';
 export class Table extends Document {
   @Prop({ required: true })
   name: string;
-
-  @Prop({ required: true })
-  code: string;
 }
 
 export const TableSchema = SchemaFactory.createForClass(Table);

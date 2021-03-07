@@ -14,4 +14,8 @@ export class RestaurantDto {
   readonly tables: TableDto[];
 
   readonly actions: ActionDto[];
+
+  public constructor(init?: Partial<RestaurantDto>) {
+    Object.assign(this, init);
+  }
 }
