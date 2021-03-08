@@ -109,4 +109,13 @@ export class RestaurantService {
       },
     });
   }
+
+  public async checkTableExistingInRestaurant(
+    restaurantId: string,
+    tableId: string,
+  ): Promise<boolean> {
+    const tables = await this.findAllTables(restaurantId);
+
+    return !!tables.find((t) => t._id.equals(tableId));
+  }
 }
