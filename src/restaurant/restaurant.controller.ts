@@ -73,8 +73,6 @@ export class RestaurantController {
     return `${url}/${restaurantId}/${tableId}`;
   }
 
-  private checkTableExists(tableId: string) {}
-
   @Get(':id/table/:tableId/svg')
   public async getRestaurantTableSvg(
     @Param('id') id: string,
