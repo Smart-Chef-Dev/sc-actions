@@ -5,6 +5,8 @@ import autobind from 'autobind-decorator';
 import { RestaurantService } from '../restaurant/restaurant.service';
 import { CreateMessageDto } from './dto/create-message.dto';
 import { TelegramService } from '../telegram/telegram.service';
+import { AnalyticsService } from '../analytics/analytics.service';
+import { AnalyticType } from '../analytics/enums/analytic-type.enum';
 
 const loggerContext = 'Restaurant';
 
@@ -15,6 +17,7 @@ export class MessageService implements OnModuleInit {
     private readonly restaurantService: RestaurantService,
     private readonly logger: Logger,
     private readonly telegramService: TelegramService,
+    private readonly analyticsService: AnalyticsService,
   ) {}
 
   onModuleInit() {
@@ -33,6 +36,10 @@ export class MessageService implements OnModuleInit {
       `Add new chat into restaurant, restaurantId: ${restaurantId}`,
       loggerContext,
     );
+    await this.analyticsService.create({
+      type: AnalyticType.NEW_WAITER,
+      restaurantId,
+    });
 
     await msg.reply.text(
       `You were added to the restaurant "${restaurant.name}" successfully`,
@@ -48,6 +55,9 @@ export class MessageService implements OnModuleInit {
     const text = `${message.text} ✅`;
 
     this.logger.log(`Edit message in chat, message: ${text}`, loggerContext);
+    await this.analyticsService.create({
+      type: AnalyticType.COMPLETE_ACTION,
+    });
 
     await this.telegramService.editMessageText(
       message.chat.id,
@@ -71,6 +81,12 @@ export class MessageService implements OnModuleInit {
       `New message for restaurantId: ${restaurant._id}, tableId: ${table._id}}, action: ${action._id}, message: ${action.message}`,
       loggerContext,
     );
+    await this.analyticsService.create({
+      type: AnalyticType.ACTION_CALL,
+      restaurantId: restaurant._id,
+      tableId: table._id,
+      actionId: action._id,
+    });
 
     for (const username of restaurant.usernames) {
       await this.telegramService.sendMessage(username, text, { replyMarkup });

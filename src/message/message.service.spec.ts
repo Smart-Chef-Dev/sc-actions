@@ -15,6 +15,7 @@ import { Action, ActionSchema } from '../restaurant/schemas/action.schema';
 import { Table, TableSchema } from '../restaurant/schemas/table.schema';
 import { TelegramService } from '../telegram/telegram.service';
 import { TelegramServiceMock } from '../telegram/telegram.service.mock';
+import { AnalyticsModule } from '../analytics/analytics.module';
 
 let mongod: MongoMemoryServer;
 
@@ -48,6 +49,7 @@ describe('MessageService', () => {
           { name: Action.name, schema: ActionSchema },
           { name: Table.name, schema: TableSchema },
         ]),
+        AnalyticsModule,
       ],
       providers: [
         ConfigService,

@@ -14,6 +14,8 @@ import { RestaurantDto } from './dto/restaurant.dto';
 import { ActionDto } from './dto/action.dto';
 import { TableDto } from './dto/table.dto';
 import { QrCodeService } from '../qr-code/qr-code.service';
+import { AnalyticsService } from '../analytics/analytics.service';
+import { AnalyticType } from '../analytics/enums/analytic-type.enum';
 
 @Controller('restaurant')
 export class RestaurantController {
@@ -21,6 +23,7 @@ export class RestaurantController {
     private restaurantService: RestaurantService,
     private readonly configService: ConfigService,
     private readonly qrCodeService: QrCodeService,
+    private readonly analyticsService: AnalyticsService,
   ) {}
 
   @Get()
@@ -40,6 +43,10 @@ export class RestaurantController {
   @Get(':id/action')
   public async getRestaurantActions(@Param('id') id: string, @Res() res) {
     const actions = await this.restaurantService.findAllActions(id);
+    await this.analyticsService.create({
+      type: AnalyticType.GET_ACTIONS,
+      restaurantId: id,
+    });
 
     return res.status(HttpStatus.OK).json(actions);
   }

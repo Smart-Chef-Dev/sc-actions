@@ -6,6 +6,7 @@ import { RestaurantModule } from './restaurant/restaurant.module';
 import { MessageModule } from './message/message.module';
 import { TelegramModule } from './telegram/telegram.module';
 import { QrCodeService } from './qr-code/qr-code.service';
+import { AnalyticsModule } from './analytics/analytics.module';
 import configuration from './config/configuration';
 
 @Module({
@@ -24,6 +25,7 @@ import configuration from './config/configuration';
     RestaurantModule,
     MessageModule,
     TelegramModule,
+    AnalyticsModule,
   ],
   providers: [QrCodeService],
 })

@@ -8,6 +8,7 @@ import { TableSchema, Table } from './schemas/table.schema';
 import { RestaurantService } from './restaurant.service';
 import { RestaurantController } from './restaurant.controller';
 import { QrCodeService } from '../qr-code/qr-code.service';
+import { AnalyticsModule } from '../analytics/analytics.module';
 
 @Module({
   imports: [
@@ -16,6 +17,7 @@ import { QrCodeService } from '../qr-code/qr-code.service';
       { name: Action.name, schema: ActionSchema },
       { name: Table.name, schema: TableSchema },
     ]),
+    AnalyticsModule,
   ],
   providers: [RestaurantService, ConfigService, QrCodeService],
   controllers: [RestaurantController],
