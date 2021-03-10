@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import * as QRCode from 'qrcode-svg';
 import * as svgToImg from 'svg-to-img';
-// import QRCode = require('easyqrcodejs-nodejs');
+import * as archiver from 'archiver';
 
 @Injectable()
 export class QrCodeService {
@@ -13,9 +13,31 @@ export class QrCodeService {
 
   async generatePng(content: string) {
     const svg = this.generateSvg(content);
-    const png = await svgToImg.from(svg).toPng();
+    return await svgToImg.from(svg).toPng();
+  }
 
-    return png;
+  getSvgArchive(contents: string[]): archiver.Archiver {
+    const archive = archiver('zip');
+
+    for (const content of contents) {
+      const code = this.generateSvg(content);
+
+      archive.append(code, { name: `${content}.svg` });
+    }
+
+    return archive;
+  }
+
+  async getPngArchive(contents: string[]): Promise<archiver.Archiver> {
+    const archive = archiver('zip');
+
+    for (const content of contents) {
+      const code = await this.generatePng(content);
+
+      archive.append(code, { name: `${content}.png` });
+    }
+
+    return archive;
   }
 
   private static create(content: string) {

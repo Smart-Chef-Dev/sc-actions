@@ -103,6 +103,18 @@ export class RestaurantController {
     return res.status(HttpStatus.OK).send(qrCode);
   }
 
+  @Get(':id/svg-archive')
+  public async getRestaurantSvgArchive(@Param('id') id: string, @Res() res) {
+    const tables = await this.restaurantService.findAllTables(id);
+    const urls = tables.map((t) => this.getQrCodeUrl(id, t._id));
+
+    const archive = this.qrCodeService.getSvgArchive(urls);
+    res.attachment(`${id}.zip`).type('zip');
+    archive.on('end', () => res.end());
+    archive.pipe(res);
+    await archive.finalize();
+  }
+
   @Get(':id/table/:tableId/png')
   public async getRestaurantTablePng(
     @Param('id') id: string,
@@ -124,6 +136,18 @@ export class RestaurantController {
     const qrCode = await this.qrCodeService.generatePng(contentUrl);
 
     return res.status(HttpStatus.OK).send(qrCode);
+  }
+
+  @Get(':id/png-archive')
+  public async getRestaurantPngArchive(@Param('id') id: string, @Res() res) {
+    const tables = await this.restaurantService.findAllTables(id);
+    const urls = tables.map((t) => this.getQrCodeUrl(id, t._id));
+
+    const archive = await this.qrCodeService.getPngArchive(urls);
+    res.attachment(`${id}.zip`).type('zip');
+    archive.on('end', () => res.end());
+    archive.pipe(res);
+    await archive.finalize();
   }
 
   @Post(':id/table')
