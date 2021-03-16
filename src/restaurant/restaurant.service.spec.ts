@@ -205,4 +205,27 @@ describe('RestaurantService', () => {
     expect(restaurants[1].name).toStrictEqual(restaurant2.name);
     expect(restaurants[0]._id).not.toBe(restaurants[1]._id);
   });
+
+  it('should check restaurant exist status', async () => {
+    const restaurant = await preCreateRestaurant();
+
+    expect(
+      await service.checkTableExistingInRestaurant(
+        restaurant._id,
+        restaurant.tables[0]._id,
+      ),
+    ).toBe(true);
+    expect(
+      await service.checkTableExistingInRestaurant(
+        restaurant.tables[0]._id,
+        restaurant.tables[0]._id,
+      ),
+    ).toBe(false);
+    expect(
+      await service.checkTableExistingInRestaurant(
+        restaurant._id,
+        restaurant._id,
+      ),
+    ).toBe(false);
+  });
 });

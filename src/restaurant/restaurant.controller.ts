@@ -16,6 +16,7 @@ import { TableDto } from './dto/table.dto';
 import { QrCodeService } from '../qr-code/qr-code.service';
 import { AnalyticsService } from '../analytics/analytics.service';
 import { AnalyticType } from '../analytics/enums/analytic-type.enum';
+import { TableUrlsDto } from './dto/table-urls.dto';
 
 @Controller('restaurant')
 export class RestaurantController {
@@ -105,11 +106,20 @@ export class RestaurantController {
 
   @Get(':id/svg-archive')
   public async getRestaurantSvgArchive(@Param('id') id: string, @Res() res) {
-    const tables = await this.restaurantService.findAllTables(id);
-    const urls = tables.map((t) => this.getQrCodeUrl(id, t._id));
+    const restaurant = await this.restaurantService.findById(id);
+    if (!restaurant) {
+      res.status(HttpStatus.NOT_FOUND).send();
+    }
+
+    const tables = restaurant.tables ?? [];
+    const urls = tables.map<TableUrlsDto>((t) => ({
+      name: t.name,
+      url: this.getQrCodeUrl(id, t._id),
+    }));
 
     const archive = this.qrCodeService.getSvgArchive(urls);
-    res.attachment(`${id}.zip`).type('zip');
+    res.attachment(`${restaurant.name}.zip`).type('zip');
+
     archive.on('end', () => res.end());
     archive.pipe(res);
     await archive.finalize();
@@ -140,11 +150,20 @@ export class RestaurantController {
 
   @Get(':id/png-archive')
   public async getRestaurantPngArchive(@Param('id') id: string, @Res() res) {
-    const tables = await this.restaurantService.findAllTables(id);
-    const urls = tables.map((t) => this.getQrCodeUrl(id, t._id));
+    const restaurant = await this.restaurantService.findById(id);
+    if (!restaurant) {
+      res.status(HttpStatus.NOT_FOUND).send();
+    }
+
+    const tables = restaurant.tables ?? [];
+    const urls = tables.map<TableUrlsDto>((t) => ({
+      name: t.name,
+      url: this.getQrCodeUrl(id, t._id),
+    }));
 
     const archive = await this.qrCodeService.getPngArchive(urls);
-    res.attachment(`${id}.zip`).type('zip');
+    res.attachment(`${restaurant.name}.zip`).type('zip');
+
     archive.on('end', () => res.end());
     archive.pipe(res);
     await archive.finalize();

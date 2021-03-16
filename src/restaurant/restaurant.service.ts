@@ -31,13 +31,13 @@ export class RestaurantService {
   public async findAllActions(id: string): Promise<Action[]> {
     const restaurant = await this.findById(id);
 
-    return restaurant.actions;
+    return restaurant?.actions;
   }
 
   public async findAllTables(id: string): Promise<Table[]> {
     const restaurant = await this.findById(id);
 
-    return restaurant.tables;
+    return restaurant?.tables;
   }
 
   public async create(dto: RestaurantDto): Promise<Restaurant> {
@@ -116,6 +116,6 @@ export class RestaurantService {
   ): Promise<boolean> {
     const tables = await this.findAllTables(restaurantId);
 
-    return !!tables.find((t) => t._id.equals(tableId));
+    return !!tables?.find((t) => t._id.equals(tableId)) ?? false;
   }
 }
