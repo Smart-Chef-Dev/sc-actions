@@ -6,6 +6,7 @@ import {
   Param,
   Body,
   HttpStatus,
+  Header,
 } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 
@@ -82,6 +83,7 @@ export class RestaurantController {
   }
 
   @Get(':id/table/:tableId/svg')
+  @Header('Content-Type', 'image/svg+xml')
   public async getRestaurantTableSvg(
     @Param('id') id: string,
     @Param('tableId') tableId: string,
@@ -97,7 +99,6 @@ export class RestaurantController {
     }
 
     const contentUrl = this.getQrCodeUrl(id, tableId);
-    res.set('Content-Type', 'image/svg+xml');
     res.set('Content-Disposition', `attachment; filename=${tableId}.svg`);
     const qrCode = await this.qrCodeService.generateSvg(contentUrl);
 
@@ -105,6 +106,7 @@ export class RestaurantController {
   }
 
   @Get(':id/svg-archive')
+  @Header('Content-Type', 'application/zip, application/octet-stream')
   public async getRestaurantSvgArchive(@Param('id') id: string, @Res() res) {
     const restaurant = await this.restaurantService.findById(id);
     if (!restaurant) {
@@ -126,6 +128,7 @@ export class RestaurantController {
   }
 
   @Get(':id/table/:tableId/png')
+  @Header('Content-Type', 'image/png')
   public async getRestaurantTablePng(
     @Param('id') id: string,
     @Param('tableId') tableId: string,
@@ -141,14 +144,14 @@ export class RestaurantController {
     }
 
     const contentUrl = this.getQrCodeUrl(id, tableId);
-    res.set('Content-Type', 'image/png');
     res.set('Content-Disposition', `attachment; filename=${tableId}.png`);
-    const qrCode = await this.qrCodeService.generatePng(contentUrl);
+    const qrStream = await this.qrCodeService.generatePng(contentUrl);
 
-    return res.status(HttpStatus.OK).send(qrCode);
+    qrStream.pipe(res);
   }
 
   @Get(':id/png-archive')
+  @Header('Content-Type', 'application/octet-stream')
   public async getRestaurantPngArchive(@Param('id') id: string, @Res() res) {
     const restaurant = await this.restaurantService.findById(id);
     if (!restaurant) {

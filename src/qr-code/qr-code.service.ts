@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import * as QRCode from 'qrcode-svg';
-import * as svgToImg from 'svg-to-img';
+import * as QRCodePng from 'qrcode';
+import { PassThrough } from 'stream';
 import * as archiver from 'archiver';
 
 import { TableUrlsDto } from '../restaurant/dto/table-urls.dto';
@@ -13,9 +14,15 @@ export class QrCodeService {
     return code.svg();
   }
 
-  async generatePng(content: string) {
-    const svg = this.generateSvg(content);
-    return await svgToImg.from(svg).toPng();
+  async generatePng(content: string): Promise<PassThrough> {
+    const qrStream = new PassThrough();
+    await QRCodePng.toFileStream(qrStream, content, {
+      type: 'png',
+      width: 256,
+      errorCorrectionLevel: 'H',
+    });
+
+    return qrStream;
   }
 
   getSvgArchive(contents: TableUrlsDto[]): archiver.Archiver {
