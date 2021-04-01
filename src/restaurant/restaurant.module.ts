@@ -7,7 +7,6 @@ import { ActionSchema, Action } from './schemas/action.schema';
 import { TableSchema, Table } from './schemas/table.schema';
 import { RestaurantService } from './restaurant.service';
 import { RestaurantController } from './restaurant.controller';
-import { QrCodeService } from '../qr-code/qr-code.service';
 import { AnalyticsModule } from '../analytics/analytics.module';
 
 @Module({
@@ -19,7 +18,7 @@ import { AnalyticsModule } from '../analytics/analytics.module';
     ]),
     AnalyticsModule,
   ],
-  providers: [RestaurantService, ConfigService, QrCodeService],
+  providers: [RestaurantService, ConfigService],
   controllers: [RestaurantController],
   exports: [RestaurantService],
 })

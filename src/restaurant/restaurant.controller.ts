@@ -6,7 +6,6 @@ import {
   Param,
   Body,
   HttpStatus,
-  Header,
 } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 
@@ -14,17 +13,14 @@ import { RestaurantService } from './restaurant.service';
 import { RestaurantDto } from './dto/restaurant.dto';
 import { ActionDto } from './dto/action.dto';
 import { TableDto } from './dto/table.dto';
-import { QrCodeService } from '../qr-code/qr-code.service';
 import { AnalyticsService } from '../analytics/analytics.service';
 import { AnalyticType } from '../analytics/enums/analytic-type.enum';
-import { TableUrlsDto } from './dto/table-urls.dto';
 
 @Controller('restaurant')
 export class RestaurantController {
   constructor(
     private restaurantService: RestaurantService,
     private readonly configService: ConfigService,
-    private readonly qrCodeService: QrCodeService,
     private readonly analyticsService: AnalyticsService,
   ) {}
 
@@ -33,6 +29,13 @@ export class RestaurantController {
     const restaurants = await this.restaurantService.findAll();
 
     return res.status(HttpStatus.OK).json(restaurants);
+  }
+
+  @Get(':id')
+  public async findById(@Param('id') id: string, @Res() res) {
+    const restaurant = await this.restaurantService.findById(id);
+
+    return res.status(HttpStatus.OK).json(restaurant);
   }
 
   @Post()
@@ -74,102 +77,6 @@ export class RestaurantController {
     return res
       .status(HttpStatus.OK)
       .json(tables.map((t) => ({ ...t, restaurantId: id })));
-  }
-
-  private getQrCodeUrl(restaurantId: string, tableId: string) {
-    const url = this.configService.get('frontendUrl');
-
-    return `${url}/${restaurantId}/${tableId}`;
-  }
-
-  @Get(':id/table/:tableId/svg')
-  @Header('Content-Type', 'image/svg+xml')
-  public async getRestaurantTableSvg(
-    @Param('id') id: string,
-    @Param('tableId') tableId: string,
-    @Res() res,
-  ) {
-    if (
-      !(await this.restaurantService.checkTableExistingInRestaurant(
-        id,
-        tableId,
-      ))
-    ) {
-      return res.status(HttpStatus.NOT_FOUND).send();
-    }
-
-    const contentUrl = this.getQrCodeUrl(id, tableId);
-    res.set('Content-Disposition', `attachment; filename=${tableId}.svg`);
-    const qrCode = await this.qrCodeService.generateSvg(contentUrl);
-
-    return res.status(HttpStatus.OK).send(qrCode);
-  }
-
-  @Get(':id/svg-archive')
-  @Header('Content-Type', 'application/zip, application/octet-stream')
-  public async getRestaurantSvgArchive(@Param('id') id: string, @Res() res) {
-    const restaurant = await this.restaurantService.findById(id);
-    if (!restaurant) {
-      res.status(HttpStatus.NOT_FOUND).send();
-    }
-
-    const tables = restaurant.tables ?? [];
-    const urls = tables.map<TableUrlsDto>((t) => ({
-      name: t.name,
-      url: this.getQrCodeUrl(id, t._id),
-    }));
-
-    const archive = this.qrCodeService.getSvgArchive(urls);
-    res.attachment(`${restaurant.name}.zip`).type('zip');
-
-    archive.on('end', () => res.end());
-    archive.pipe(res);
-    await archive.finalize();
-  }
-
-  @Get(':id/table/:tableId/png')
-  @Header('Content-Type', 'image/png')
-  public async getRestaurantTablePng(
-    @Param('id') id: string,
-    @Param('tableId') tableId: string,
-    @Res() res,
-  ) {
-    if (
-      !(await this.restaurantService.checkTableExistingInRestaurant(
-        id,
-        tableId,
-      ))
-    ) {
-      return res.status(HttpStatus.NOT_FOUND).send();
-    }
-
-    const contentUrl = this.getQrCodeUrl(id, tableId);
-    res.set('Content-Disposition', `attachment; filename=${tableId}.png`);
-    const qrStream = await this.qrCodeService.generatePng(contentUrl);
-
-    qrStream.pipe(res);
-  }
-
-  @Get(':id/png-archive')
-  @Header('Content-Type', 'application/octet-stream')
-  public async getRestaurantPngArchive(@Param('id') id: string, @Res() res) {
-    const restaurant = await this.restaurantService.findById(id);
-    if (!restaurant) {
-      res.status(HttpStatus.NOT_FOUND).send();
-    }
-
-    const tables = restaurant.tables ?? [];
-    const urls = tables.map<TableUrlsDto>((t) => ({
-      name: t.name,
-      url: this.getQrCodeUrl(id, t._id),
-    }));
-
-    const archive = await this.qrCodeService.getPngArchive(urls);
-    res.attachment(`${restaurant.name}.zip`).type('zip');
-
-    archive.on('end', () => res.end());
-    archive.pipe(res);
-    await archive.finalize();
   }
 
   @Post(':id/table')
