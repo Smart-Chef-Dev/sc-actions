@@ -128,6 +128,7 @@ describe('RestaurantService', () => {
 
     const dto = new ActionDto({
       name: 'New_ Action_',
+      link: 'new link',
       message: 'new Action message',
     });
     const updatedRestaurant = await service.addActionIntoRestaurant(
@@ -140,6 +141,7 @@ describe('RestaurantService', () => {
     );
     expect(updatedRestaurant.actions.length).toBe(2);
     expect(updatedRestaurant.actions[1].name).toBe(dto.name);
+    expect(updatedRestaurant.actions[1].link).toBe(dto.link);
     expect(updatedRestaurant.actions[1].message).toBe(dto.message);
   });
 

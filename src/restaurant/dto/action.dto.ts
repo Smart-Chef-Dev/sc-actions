@@ -11,6 +11,10 @@ export class ActionDto {
   @IsNotEmpty()
   readonly message: string;
 
+  @IsString()
+  @MaxLength(300)
+  readonly link: string;
+
   public constructor(init?: Partial<ActionDto>) {
     Object.assign(this, init);
   }
