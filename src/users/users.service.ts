@@ -13,20 +13,23 @@ export class UsersService {
     private readonly jwtService: JwtService,
   ) {}
 
-  async SignUp(createUserDto: CreateUserDto) {
+  async signUp(createUserDto: CreateUserDto) {
     const password = createUserDto.password;
     const salt = await bcrypt.genSalt();
     const hash = await bcrypt.hash(password, salt);
 
+    console.log(createUserDto);
+
     const newUser = new this.usersModel();
     newUser.password = hash;
-    newUser.name = createUserDto.name;
+    newUser.email = createUserDto.email;
 
+    console.log(newUser);
     return newUser.save();
   }
 
-  async SingIn(createUserDto: CreateUserDto) {
-    const user = await this.usersModel.findOne({ name: createUserDto.name });
+  async singIn(createUserDto: CreateUserDto) {
+    const user = await this.usersModel.findOne({ email: createUserDto.email });
     const isMatch = await bcrypt.compare(createUserDto.password, user.password);
 
     if (isMatch) {
