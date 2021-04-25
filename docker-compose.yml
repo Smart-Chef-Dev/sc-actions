@@ -10,10 +10,11 @@ services:
       MONGO_INITDB_ROOT_PASSWORD: <ROOT_PASSWORD>
       MONGO_USERNAME: <USERNAME>
       MONGO_PASSWORD: <PASSWORD>
-      MONGO_DB: <DB>в 
+      MONGO_DB: <DB>
     ports:
       - 27017:27017
     volumes:
+      -  ./mongo-init.sh:/docker-entrypoint-initdb.d/mongo-init.sh
       - mongodbdata:/data/db
 
   client:

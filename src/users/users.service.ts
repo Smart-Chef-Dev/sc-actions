@@ -13,7 +13,7 @@ export class UsersService {
     private readonly jwtService: JwtService,
   ) {}
 
-  async signUp(createUserDto: CreateUserDto) {
+  async SignUp(createUserDto: CreateUserDto) {
     const password = createUserDto.password;
     const salt = await bcrypt.genSalt();
     const hash = await bcrypt.hash(password, salt);
