@@ -14,18 +14,21 @@ export class UsersService {
   ) {}
 
   async signUp(createUserDto: CreateUserDto) {
-    const password = createUserDto.password;
-    const salt = await bcrypt.genSalt();
-    const hash = await bcrypt.hash(password, salt);
+    const checkForAbsence = await this.usersModel.findOne({ email: createUserDto.email });
+    if (!checkForAbsence) {
+      const password = createUserDto.password;
+      const salt = await bcrypt.genSalt();
+      const hash = await bcrypt.hash(password, salt);
 
-    console.log(createUserDto);
+      const newUser = new this.usersModel();
+      newUser.password = hash;
+      newUser.email = createUserDto.email;
 
-    const newUser = new this.usersModel();
-    newUser.password = hash;
-    newUser.email = createUserDto.email;
-
-    console.log(newUser);
-    return newUser.save();
+      await newUser.save();
+      throw new HttpException('Account created', HttpStatus.OK);
+    } else {
+      throw new HttpException('Email is busy', HttpStatus.PRECONDITION_FAILED);
+    }
   }
 
   async singIn(createUserDto: CreateUserDto) {
