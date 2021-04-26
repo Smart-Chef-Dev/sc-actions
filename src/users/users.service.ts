@@ -14,30 +14,32 @@ export class UsersService {
   ) {}
 
   async signUp(createUserDto: CreateUserDto) {
-    const checkForAbsence = await this.usersModel.findOne({ email: createUserDto.email });
-    if (!checkForAbsence) {
-      const password = createUserDto.password;
-      const salt = await bcrypt.genSalt();
-      const hash = await bcrypt.hash(password, salt);
+    const password = createUserDto.password;
+    const salt = await bcrypt.genSalt();
+    const hash = await bcrypt.hash(password, salt);
 
-      const newUser = new this.usersModel();
-      newUser.password = hash;
-      newUser.email = createUserDto.email;
+    const newUser = new this.usersModel({
+      email: createUserDto.email,
+      password: hash,
+    });
 
-      await newUser.save();
-      throw new HttpException('Account created', HttpStatus.OK);
-    } else {
-      throw new HttpException('Email is busy', HttpStatus.PRECONDITION_FAILED);
-    }
+    await newUser.save();
   }
 
   async singIn(createUserDto: CreateUserDto) {
     const user = await this.usersModel.findOne({ email: createUserDto.email });
-    const isMatch = await bcrypt.compare(createUserDto.password, user.password);
 
-    if (isMatch) {
-      return this.jwtService.sign({ id: user._id });
+    if (user) {
+      const isMatch = await bcrypt.compare(
+        createUserDto.password,
+        user.password,
+      );
+
+      if (isMatch) return this.jwtService.sign({ id: user._id });
     }
-    throw new HttpException('Not found', HttpStatus.NOT_FOUND);
+  }
+
+  findByEmail(email) {
+    return this.usersModel.findOne({ email: email });
   }
 }
