@@ -6,6 +6,7 @@ import { InjectModel } from '@nestjs/mongoose';
 import { Users, UsersDocument } from './schemas/users.schema';
 import { JwtService } from '@nestjs/jwt';
 
+
 @Injectable()
 export class UsersService {
   constructor(
@@ -13,33 +14,30 @@ export class UsersService {
     private readonly jwtService: JwtService,
   ) {}
 
-  async signUp(createUserDto: CreateUserDto) {
-    const password = createUserDto.password;
+  async signUp(createUserDto: CreateUserDto): Promise<Users> {
     const salt = await bcrypt.genSalt();
-    const hash = await bcrypt.hash(password, salt);
+    const hash = await bcrypt.hash(createUserDto.password, salt);
 
     const newUser = new this.usersModel({
       email: createUserDto.email,
       password: hash,
     });
 
-    await newUser.save();
+    return await newUser.save();
   }
 
   async singIn(createUserDto: CreateUserDto) {
-    const user = await this.usersModel.findOne({ email: createUserDto.email });
+    const user = await this.findByEmail(createUserDto.email);
 
-    if (user) {
-      const isMatch = await bcrypt.compare(
-        createUserDto.password,
-        user.password,
-      );
+    const isMatch = await bcrypt.compare(createUserDto.password, user.password);
+    if (isMatch) return this.jwtService.sign({ email: user.email });
 
-      if (isMatch) return this.jwtService.sign({ id: user._id });
-    }
+    throw {
+      message: 'Not found',
+    };
   }
 
-  findByEmail(email) {
+  async findByEmail(email): Promise<Users> {
     return this.usersModel.findOne({ email: email });
   }
 }
