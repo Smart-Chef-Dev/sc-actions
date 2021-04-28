@@ -1,6 +1,5 @@
 import {
   Controller,
-  Get,
   Post,
   Body,
   HttpStatus,
@@ -16,19 +15,21 @@ export class UsersController {
 
   @Post('signUp')
   async signUp(@Body() createUserDto: CreateUserDto, @Res() res) {
-    await this.usersService.signUp(createUserDto).catch(() => {
+    try {
+      await this.usersService.signUp(createUserDto);
+      return res.status(HttpStatus.OK).json();
+    } catch (err) {
       throw new HttpException('Email already taken', HttpStatus.FORBIDDEN);
-    });
-
-    return res.status(HttpStatus.OK).json();
+    }
   }
 
   @Post('singIn')
   async singIn(@Body() createUserDto: CreateUserDto, @Res() res) {
-    const jwt = await this.usersService.singIn(createUserDto).catch((err) => {
+    try {
+      const jwt = await this.usersService.singIn(createUserDto);
+      return res.status(HttpStatus.OK).json(jwt);
+    } catch (err) {
       throw new HttpException(err.message, HttpStatus.NOT_FOUND);
-    });
-
-    return res.status(HttpStatus.OK).json(jwt);
+    }
   }
 }

@@ -1,15 +1,17 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { UsersService } from './users.service';
+import * as bcrypt from 'bcrypt';
 import { MongooseModule } from '@nestjs/mongoose';
 import { MongoMemoryServer } from 'mongodb-memory-server';
-import { JwtModule } from '@nestjs/jwt';
+import { JwtModule, JwtService } from '@nestjs/jwt';
 import { Users, UsersSchema } from './schemas/users.schema';
-import { CreateUserDto } from './dto/create-user.dto';
 import * as mongoose from 'mongoose';
+import { ConfigModule, ConfigService } from '@nestjs/config';
 
 let mongod: MongoMemoryServer;
 
 describe('UsersService', () => {
+  let jwtService: JwtService;
   let service: UsersService;
 
   mongoose.set('useCreateIndex', true);
@@ -26,24 +28,29 @@ describe('UsersService', () => {
           }),
         }),
         MongooseModule.forFeature([{ name: Users.name, schema: UsersSchema }]),
-        JwtModule.register({ secret: 'Test' }),
+        JwtModule.registerAsync({
+          imports: [ConfigModule],
+          useFactory: async (configService: ConfigService) => ({
+            secret: 'Test',
+          }),
+          inject: [ConfigService],
+        }),
       ],
       providers: [UsersService],
     }).compile();
 
     service = module.get<UsersService>(UsersService);
+    jwtService = module.get<JwtService>(JwtService);
   });
 
-  const email = 'test email';
-  const password = 'test password';
+  const email = 'test@gmail.com';
+  const password = 'test123';
 
   const preCreateUsers = async (email, password) => {
-    const dto = new CreateUserDto({
+    return service.signUp({
       email: email,
       password: password,
     });
-
-    return service.signUp(dto);
   };
 
   it('should be defined', () => {
@@ -51,29 +58,47 @@ describe('UsersService', () => {
   });
 
   it('should create an account', async () => {
-    const addUser = await preCreateUsers(email, password);
+    const addedUser = await preCreateUsers(email, password);
 
-    expect(addUser).toBeDefined();
-    expect(addUser.email).toBe(email);
+    expect(addedUser).toBeDefined();
+    expect(addedUser.email).toBe(email);
+    expect(addedUser.password).not.toBe(password);
+    expect(addedUser._id).toBeDefined();
   });
 
   it('should return the user with the specified email', async () => {
-    await preCreateUsers(email, password);
+    const addedUser = await preCreateUsers(email, password);
 
-    const user = await service.findByEmail(email);
-    expect(user).toBeDefined();
-    expect(user.email).toBe(email);
+    const userFound = await service.findByEmail(email);
+    expect(userFound).toBeDefined();
+    expect(userFound.email).toBe(email);
+    expect(userFound._id).toStrictEqual(addedUser._id);
+
+    const isMatch = await bcrypt.compare(password, userFound.password);
+    expect(isMatch).toBe(true);
   });
 
   it('should return jwt if data is correct', async () => {
     await preCreateUsers(email, password);
 
-    const dto = new CreateUserDto({
+    const jwt = await service.singIn({
       email: email,
       password: password,
     });
-    const jwt = await service.singIn(dto);
+
+    interface JWTData {
+      email: string;
+    }
+
+    const decodeJwt = await jwtService.decode(jwt);
 
     expect(jwt).toBeDefined();
+    expect((decodeJwt as JWTData).email).toBe(email);
+  });
+
+  it('try to enter numbers instead of email', async () => {
+    const a = await preCreateUsers('123', password);
+
+    expect(a).toBeDefined();
   });
 });

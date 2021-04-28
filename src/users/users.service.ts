@@ -3,14 +3,14 @@ import { CreateUserDto } from './dto/create-user.dto';
 import * as bcrypt from 'bcrypt';
 import { Model } from 'mongoose';
 import { InjectModel } from '@nestjs/mongoose';
-import { Users, UsersDocument } from './schemas/users.schema';
+import { Users } from './schemas/users.schema';
 import { JwtService } from '@nestjs/jwt';
-
+import { promises } from 'dns';
 
 @Injectable()
 export class UsersService {
   constructor(
-    @InjectModel(Users.name) private usersModel: Model<UsersDocument>,
+    @InjectModel(Users.name) private usersModel: Model<Users>,
     private readonly jwtService: JwtService,
   ) {}
 
@@ -23,18 +23,18 @@ export class UsersService {
       password: hash,
     });
 
-    return await newUser.save();
+    return newUser.save();
   }
 
-  async singIn(createUserDto: CreateUserDto) {
+  async singIn(createUserDto: CreateUserDto): Promise<string> {
     const user = await this.findByEmail(createUserDto.email);
 
     const isMatch = await bcrypt.compare(createUserDto.password, user.password);
-    if (isMatch) return this.jwtService.sign({ email: user.email });
+    if (isMatch) {
+      return this.jwtService.sign({ email: user.email });
+    }
 
-    throw {
-      message: 'Not found',
-    };
+    throw Error('Not found');
   }
 
   async findByEmail(email): Promise<Users> {
