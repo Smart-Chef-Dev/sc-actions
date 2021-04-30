@@ -69,12 +69,12 @@ describe('UsersService', () => {
   it('should return the user with the specified email', async () => {
     const addedUser = await preCreateUsers(email, password);
 
-    const userFound = await service.findByEmail(email);
-    expect(userFound).toBeDefined();
-    expect(userFound.email).toBe(email);
-    expect(userFound._id).toStrictEqual(addedUser._id);
+    const user = await service.findByEmail(email);
+    expect(user).toBeDefined();
+    expect(user.email).toBe(email);
+    expect(user._id).toStrictEqual(addedUser._id);
 
-    const isMatch = await bcrypt.compare(password, userFound.password);
+    const isMatch = await bcrypt.compare(password, user.password);
     expect(isMatch).toBe(true);
   });
 

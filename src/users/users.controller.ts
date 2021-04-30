@@ -29,7 +29,7 @@ export class UsersController {
       const jwt = await this.usersService.singIn(createUserDto);
       return res.status(HttpStatus.OK).json(jwt);
     } catch (err) {
-      throw new HttpException(err.message, HttpStatus.NOT_FOUND);
+      throw new HttpException('Not found', HttpStatus.NOT_FOUND);
     }
   }
 }
