@@ -6,11 +6,11 @@ services:
     image: mongo:4.4-bionic
     command: mongod --serviceExecutor adaptive
     environment:
-      MONGO_INITDB_ROOT_USERNAME: admin
-      MONGO_INITDB_ROOT_PASSWORD: wDjHMaje8y_Ai_42izjv!Uv-2PPscwdQ
-      MONGO_USERNAME: admin
-      MONGO_PASSWORD: wDjHMaje8y_Ai_42izjv!Uv-2PPscwdQ
-      MONGO_DB: actions
+      MONGO_INITDB_ROOT_USERNAME: <ROOT_USERNAME>
+      MONGO_INITDB_ROOT_PASSWORD: <ROOT_PASSWORD>
+      MONGO_USERNAME: <USERNAME>
+      MONGO_PASSWORD: <PASSWORD>
+      MONGO_DB: <DB>
     ports:
       - 27017:27017
     volumes:
