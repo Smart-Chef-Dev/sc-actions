@@ -28,12 +28,9 @@ describe('UsersService', () => {
           }),
         }),
         MongooseModule.forFeature([{ name: Users.name, schema: UsersSchema }]),
-        JwtModule.registerAsync({
-          imports: [ConfigModule],
-          useFactory: async (configService: ConfigService) => ({
-            secret: 'Test',
-          }),
-          inject: [ConfigService],
+        JwtModule.register({
+          secret: 'Test',
+          signOptions: { expiresIn: '60s' },
         }),
       ],
       providers: [UsersService],

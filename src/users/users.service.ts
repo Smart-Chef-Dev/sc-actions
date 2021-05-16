@@ -5,7 +5,6 @@ import { Model } from 'mongoose';
 import { InjectModel } from '@nestjs/mongoose';
 import { Users } from './schemas/users.schema';
 import { JwtService } from '@nestjs/jwt';
-import { promises } from 'dns';
 
 @Injectable()
 export class UsersService {
