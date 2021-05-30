@@ -6,6 +6,7 @@ import {
   HttpException,
   HttpStatus,
   Res,
+  Get,
 } from '@nestjs/common';
 
 import { MenuService } from './menu.service';
@@ -15,30 +16,52 @@ import { CourseDto } from './dto/course';
 export class MenuController {
   constructor(private readonly menuService: MenuService) {}
 
-  @Post(':categoryName/addCategory')
-  async addCategory(@Param('categoryName') categoryName: string, @Res() res) {
+  @Post(':restaurantId/addCategory/:categoryName')
+  async addCategory(
+    @Param('categoryName') categoryName: string,
+    @Param('restaurantId') restaurantId: string,
+    @Res() res,
+  ) {
     try {
-      await this.menuService.addCategory(categoryName);
+      await this.menuService.addCategory(categoryName, restaurantId);
       return res.status(HttpStatus.OK).json();
     } catch (err) {
-      throw new HttpException(
-        'This category already exists',
-        HttpStatus.FORBIDDEN,
-      );
+      throw new HttpException('Not found', HttpStatus.FORBIDDEN);
     }
   }
 
-  @Post(':categoryName/addCourses')
-  async addCourses(
+  @Post(':restaurantId/addCourses/:categoryName')
+  async addCourse(
     @Param('categoryName') categoryName: string,
+    @Param('restaurantId') restaurantId: string,
     @Body() courseDto: CourseDto,
     @Res() res,
   ) {
     try {
-      await this.menuService.addCourses(courseDto, categoryName);
+      await this.menuService.addCourse(courseDto, categoryName, restaurantId);
       return res.status(HttpStatus.OK).json();
     } catch (err) {
-      throw new HttpException(err.message, HttpStatus.NOT_FOUND);
+      throw new HttpException('Not found', HttpStatus.NOT_FOUND);
+    }
+  }
+
+  @Get(':restaurantId/getCategory')
+  async getCategory(@Res() res, @Param('restaurantId') restaurantId: string) {
+    try {
+      const category = await this.menuService.getCategory(restaurantId);
+      return res.status(HttpStatus.OK).json(category);
+    } catch (err) {
+      throw new HttpException('Not found', HttpStatus.NOT_FOUND);
+    }
+  }
+
+  @Get(':restaurantId/getCourse')
+  async getCourse(@Res() res, @Param('restaurantId') restaurantId: string) {
+    try {
+      const category = await this.menuService.getCourse(restaurantId);
+      return res.status(HttpStatus.OK).json(category);
+    } catch (err) {
+      throw new HttpException('Not found', HttpStatus.NOT_FOUND);
     }
   }
 }
