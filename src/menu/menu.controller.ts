@@ -11,6 +11,7 @@ import {
 
 import { MenuService } from './menu.service';
 import { CourseDto } from './dto/course';
+import { OrderDto } from './dto/order';
 
 @Controller('menu')
 export class MenuController {
@@ -63,5 +64,15 @@ export class MenuController {
     } catch (err) {
       throw new HttpException('Not found', HttpStatus.NOT_FOUND);
     }
+  }
+
+  @Post('sendMessage/:restaurantId/:tableId')
+  async sendMessage(
+    @Body() orderDto: OrderDto[],
+    @Param('restaurantId') restaurantId: string,
+    @Param('tableId') tableId: string,
+  ) {
+    // console.log(orderDto);
+    return await this.menuService.sendMessage(orderDto, restaurantId, tableId);
   }
 }

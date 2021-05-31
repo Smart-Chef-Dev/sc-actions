@@ -8,6 +8,9 @@ import {
   Restaurant,
   RestaurantSchema,
 } from '../restaurant/schemas/restaurant.schema';
+import { RestaurantModule } from '../restaurant/restaurant.module';
+import { TelegramModule } from '../telegram/telegram.module';
+import { ConfigModule } from '@nestjs/config';
 
 @Module({
   imports: [
@@ -16,6 +19,9 @@ import {
       { name: Course.name, schema: CourseSchema },
       { name: Restaurant.name, schema: RestaurantSchema },
     ]),
+    RestaurantModule,
+    TelegramModule,
+    ConfigModule,
   ],
   controllers: [MenuController],
   providers: [MenuService],

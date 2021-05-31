@@ -5,7 +5,9 @@ import { Model } from 'mongoose';
 import { Category } from './schemas/category.schema';
 import { Course } from './schemas/course.shema';
 import { Restaurant } from '../restaurant/schemas/restaurant.schema';
-import { count } from 'rxjs/operators';
+import { OrderDto } from './dto/order';
+import { RestaurantService } from '../restaurant/restaurant.service';
+import { TelegramService } from '../telegram/telegram.service';
 
 @Injectable()
 export class MenuService {
@@ -13,6 +15,8 @@ export class MenuService {
     @InjectModel(Category.name) private categoryModel: Model<Category>,
     @InjectModel(Course.name) private courseModel: Model<Category>,
     @InjectModel(Restaurant.name) private restaurantModel: Model<Category>,
+    private readonly restaurantService: RestaurantService,
+    private readonly telegramService: TelegramService,
   ) {}
 
   async addCategory(categoryName, restaurantId) {
@@ -67,5 +71,19 @@ export class MenuService {
     return this.courseModel.find({
       restaurant: restaurantId,
     });
+  }
+
+  async sendMessage(orderDto, restaurantId, tableId) {
+    const restaurant = await this.restaurantService.findById(restaurantId);
+    const table = restaurant.tables.find((t) => t._id.equals(tableId));
+
+    let text = `${table.name} - `;
+    for (let i = 0; i < orderDto.length; i++) {
+      text = text + `${orderDto[i].name}(${orderDto[i].count}),`;
+    }
+
+    for (const username of restaurant.usernames) {
+      await this.telegramService.sendMessage(username, text);
+    }
   }
 }
