@@ -83,6 +83,7 @@ export class MenuService {
     }
 
     for (const username of restaurant.usernames) {
+      console.log(username);
       await this.telegramService.sendMessage(username, text);
     }
   }

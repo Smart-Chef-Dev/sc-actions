@@ -11,6 +11,8 @@ import {
 import { RestaurantModule } from '../restaurant/restaurant.module';
 import { TelegramModule } from '../telegram/telegram.module';
 import { ConfigModule } from '@nestjs/config';
+import { ServeStaticModule } from '@nestjs/serve-static';
+import { join } from 'path';
 
 @Module({
   imports: [
@@ -19,6 +21,9 @@ import { ConfigModule } from '@nestjs/config';
       { name: Course.name, schema: CourseSchema },
       { name: Restaurant.name, schema: RestaurantSchema },
     ]),
+    ServeStaticModule.forRoot({
+      rootPath: join(__filename, '../photos'),
+    }),
     RestaurantModule,
     TelegramModule,
     ConfigModule,
