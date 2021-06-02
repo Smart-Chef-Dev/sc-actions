@@ -5,4 +5,5 @@ export class OrderDto {
   price: string;
   productId: string;
   restaurant: string;
+  person: string;
 }

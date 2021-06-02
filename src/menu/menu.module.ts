@@ -24,9 +24,7 @@ import { join } from 'path';
     ServeStaticModule.forRoot({
       rootPath: join(__filename, '../photos'),
     }),
-    RestaurantModule,
     TelegramModule,
-    ConfigModule,
   ],
   controllers: [MenuController],
   providers: [MenuService],

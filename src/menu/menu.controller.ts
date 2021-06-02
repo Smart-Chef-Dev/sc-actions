@@ -12,19 +12,20 @@ import {
 import { MenuService } from './menu.service';
 import { CourseDto } from './dto/course';
 import { OrderDto } from './dto/order';
+import { CategoryDto } from './dto/category';
 
 @Controller('menu')
 export class MenuController {
   constructor(private readonly menuService: MenuService) {}
 
-  @Post(':restaurantId/addCategory/:categoryName')
+  @Post(':restaurantId/addCategory')
   async addCategory(
-    @Param('categoryName') categoryName: string,
     @Param('restaurantId') restaurantId: string,
+    @Body() categoryDto: CategoryDto,
     @Res() res,
   ) {
     try {
-      await this.menuService.addCategory(categoryName, restaurantId);
+      await this.menuService.addCategory(categoryDto.name, restaurantId);
       return res.status(HttpStatus.OK).json();
     } catch (err) {
       throw new HttpException('Not found', HttpStatus.FORBIDDEN);
@@ -72,7 +73,6 @@ export class MenuController {
     @Param('restaurantId') restaurantId: string,
     @Param('tableId') tableId: string,
   ) {
-    // console.log(orderDto);
     return await this.menuService.sendMessage(orderDto, restaurantId, tableId);
   }
 }

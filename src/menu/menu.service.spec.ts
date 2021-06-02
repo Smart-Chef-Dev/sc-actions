@@ -8,6 +8,10 @@ import {
   Restaurant,
   RestaurantSchema,
 } from '../restaurant/schemas/restaurant.schema';
+import { ServeStaticModule } from '@nestjs/serve-static';
+import { join } from 'path';
+import { TelegramService } from '../telegram/telegram.service';
+import { TelegramServiceMock } from '../telegram/telegram.service.mock';
 
 let mongod: MongoMemoryServer;
 
@@ -16,6 +20,11 @@ describe('MenuService', () => {
 
   beforeEach(async () => {
     mongod = new MongoMemoryServer();
+
+    const TelegramProvider = {
+      provide: TelegramService,
+      useClass: TelegramServiceMock,
+    };
 
     const module: TestingModule = await Test.createTestingModule({
       imports: [
@@ -30,8 +39,11 @@ describe('MenuService', () => {
           { name: Course.name, schema: CourseSchema },
           { name: Restaurant.name, schema: RestaurantSchema },
         ]),
+        ServeStaticModule.forRoot({
+          rootPath: join(__filename, '../photos'),
+        }),
       ],
-      providers: [MenuService],
+      providers: [MenuService, TelegramProvider],
     }).compile();
 
     service = module.get<MenuService>(MenuService);

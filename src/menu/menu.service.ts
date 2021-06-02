@@ -5,17 +5,14 @@ import { Model } from 'mongoose';
 import { Category } from './schemas/category.schema';
 import { Course } from './schemas/course.shema';
 import { Restaurant } from '../restaurant/schemas/restaurant.schema';
-import { OrderDto } from './dto/order';
-import { RestaurantService } from '../restaurant/restaurant.service';
 import { TelegramService } from '../telegram/telegram.service';
 
 @Injectable()
 export class MenuService {
   constructor(
     @InjectModel(Category.name) private categoryModel: Model<Category>,
-    @InjectModel(Course.name) private courseModel: Model<Category>,
-    @InjectModel(Restaurant.name) private restaurantModel: Model<Category>,
-    private readonly restaurantService: RestaurantService,
+    @InjectModel(Course.name) private courseModel: Model<Course>,
+    @InjectModel(Restaurant.name) private restaurantModel: Model<Restaurant>,
     private readonly telegramService: TelegramService,
   ) {}
 
@@ -74,16 +71,15 @@ export class MenuService {
   }
 
   async sendMessage(orderDto, restaurantId, tableId) {
-    const restaurant = await this.restaurantService.findById(restaurantId);
+    const restaurant = await this.restaurantModel.findById(restaurantId);
     const table = restaurant.tables.find((t) => t._id.equals(tableId));
 
-    let text = `${table.name} - `;
-    for (let i = 0; i < orderDto.length; i++) {
-      text = text + `${orderDto[i].name}(${orderDto[i].count}),`;
+    let text = `person: ${orderDto[0].person}, ${table.name} -`;
+    for (let i = 1; i < orderDto.length; i++) {
+      text = text + ` ${orderDto[i].name}(${orderDto[i].count}),`;
     }
 
     for (const username of restaurant.usernames) {
-      console.log(username);
       await this.telegramService.sendMessage(username, text);
     }
   }
