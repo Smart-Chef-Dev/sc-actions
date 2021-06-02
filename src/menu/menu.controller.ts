@@ -40,7 +40,7 @@ export class MenuController {
     @Res() res,
   ) {
     try {
-      await this.menuService.addCourse(courseDto, categoryName, restaurantId);
+      await this.menuService.addCourse(categoryName, restaurantId);
       return res.status(HttpStatus.OK).json();
     } catch (err) {
       throw new HttpException('Not found', HttpStatus.NOT_FOUND);
@@ -72,7 +72,9 @@ export class MenuController {
     @Body() orderDto: OrderDto[],
     @Param('restaurantId') restaurantId: string,
     @Param('tableId') tableId: string,
+    @Res() res,
   ) {
-    return await this.menuService.sendMessage(orderDto, restaurantId, tableId);
+    await this.menuService.sendMessage(orderDto, restaurantId, tableId);
+    return res.status(HttpStatus.OK).json();
   }
 }

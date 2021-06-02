@@ -5,4 +5,5 @@ export class CourseDto {
   weight: string;
   time: string;
   description: string;
+  categoryName: string;
 }

@@ -4,22 +4,21 @@ import { Model } from 'mongoose';
 
 import { Category } from './schemas/category.schema';
 import { Course } from './schemas/course.shema';
-import { Restaurant } from '../restaurant/schemas/restaurant.schema';
+
 import { TelegramService } from '../telegram/telegram.service';
+import { RestaurantService } from '../restaurant/restaurant.service';
 
 @Injectable()
 export class MenuService {
   constructor(
     @InjectModel(Category.name) private categoryModel: Model<Category>,
     @InjectModel(Course.name) private courseModel: Model<Course>,
-    @InjectModel(Restaurant.name) private restaurantModel: Model<Restaurant>,
     private readonly telegramService: TelegramService,
+    private readonly restaurantService: RestaurantService,
   ) {}
 
   async addCategory(categoryName, restaurantId) {
-    const restaurant = await this.restaurantModel.findById({
-      _id: restaurantId,
-    });
+    const restaurant = await this.restaurantService.findById(restaurantId);
 
     if (restaurant) {
       const newCategory = new this.categoryModel({
@@ -34,9 +33,9 @@ export class MenuService {
     throw Error('Not found');
   }
 
-  async addCourse(courseDto, categoryName, restaurantId) {
+  async addCourse(courseDto, restaurantId) {
     const category = await this.categoryModel.findOne({
-      category: categoryName,
+      category: courseDto.categoryName,
     });
 
     if (category && category.restaurant == restaurantId) {
@@ -58,20 +57,20 @@ export class MenuService {
     throw Error('Not found');
   }
 
-  async getCategory(restaurantId) {
+  async getCategory(restaurantId): Promise<Category[]> {
     return this.categoryModel.find({
       restaurant: restaurantId,
     });
   }
 
-  async getCourse(restaurantId) {
+  async getCourse(restaurantId): Promise<Course[]> {
     return this.courseModel.find({
       restaurant: restaurantId,
     });
   }
 
   async sendMessage(orderDto, restaurantId, tableId) {
-    const restaurant = await this.restaurantModel.findById(restaurantId);
+    const restaurant = await this.restaurantService.findById(restaurantId);
     const table = restaurant.tables.find((t) => t._id.equals(tableId));
 
     let text = `person: ${orderDto[0].person}, ${table.name} -`;
