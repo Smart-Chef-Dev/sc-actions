@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { Logger, Module } from '@nestjs/common';
 import { ServeStaticModule } from '@nestjs/serve-static';
 import { MongooseModule } from '@nestjs/mongoose';
 import { join } from 'path';
@@ -24,6 +24,6 @@ import { Category, CategorySchema } from './schemas/category.schema';
     RestaurantModule,
   ],
   controllers: [MenuController],
-  providers: [MenuService],
+  providers: [MenuService, Logger],
 })
 export class MenuModule {}

@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 
@@ -15,6 +15,7 @@ export class MenuService {
     @InjectModel(Course.name) private courseModel: Model<Course>,
     private readonly telegramService: TelegramService,
     private readonly restaurantService: RestaurantService,
+    private readonly logger: Logger,
   ) {}
 
   async addCategory(categoryName, restaurantId) {
@@ -79,7 +80,15 @@ export class MenuService {
     }
 
     for (const username of restaurant.usernames) {
-      await this.telegramService.sendMessage(username, text);
+      try {
+        await this.telegramService.sendMessage(username, text);
+      } catch (err) {
+        if (err.error_code === 403) {
+          this.logger.warn(
+            `Failed to send a message to the user(${username}) from the restaurant(${restaurantId}). By reason ${err.description}`,
+          );
+        }
+      }
     }
   }
 }

@@ -32,15 +32,14 @@ export class MenuController {
     }
   }
 
-  @Post(':restaurantId/addCourses/:categoryName')
+  @Post(':restaurantId/addCourses')
   async addCourse(
-    @Param('categoryName') categoryName: string,
     @Param('restaurantId') restaurantId: string,
     @Body() courseDto: CourseDto,
     @Res() res,
   ) {
     try {
-      await this.menuService.addCourse(categoryName, restaurantId);
+      await this.menuService.addCourse(courseDto, restaurantId);
       return res.status(HttpStatus.OK).json();
     } catch (err) {
       throw new HttpException('Not found', HttpStatus.NOT_FOUND);

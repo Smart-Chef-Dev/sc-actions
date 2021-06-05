@@ -120,4 +120,16 @@ export class RestaurantService {
 
     return !!tables?.find((t) => t._id.equals(tableId)) ?? false;
   }
+
+  public async checkIfChatExists(
+    restaurantId: string,
+    userName: string,
+  ): Promise<boolean> {
+    return !!(
+      await this.restaurantModel.find({
+        _id: restaurantId,
+        usernames: userName,
+      })
+    ).length;
+  }
 }

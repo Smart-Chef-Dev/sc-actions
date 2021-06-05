@@ -1,5 +1,6 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { MongooseModule } from '@nestjs/mongoose';
+import { Logger } from '@nestjs/common';
 import { ServeStaticModule } from '@nestjs/serve-static';
 import { MongoMemoryServer } from 'mongodb-memory-server';
 import { join } from 'path';
@@ -44,6 +45,7 @@ describe('MenuService', () => {
       ],
       providers: [
         MenuService,
+        Logger,
         TelegramProvider,
         {
           provide: RestaurantService,

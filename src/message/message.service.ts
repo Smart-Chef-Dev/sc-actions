@@ -31,11 +31,23 @@ export class MessageService implements OnModuleInit {
   async handleStartCommand(msg, props) {
     const restaurantId = props.match[1];
     const restaurant = await this.restaurantService.findById(restaurantId);
-
-    this.logger.log(
-      `Add new chat into restaurant, restaurantId: ${restaurantId}`,
-      loggerContext,
+    const checkIfChatExists = await this.restaurantService.checkIfChatExists(
+      restaurantId,
+      msg.chat.id,
     );
+
+    if (!checkIfChatExists) {
+      this.logger.log(
+        `Add new chat into restaurant, restaurantId: ${restaurantId}`,
+        loggerContext,
+      );
+    } else {
+      this.logger.warn(
+        `A new chat has not been created. Because he already exists`,
+        loggerContext,
+      );
+    }
+
     await this.analyticsService.create({
       type: AnalyticType.NEW_WAITER,
       restaurantId,
@@ -45,9 +57,11 @@ export class MessageService implements OnModuleInit {
       `You were added to the restaurant "${restaurant.name}" successfully`,
     );
 
-    return this.restaurantService.updateById(restaurantId, {
-      $push: { usernames: msg.chat.id },
-    });
+    if (!checkIfChatExists) {
+      return this.restaurantService.updateById(restaurantId, {
+        $push: { usernames: msg.chat.id },
+      });
+    }
   }
 
   @autobind
@@ -89,7 +103,15 @@ export class MessageService implements OnModuleInit {
     });
 
     for (const username of restaurant.usernames) {
-      await this.telegramService.sendMessage(username, text, { replyMarkup });
+      try {
+        await this.telegramService.sendMessage(username, text, { replyMarkup });
+      } catch (err) {
+        if (err.error_code === 403) {
+          this.logger.warn(
+            `Failed to send a message to the user(${username}) from the restaurant(${dto.restaurantId}). By reason ${err.description}`,
+          );
+        }
+      }
     }
   }
 }
