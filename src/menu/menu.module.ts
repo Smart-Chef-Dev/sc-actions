@@ -9,7 +9,7 @@ import { RestaurantModule } from '../restaurant/restaurant.module';
 import { TelegramModule } from '../telegram/telegram.module';
 
 import { Course, CourseSchema } from './schemas/course.shema';
-import { Category, CategorySchema } from './schemas/category.schema';
+import { Category, CategorySchema } from '../category/schemas/category.schema';
 
 @Module({
   imports: [

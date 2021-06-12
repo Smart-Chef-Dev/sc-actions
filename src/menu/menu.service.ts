@@ -2,8 +2,8 @@ import { Injectable, Logger } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 
-import { Category } from './schemas/category.schema';
 import { Course } from './schemas/course.shema';
+import { Category } from '../category/schemas/category.schema';
 
 import { TelegramService } from '../telegram/telegram.service';
 import { RestaurantService } from '../restaurant/restaurant.service';
@@ -19,22 +19,6 @@ export class MenuService {
     private readonly restaurantService: RestaurantService,
     private readonly logger: Logger,
   ) {}
-
-  async addCategory(categoryName: string, restaurantId: string) {
-    const restaurant = await this.restaurantService.findById(restaurantId);
-
-    if (restaurant) {
-      const newCategory = new this.categoryModel({
-        category: categoryName,
-        restaurant: restaurant,
-      });
-
-      await newCategory.save();
-      return;
-    }
-
-    throw Error('Not found');
-  }
 
   async addCourse(courseDto: CourseDto, restaurantId: string) {
     const category = await this.categoryModel.findOne({
@@ -58,12 +42,6 @@ export class MenuService {
     }
 
     throw Error('Not found');
-  }
-
-  async getCategory(restaurantId: string): Promise<Category[]> {
-    const category = await this.categoryModel.find();
-
-    return category.filter((c) => c.restaurant._id.equals(restaurantId));
   }
 
   async getCourse(restaurantId: string): Promise<Course[]> {

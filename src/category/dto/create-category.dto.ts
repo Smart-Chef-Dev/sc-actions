@@ -1,4 +1,4 @@
-export class CategoryDto {
+export class CreateCategoryDto {
   name: string;
   restaurantId: string;
 }

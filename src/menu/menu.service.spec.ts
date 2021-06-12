@@ -10,7 +10,7 @@ import { TelegramService } from '../telegram/telegram.service';
 import { TelegramServiceMock } from '../telegram/telegram.service.mock';
 import { RestaurantService } from '../restaurant/restaurant.service';
 
-import { Category, CategorySchema } from './schemas/category.schema';
+import { Category, CategorySchema } from '../category/schemas/category.schema';
 import { Course, CourseSchema } from './schemas/course.shema';
 
 let mongod: MongoMemoryServer;
