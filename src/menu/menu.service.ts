@@ -1,6 +1,10 @@
-import { Injectable, Logger } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { Model } from 'mongoose';
+import { Model, Mongoose } from 'mongoose';
 
 import { Course } from './schemas/course.shema';
 import { Category } from '../category/schemas/category.schema';
@@ -9,6 +13,7 @@ import { TelegramService } from '../telegram/telegram.service';
 import { RestaurantService } from '../restaurant/restaurant.service';
 import { MenuItemsDto } from './dto/menuItems';
 import { OrderDto } from './dto/order';
+import { MenuBusinessErrors } from '../shared/errors/menu/menu.business-errors';
 
 @Injectable()
 export class MenuService {
@@ -17,13 +22,16 @@ export class MenuService {
     @InjectModel(Course.name) private courseModel: Model<Course>,
     private readonly telegramService: TelegramService,
     private readonly restaurantService: RestaurantService,
-    private readonly logger: Logger,
+    private readonly mongoose: Mongoose,
   ) {}
 
   async create(dto: MenuItemsDto) {
-    const category = await this.categoryModel.findById({
-      _id: dto.categoryId,
-    });
+    const idValidation = await this.mongoose.isValidObjectId(dto.categoryId);
+    if (!idValidation) {
+      throw new BadRequestException(MenuBusinessErrors.BadRequest);
+    }
+
+    const category = await this.categoryModel.findById(dto.categoryId);
 
     if (category) {
       const newMenuItem = new this.courseModel({
@@ -40,10 +48,15 @@ export class MenuService {
       return newMenuItem;
     }
 
-    throw Error('Not found');
+    throw new NotFoundException(MenuBusinessErrors.NotFoundCategory);
   }
 
   async findAll(restaurantId: string): Promise<Course[]> {
+    const idValidation = await this.mongoose.isValidObjectId(restaurantId);
+    if (!idValidation) {
+      throw new BadRequestException(MenuBusinessErrors.BadRequest);
+    }
+
     const menuItem = await this.courseModel.find();
 
     return menuItem.filter((c) =>

@@ -23,7 +23,9 @@ export class MenuController {
       await this.menuService.create(courseDto);
       return res.status(HttpStatus.OK).json();
     } catch (err) {
-      throw new HttpException('Not found', HttpStatus.NOT_FOUND);
+      if (err.status) {
+        throw new HttpException(err.response, err.status);
+      }
     }
   }
 
@@ -33,7 +35,9 @@ export class MenuController {
       const category = await this.menuService.findAll(restaurantId);
       return res.status(HttpStatus.OK).json(category);
     } catch (err) {
-      throw new HttpException('Not found', HttpStatus.NOT_FOUND);
+      if (err.status) {
+        throw new HttpException(err.response, err.status);
+      }
     }
   }
 

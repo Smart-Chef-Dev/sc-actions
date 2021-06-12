@@ -6,6 +6,7 @@ import { CategoryController } from './category.controller';
 import { RestaurantModule } from '../restaurant/restaurant.module';
 
 import { Category, CategorySchema } from './schemas/category.schema';
+import { Mongoose } from 'mongoose';
 
 @Module({
   imports: [
@@ -15,6 +16,6 @@ import { Category, CategorySchema } from './schemas/category.schema';
     RestaurantModule,
   ],
   controllers: [CategoryController],
-  providers: [CategoryService],
+  providers: [CategoryService, Mongoose],
 })
 export class CategoryModule {}

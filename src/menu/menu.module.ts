@@ -10,6 +10,7 @@ import { TelegramModule } from '../telegram/telegram.module';
 
 import { Course, CourseSchema } from './schemas/course.shema';
 import { Category, CategorySchema } from '../category/schemas/category.schema';
+import { Mongoose } from 'mongoose';
 
 @Module({
   imports: [
@@ -24,6 +25,6 @@ import { Category, CategorySchema } from '../category/schemas/category.schema';
     RestaurantModule,
   ],
   controllers: [MenuController],
-  providers: [MenuService, Logger],
+  providers: [MenuService, Logger, Mongoose],
 })
 export class MenuModule {}
