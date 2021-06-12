@@ -1,9 +1,9 @@
-export class CourseDto {
+export class MenuItemsDto {
   name: string;
-  picture: string;
+  pictureUrl: string;
   price: string;
   weight: string;
   time: string;
   description: string;
-  categoryName: string;
+  categoryId: string;
 }

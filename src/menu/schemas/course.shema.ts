@@ -27,9 +27,6 @@ export class Course extends Document {
 
   @Prop()
   category: Category;
-
-  @Prop({ type: mongoose.Schema.Types.ObjectId, ref: 'Restaurant' })
-  restaurant: Restaurant;
 }
 
 export const CourseSchema = SchemaFactory.createForClass(Course);

@@ -10,31 +10,27 @@ import {
 } from '@nestjs/common';
 
 import { MenuService } from './menu.service';
-import { CourseDto } from './dto/course';
+import { MenuItemsDto } from './dto/menuItems';
 import { OrderDto } from './dto/order';
 
 @Controller('menu')
 export class MenuController {
   constructor(private readonly menuService: MenuService) {}
 
-  @Post(':restaurantId/addCourses')
-  async addCourse(
-    @Param('restaurantId') restaurantId: string,
-    @Body() courseDto: CourseDto,
-    @Res() res,
-  ) {
+  @Post()
+  async create(@Body() courseDto: MenuItemsDto, @Res() res) {
     try {
-      await this.menuService.addCourse(courseDto, restaurantId);
+      await this.menuService.create(courseDto);
       return res.status(HttpStatus.OK).json();
     } catch (err) {
       throw new HttpException('Not found', HttpStatus.NOT_FOUND);
     }
   }
 
-  @Get(':restaurantId/getCourse')
-  async getCourse(@Res() res, @Param('restaurantId') restaurantId: string) {
+  @Get(':restaurantId')
+  async findAll(@Res() res, @Param('restaurantId') restaurantId: string) {
     try {
-      const category = await this.menuService.getCourse(restaurantId);
+      const category = await this.menuService.findAll(restaurantId);
       return res.status(HttpStatus.OK).json(category);
     } catch (err) {
       throw new HttpException('Not found', HttpStatus.NOT_FOUND);

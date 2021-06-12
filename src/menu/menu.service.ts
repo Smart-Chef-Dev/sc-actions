@@ -7,7 +7,7 @@ import { Category } from '../category/schemas/category.schema';
 
 import { TelegramService } from '../telegram/telegram.service';
 import { RestaurantService } from '../restaurant/restaurant.service';
-import { CourseDto } from './dto/course';
+import { MenuItemsDto } from './dto/menuItems';
 import { OrderDto } from './dto/order';
 
 @Injectable()
@@ -20,34 +20,35 @@ export class MenuService {
     private readonly logger: Logger,
   ) {}
 
-  async addCourse(courseDto: CourseDto, restaurantId: string) {
-    const category = await this.categoryModel.findOne({
-      category: courseDto.categoryName,
+  async create(dto: MenuItemsDto) {
+    const category = await this.categoryModel.findById({
+      _id: dto.categoryId,
     });
 
-    if (category && category.restaurant._id.equals(restaurantId)) {
-      const newCourse = new this.courseModel({
-        name: courseDto.name,
-        picture: courseDto.picture,
-        price: courseDto.price,
-        weight: courseDto.weight,
-        time: courseDto.time,
-        description: courseDto.description,
+    if (category) {
+      const newMenuItem = new this.courseModel({
+        name: dto.name,
+        picture: dto.pictureUrl,
+        price: dto.price,
+        weight: dto.weight,
+        time: dto.time,
+        description: dto.description,
         category: category,
-        restaurant: restaurantId,
       });
 
-      await newCourse.save();
-      return;
+      await newMenuItem.save();
+      return newMenuItem;
     }
 
     throw Error('Not found');
   }
 
-  async getCourse(restaurantId: string): Promise<Course[]> {
-    const course = await this.courseModel.find();
+  async findAll(restaurantId: string): Promise<Course[]> {
+    const menuItem = await this.courseModel.find();
 
-    return course.filter((c) => c.restaurant._id.equals(restaurantId));
+    return menuItem.filter((c) =>
+      c.category.restaurant._id.equals(restaurantId),
+    );
   }
 
   async sendMessage(

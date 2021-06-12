@@ -13,14 +13,12 @@ export class CategoryService {
     private readonly restaurantService: RestaurantService,
   ) {}
 
-  async create(createCategoryDto: CreateCategoryDto): Promise<Category> {
-    const restaurant = await this.restaurantService.findById(
-      createCategoryDto.restaurantId,
-    );
+  async create(dto: CreateCategoryDto): Promise<Category> {
+    const restaurant = await this.restaurantService.findById(dto.restaurantId);
 
     if (restaurant) {
       const newCategory = new this.categoryModel({
-        category: createCategoryDto.name,
+        category: dto.name,
         restaurant: restaurant,
       });
 
