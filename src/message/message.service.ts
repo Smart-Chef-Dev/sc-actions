@@ -41,27 +41,25 @@ export class MessageService implements OnModuleInit {
         `Add new chat into restaurant, restaurantId: ${restaurantId}`,
         loggerContext,
       );
-    } else {
-      this.logger.warn(
-        `A new chat has not been created. Because he already exists`,
-        loggerContext,
+
+      await this.analyticsService.create({
+        type: AnalyticType.NEW_WAITER,
+        restaurantId,
+      });
+
+      await msg.reply.text(
+        `You were added to the restaurant "${restaurant.name}" successfully`,
       );
-    }
 
-    await this.analyticsService.create({
-      type: AnalyticType.NEW_WAITER,
-      restaurantId,
-    });
-
-    await msg.reply.text(
-      `You were added to the restaurant "${restaurant.name}" successfully`,
-    );
-
-    if (!checkIfChatExists) {
       return this.restaurantService.updateById(restaurantId, {
         $push: { usernames: msg.chat.id },
       });
     }
+
+    this.logger.warn(
+      `A new chat has not been created. Because he already exists`,
+      loggerContext,
+    );
   }
 
   @autobind
@@ -103,15 +101,7 @@ export class MessageService implements OnModuleInit {
     });
 
     for (const username of restaurant.usernames) {
-      try {
-        await this.telegramService.sendMessage(username, text, { replyMarkup });
-      } catch (err) {
-        if (err.error_code === 403) {
-          this.logger.warn(
-            `Failed to send a message to the user(${username}) from the restaurant(${dto.restaurantId}). By reason ${err.description}`,
-          );
-        }
-      }
+      await this.telegramService.sendMessage(username, text, { replyMarkup });
     }
   }
 }

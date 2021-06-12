@@ -1,4 +1,4 @@
-import { Injectable, OnModuleInit } from '@nestjs/common';
+import { Injectable, Logger, OnModuleInit } from '@nestjs/common';
 import * as TelegramBot from 'telebot';
 import { ConfigService } from '@nestjs/config';
 import autobind from 'autobind-decorator';
@@ -7,7 +7,10 @@ import autobind from 'autobind-decorator';
 export class TelegramService implements OnModuleInit {
   bot: TelegramBot = null;
 
-  constructor(private readonly configService: ConfigService) {}
+  constructor(
+    private readonly configService: ConfigService,
+    private readonly logger: Logger,
+  ) {}
 
   onModuleInit(): any {
     this.bot = new TelegramBot({
@@ -37,7 +40,15 @@ export class TelegramService implements OnModuleInit {
 
   @autobind
   async sendMessage(chatId: string, text: string, options: any = {}) {
-    return this.bot.sendMessage(chatId, text, options);
+    try {
+      await this.bot.sendMessage(chatId, text, options);
+    } catch (err) {
+      if (err.error_code === 403) {
+        this.logger.warn(
+          `Failed to send a message to the user(${chatId}). By reason ${err.description}`,
+        );
+      }
+    }
   }
 
   @autobind

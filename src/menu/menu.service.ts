@@ -65,15 +65,7 @@ export class MenuService {
     }
 
     for (const username of restaurant.usernames) {
-      try {
-        await this.telegramService.sendMessage(username, text);
-      } catch (err) {
-        if (err.error_code === 403) {
-          this.logger.warn(
-            `Failed to send a message to the user(${username}) from the restaurant(${restaurantId}). By reason ${err.description}`,
-          );
-        }
-      }
+      await this.telegramService.sendMessage(username, text);
     }
   }
 }
