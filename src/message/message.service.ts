@@ -8,6 +8,8 @@ import { TelegramService } from '../telegram/telegram.service';
 import { AnalyticsService } from '../analytics/analytics.service';
 import { AnalyticType } from '../analytics/enums/analytic-type.enum';
 
+import { OrderDto } from './dto/order';
+
 const loggerContext = 'Restaurant';
 
 @Injectable()
@@ -31,6 +33,7 @@ export class MessageService implements OnModuleInit {
   async handleStartCommand(msg, props) {
     const restaurantId = props.match[1];
     const restaurant = await this.restaurantService.findById(restaurantId);
+
     const checkIfChatExists = await this.restaurantService.checkIfChatExists(
       restaurantId,
       msg.chat.id,
@@ -79,7 +82,7 @@ export class MessageService implements OnModuleInit {
   }
 
   @autobind
-  async sendMessage(dto: CreateMessageDto) {
+  async sendAction(dto: CreateMessageDto) {
     const restaurant = await this.restaurantService.findById(dto.restaurantId);
     const table = restaurant.tables.find((t) => t._id.equals(dto.tableId));
     const action = restaurant.actions.find((a) => a._id.equals(dto.actionId));
@@ -102,6 +105,21 @@ export class MessageService implements OnModuleInit {
 
     for (const username of restaurant.usernames) {
       await this.telegramService.sendMessage(username, text, { replyMarkup });
+    }
+  }
+
+  @autobind
+  async sendOrder(orderDto: OrderDto[], restaurantId: string, tableId: string) {
+    const restaurant = await this.restaurantService.findById(restaurantId);
+    const table = restaurant.tables.find((t) => t._id.equals(tableId));
+
+    let text = `person: ${orderDto[0].person}, ${table.name} -`;
+    for (let i = 1; i < orderDto.length; i++) {
+      text = text + ` ${orderDto[i].name}(${orderDto[i].count}),`;
+    }
+
+    for (const username of restaurant.usernames) {
+      await this.telegramService.sendMessage(username, text);
     }
   }
 }

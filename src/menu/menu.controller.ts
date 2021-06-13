@@ -11,7 +11,6 @@ import {
 
 import { MenuService } from './menu.service';
 import { MenuItemsDto } from './dto/menuItems';
-import { OrderDto } from './dto/order';
 
 @Controller('menu')
 export class MenuController {
@@ -39,16 +38,5 @@ export class MenuController {
         throw new HttpException(err.response, err.status);
       }
     }
-  }
-
-  @Post('sendMessage/:restaurantId/:tableId')
-  async sendMessage(
-    @Body() orderDto: OrderDto[],
-    @Param('restaurantId') restaurantId: string,
-    @Param('tableId') tableId: string,
-    @Res() res,
-  ) {
-    await this.menuService.sendMessage(orderDto, restaurantId, tableId);
-    return res.status(HttpStatus.OK).json();
   }
 }

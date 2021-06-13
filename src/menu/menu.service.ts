@@ -12,7 +12,6 @@ import { Category } from '../category/schemas/category.schema';
 import { TelegramService } from '../telegram/telegram.service';
 import { RestaurantService } from '../restaurant/restaurant.service';
 import { MenuItemsDto } from './dto/menuItems';
-import { OrderDto } from './dto/order';
 import { MenuBusinessErrors } from '../shared/errors/menu/menu.business-errors';
 
 @Injectable()
@@ -62,23 +61,5 @@ export class MenuService {
     return menuItem.filter((c) =>
       c.category.restaurant._id.equals(restaurantId),
     );
-  }
-
-  async sendMessage(
-    orderDto: OrderDto[],
-    restaurantId: string,
-    tableId: string,
-  ) {
-    const restaurant = await this.restaurantService.findById(restaurantId);
-    const table = restaurant.tables.find((t) => t._id.equals(tableId));
-
-    let text = `person: ${orderDto[0].person}, ${table.name} -`;
-    for (let i = 1; i < orderDto.length; i++) {
-      text = text + ` ${orderDto[i].name}(${orderDto[i].count}),`;
-    }
-
-    for (const username of restaurant.usernames) {
-      await this.telegramService.sendMessage(username, text);
-    }
   }
 }
