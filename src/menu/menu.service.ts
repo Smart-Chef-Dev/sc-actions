@@ -9,8 +9,6 @@ import { Model, Mongoose } from 'mongoose';
 import { Course } from './schemas/course.shema';
 import { Category } from '../category/schemas/category.schema';
 
-import { TelegramService } from '../telegram/telegram.service';
-import { RestaurantService } from '../restaurant/restaurant.service';
 import { MenuItemsDto } from './dto/menuItems';
 import { MenuBusinessErrors } from '../shared/errors/menu/menu.business-errors';
 
@@ -19,8 +17,6 @@ export class MenuService {
   constructor(
     @InjectModel(Category.name) private categoryModel: Model<Category>,
     @InjectModel(Course.name) private courseModel: Model<Course>,
-    private readonly telegramService: TelegramService,
-    private readonly restaurantService: RestaurantService,
     private readonly mongoose: Mongoose,
   ) {}
 
