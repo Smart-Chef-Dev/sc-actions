@@ -11,7 +11,7 @@ export class Course extends Document {
   name: string;
 
   @Prop()
-  picture: string;
+  pictureUrl: string;
 
   @Prop()
   price: string;

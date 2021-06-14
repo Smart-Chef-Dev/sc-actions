@@ -1,16 +1,17 @@
-import { Logger, Module } from '@nestjs/common';
+import { Module } from '@nestjs/common';
 import { ServeStaticModule } from '@nestjs/serve-static';
 import { MongooseModule } from '@nestjs/mongoose';
+import { Mongoose } from 'mongoose';
 import { join } from 'path';
 
 import { MenuService } from './menu.service';
 import { MenuController } from './menu.controller';
-import { RestaurantModule } from '../restaurant/restaurant.module';
-import { TelegramModule } from '../telegram/telegram.module';
 
 import { Course, CourseSchema } from './schemas/course.shema';
 import { Category, CategorySchema } from '../category/schemas/category.schema';
-import { Mongoose } from 'mongoose';
+import { CategoryModule } from '../category/category.module';
+import { CategoryService } from '../category/category.service';
+import { RestaurantModule } from '../restaurant/restaurant.module';
 
 @Module({
   imports: [
@@ -21,10 +22,9 @@ import { Mongoose } from 'mongoose';
     ServeStaticModule.forRoot({
       rootPath: join(__filename, '../photos'),
     }),
-    TelegramModule,
-    RestaurantModule,
+    CategoryModule,
   ],
   controllers: [MenuController],
-  providers: [MenuService, Logger, Mongoose],
+  providers: [MenuService, Mongoose],
 })
 export class MenuModule {}

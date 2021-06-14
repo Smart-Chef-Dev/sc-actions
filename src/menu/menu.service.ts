@@ -11,12 +11,14 @@ import { Category } from '../category/schemas/category.schema';
 
 import { MenuItemsDto } from './dto/menuItems';
 import { MenuBusinessErrors } from '../shared/errors/menu/menu.business-errors';
+import { CategoryService } from '../category/category.service';
 
 @Injectable()
 export class MenuService {
   constructor(
     @InjectModel(Category.name) private categoryModel: Model<Category>,
     @InjectModel(Course.name) private courseModel: Model<Course>,
+    private readonly categoryService: CategoryService,
     private readonly mongoose: Mongoose,
   ) {}
 
@@ -26,12 +28,12 @@ export class MenuService {
       throw new BadRequestException(MenuBusinessErrors.BadRequest);
     }
 
-    const category = await this.categoryModel.findById(dto.categoryId);
+    const category = await this.categoryService.findById(dto.categoryId);
 
     if (category) {
       const newMenuItem = new this.courseModel({
         name: dto.name,
-        picture: dto.pictureUrl,
+        pictureUrl: dto.pictureUrl,
         price: dto.price,
         weight: dto.weight,
         time: dto.time,

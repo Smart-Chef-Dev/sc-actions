@@ -15,7 +15,8 @@ import { Mongoose } from 'mongoose';
     ]),
     RestaurantModule,
   ],
-  controllers: [CategoryController],
   providers: [CategoryService, Mongoose],
+  controllers: [CategoryController],
+  exports: [CategoryService],
 })
 export class CategoryModule {}

@@ -50,4 +50,8 @@ export class CategoryService {
 
     return category.filter((c) => c.restaurant._id.equals(restaurantId));
   }
+
+  public async findById(id: string): Promise<Category> {
+    return this.categoryModel.findById({ _id: id });
+  }
 }
