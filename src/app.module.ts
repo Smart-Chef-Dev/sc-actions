@@ -1,6 +1,8 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { MongooseModule } from '@nestjs/mongoose';
+import { ServeStaticModule } from '@nestjs/serve-static';
+import { join } from 'path';
 
 import { RestaurantModule } from './restaurant/restaurant.module';
 import { MessageModule } from './message/message.module';
@@ -14,6 +16,9 @@ import configuration from './config/configuration';
   imports: [
     ConfigModule.forRoot({
       load: [configuration],
+    }),
+    ServeStaticModule.forRoot({
+      rootPath: join(__dirname, '/../client'),
     }),
     MongooseModule.forRootAsync({
       imports: [ConfigModule],
