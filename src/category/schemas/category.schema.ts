@@ -6,7 +6,7 @@ import { Restaurant } from '../../restaurant/schemas/restaurant.schema';
 @Schema()
 export class Category extends Document {
   @Prop()
-  category: string;
+  name: string;
 
   @Prop()
   restaurant: Restaurant;

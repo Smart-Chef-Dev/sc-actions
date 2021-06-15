@@ -29,7 +29,7 @@ export class CategoryService {
 
     if (restaurant) {
       const newCategory = new this.categoryModel({
-        category: dto.name,
+        name: dto.name,
         restaurant: restaurant,
       });
 

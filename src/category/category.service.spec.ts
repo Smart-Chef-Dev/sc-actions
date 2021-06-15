@@ -56,42 +56,51 @@ describe('CategoryService', () => {
     });
   });
 
+  const name = 'teas';
+  const createCategory = () => {
+    return service.create({
+      name: name,
+      restaurantId: restaurantId,
+    });
+  };
+
   it('should be defined', () => {
     expect(service).toBeDefined();
   });
 
   it('should create a category', async () => {
-    const name = 'teas';
-    const category = await service.create({
-      name: name,
-      restaurantId: restaurantId,
-    });
+    const category = await createCategory();
 
     expect(category).toBeDefined();
     expect(category._id).toBeDefined();
-    expect(category.category).toBe(name);
+    expect(category.name).toBe(name);
     expect(category.restaurant._id).toBe(restaurantId);
   });
 
   it('should return all categories', async () => {
-    const category = await service.create({
-      name: 'teas',
-      restaurantId: restaurantId,
-    });
+    const category1 = await createCategory();
+    const category2 = await createCategory();
 
-    const allCategory = await service.findAll(category.restaurant._id);
+    const allCategory = await service.findAll(restaurantId);
 
     expect(allCategory).toBeDefined();
-    expect(allCategory[0]._id).toStrictEqual(category._id);
-    expect(allCategory[0].category).toStrictEqual(category.category);
-    expect(allCategory[0].restaurant._id).toStrictEqual(
-      category.restaurant._id,
-    );
-    expect(allCategory[0].restaurant.name).toStrictEqual(
-      category.restaurant.name,
-    );
-    expect(allCategory[0].restaurant.usernames).toBeDefined();
-    expect(allCategory[0].restaurant.tables).toBeDefined();
-    expect(allCategory[0].restaurant.actions).toBeDefined();
+    expect(allCategory.length).toBe(2);
+    expect(allCategory[0]._id).toStrictEqual(category1._id);
+    expect(allCategory[0].name).toStrictEqual(category1.name);
+    expect(allCategory[0].restaurant._id).toStrictEqual(restaurantId);
+    expect(allCategory[1]._id).toStrictEqual(category2._id);
+    expect(allCategory[1].name).toStrictEqual(category2.name);
+    expect(allCategory[1].restaurant._id).toStrictEqual(restaurantId);
+    expect(allCategory[0]._id).not.toBe(allCategory[1]._id);
+  });
+
+  it('should return categories by id', async () => {
+    const category = await createCategory();
+
+    const categoryById = await service.findById(category._id);
+
+    expect(categoryById).toBeDefined();
+    expect(categoryById._id).toStrictEqual(category._id);
+    expect(categoryById.name).toBe(category.name);
   });
 });

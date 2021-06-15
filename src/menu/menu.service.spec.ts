@@ -106,17 +106,27 @@ describe('MenuService', () => {
   });
 
   it('should get all menu items', async () => {
-    const menuItems = await createMenuItems();
+    const menuItems1 = await createMenuItems();
+    const menuItems2 = await createMenuItems();
+
     const allMenuItems = await service.findAll(restaurantId);
 
     expect(allMenuItems).toBeDefined();
-    expect(allMenuItems[0]._id).toBeDefined();
-    expect(allMenuItems[0].name).toStrictEqual(menuItems.name);
-    expect(allMenuItems[0].pictureUrl).toStrictEqual(menuItems.pictureUrl);
-    expect(allMenuItems[0].price).toStrictEqual(menuItems.price);
-    expect(allMenuItems[0].weight).toStrictEqual(menuItems.weight);
-    expect(allMenuItems[0].time).toStrictEqual(menuItems.time);
-    expect(allMenuItems[0].description).toStrictEqual(menuItems.description);
-    expect(allMenuItems[0].category._id).toStrictEqual(menuItems.category._id);
+    expect(allMenuItems.length).toBe(2);
+    expect(allMenuItems[0].name).toStrictEqual(menuItems1.name);
+    expect(allMenuItems[0].pictureUrl).toStrictEqual(menuItems1.pictureUrl);
+    expect(allMenuItems[0].price).toStrictEqual(menuItems1.price);
+    expect(allMenuItems[0].weight).toStrictEqual(menuItems1.weight);
+    expect(allMenuItems[0].time).toStrictEqual(menuItems1.time);
+    expect(allMenuItems[0].description).toStrictEqual(menuItems1.description);
+    expect(allMenuItems[0].category.restaurant._id).toStrictEqual(restaurantId);
+    expect(allMenuItems[1].name).toStrictEqual(menuItems2.name);
+    expect(allMenuItems[1].pictureUrl).toStrictEqual(menuItems2.pictureUrl);
+    expect(allMenuItems[1].price).toStrictEqual(menuItems2.price);
+    expect(allMenuItems[1].weight).toStrictEqual(menuItems2.weight);
+    expect(allMenuItems[1].time).toStrictEqual(menuItems2.time);
+    expect(allMenuItems[1].description).toStrictEqual(menuItems2.description);
+    expect(allMenuItems[1].category.restaurant._id).toStrictEqual(restaurantId);
+    expect(allMenuItems[0]._id).not.toBe(allMenuItems[1]._id);
   });
 });
