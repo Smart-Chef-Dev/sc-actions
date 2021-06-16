@@ -6,6 +6,7 @@ import {
   Param,
   Res,
   HttpStatus,
+  HttpException,
 } from '@nestjs/common';
 
 import { CategoryService } from './category.service';
@@ -17,15 +18,25 @@ export class CategoryController {
 
   @Post()
   async create(@Body() createCategoryDto: CreateCategoryDto, @Res() res) {
-    await this.categoryService.create(createCategoryDto);
-
-    return res.status(HttpStatus.OK).json();
+    try {
+      const category = await this.categoryService.create(createCategoryDto);
+      return res.status(HttpStatus.OK).json(category);
+    } catch (err) {
+      if (err.status) {
+        throw new HttpException(err.response, err.status);
+      }
+    }
   }
 
   @Get(':restaurantId')
   async findAll(@Param('restaurantId') restaurantId: string, @Res() res) {
-    const restaurants = await this.categoryService.findAll(restaurantId);
-
-    return res.status(HttpStatus.OK).json(restaurants);
+    try {
+      const allCategories = await this.categoryService.findAll(restaurantId);
+      return res.status(HttpStatus.OK).json(allCategories);
+    } catch (err) {
+      if (err.status) {
+        throw new HttpException(err.response, err.status);
+      }
+    }
   }
 }

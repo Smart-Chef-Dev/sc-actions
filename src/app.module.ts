@@ -10,6 +10,7 @@ import { TelegramModule } from './telegram/telegram.module';
 import { AnalyticsModule } from './analytics/analytics.module';
 import { MenuModule } from './menu/menu.module';
 import { CategoryModule } from './category/category.module';
+import { ImagesModule } from './images/images.module';
 import configuration from './config/configuration';
 
 @Module({
@@ -34,6 +35,7 @@ import configuration from './config/configuration';
     AnalyticsModule,
     MenuModule,
     CategoryModule,
+    ImagesModule,
   ],
 })
 export class AppModule {}
