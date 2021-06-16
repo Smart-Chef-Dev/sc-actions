@@ -82,44 +82,13 @@ export class MessageService implements OnModuleInit {
   }
 
   @autobind
-  async sendAction(dto: CreateMessageDto) {
-    const restaurant = await this.restaurantService.findById(dto.restaurantId);
-    const table = restaurant.tables.find((t) => t._id.equals(dto.tableId));
-    const action = restaurant.actions.find((a) => a._id.equals(dto.actionId));
-
-    const text = `${table.name} - ${action.message}`;
-    const replyMarkup = this.telegramService.createInlineKeyboard([
-      this.telegramService.createInlineButton('✅', 'confirm'),
-    ]);
-
-    this.logger.log(
-      `New message for restaurantId: ${restaurant._id}, tableId: ${table._id}}, action: ${action._id}, message: ${action.message}`,
-      loggerContext,
-    );
-    await this.analyticsService.create({
-      type: AnalyticType.ACTION_CALL,
-      restaurantId: restaurant._id,
-      tableId: table._id,
-      actionId: action._id,
-    });
-
-    for (const username of restaurant.usernames) {
-      await this.telegramService.sendMessage(username, text, { replyMarkup });
-    }
-  }
-
-  @autobind
-  async sendOrder(orderDto: OrderDto[], restaurantId: string, tableId: string) {
-    const restaurant = await this.restaurantService.findById(restaurantId);
-    const table = restaurant.tables.find((t) => t._id.equals(tableId));
-
-    let text = `person: ${orderDto[0].person}, ${table.name} -`;
-    for (let i = 1; i < orderDto.length; i++) {
-      text = text + ` ${orderDto[i].name}(${orderDto[i].count}),`;
-    }
-
-    for (const username of restaurant.usernames) {
-      await this.telegramService.sendMessage(username, text);
+  async sendMessages(
+    text: string,
+    replyMarkup: object,
+    username: Array<string>,
+  ) {
+    for (const name of username) {
+      await this.telegramService.sendMessage(name, text, { replyMarkup });
     }
   }
 }
