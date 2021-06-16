@@ -25,6 +25,8 @@ export class MenuController {
       if (err.status) {
         throw new HttpException(err.response, err.status);
       }
+
+      throw new HttpException(err.message, HttpStatus.INTERNAL_SERVER_ERROR);
     }
   }
 
@@ -37,6 +39,8 @@ export class MenuController {
       if (err.status) {
         throw new HttpException(err.response, err.status);
       }
+
+      throw new HttpException(err.message, HttpStatus.INTERNAL_SERVER_ERROR);
     }
   }
 }
