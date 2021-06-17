@@ -6,7 +6,7 @@ import {
 import { InjectModel } from '@nestjs/mongoose';
 import { Model, Mongoose } from 'mongoose';
 
-import { Course } from './schemas/course.shema';
+import { MenuItems } from './schemas/menuItems.shema';
 import { Category } from '../category/schemas/category.schema';
 
 import { MenuItemsDto } from './dto/menuItems';
@@ -17,7 +17,7 @@ import { CategoryService } from '../category/category.service';
 export class MenuService {
   constructor(
     @InjectModel(Category.name) private categoryModel: Model<Category>,
-    @InjectModel(Course.name) private courseModel: Model<Course>,
+    @InjectModel(MenuItems.name) private courseModel: Model<MenuItems>,
     private readonly categoryService: CategoryService,
     private readonly mongoose: Mongoose,
   ) {}
@@ -33,7 +33,7 @@ export class MenuService {
     if (category) {
       const newMenuItem = new this.courseModel({
         name: dto.name,
-        pictureUrl: `${process.env.FRONTEND_URL}/client/${category.restaurant._id}/${dto.pictureId}`,
+        pictureUrl: `${process.env.FRONTEND_URL}/menuPhotos/${category.restaurant._id}/${dto.pictureId}.png`,
         price: dto.price,
         weight: dto.weight,
         time: dto.time,
@@ -48,7 +48,7 @@ export class MenuService {
     throw new NotFoundException(MenuBusinessErrors.NotFoundCategory);
   }
 
-  async findAll(restaurantId: string): Promise<Course[]> {
+  async findAll(restaurantId: string): Promise<MenuItems[]> {
     const idValidation = await this.mongoose.isValidObjectId(restaurantId);
     if (!idValidation) {
       throw new BadRequestException(MenuBusinessErrors.BadRequest);

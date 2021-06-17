@@ -8,7 +8,7 @@ import { join } from 'path';
 import { MenuService } from './menu.service';
 
 import { Category, CategorySchema } from '../category/schemas/category.schema';
-import { Course, CourseSchema } from './schemas/course.shema';
+import { Course, CourseSchema } from './schemas/menuItems.shema';
 import { CategoryService } from '../category/category.service';
 
 let mongod: MongoMemoryServer;

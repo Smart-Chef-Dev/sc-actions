@@ -5,7 +5,7 @@ import { Mongoose } from 'mongoose';
 import { MenuService } from './menu.service';
 import { MenuController } from './menu.controller';
 
-import { Course, CourseSchema } from './schemas/course.shema';
+import { MenuItems, CourseSchema } from './schemas/menuItems.shema';
 import { Category, CategorySchema } from '../category/schemas/category.schema';
 import { CategoryModule } from '../category/category.module';
 
@@ -13,7 +13,7 @@ import { CategoryModule } from '../category/category.module';
   imports: [
     MongooseModule.forFeature([
       { name: Category.name, schema: CategorySchema },
-      { name: Course.name, schema: CourseSchema },
+      { name: MenuItems.name, schema: CourseSchema },
     ]),
     CategoryModule,
   ],
