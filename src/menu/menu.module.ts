@@ -3,7 +3,6 @@ import { MongooseModule } from '@nestjs/mongoose';
 import { Mongoose } from 'mongoose';
 
 import { MenuService } from './menu.service';
-import { MenuController } from './menu.controller';
 
 import { MenuItems, CourseSchema } from './schemas/menuItems.shema';
 import { Category, CategorySchema } from '../category/schemas/category.schema';
@@ -17,7 +16,7 @@ import { CategoryModule } from '../category/category.module';
     ]),
     CategoryModule,
   ],
-  controllers: [MenuController],
   providers: [MenuService, Mongoose],
+  exports: [MenuService],
 })
 export class MenuModule {}

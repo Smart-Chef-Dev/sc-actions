@@ -1,8 +1,7 @@
-import { Module } from '@nestjs/common';
+import { forwardRef, Module } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
 
 import { CategoryService } from './category.service';
-import { CategoryController } from './category.controller';
 import { RestaurantModule } from '../restaurant/restaurant.module';
 
 import { Category, CategorySchema } from './schemas/category.schema';
@@ -13,10 +12,9 @@ import { Mongoose } from 'mongoose';
     MongooseModule.forFeature([
       { name: Category.name, schema: CategorySchema },
     ]),
-    RestaurantModule,
+    forwardRef(() => RestaurantModule),
   ],
   providers: [CategoryService, Mongoose],
-  controllers: [CategoryController],
   exports: [CategoryService],
 })
 export class CategoryModule {}

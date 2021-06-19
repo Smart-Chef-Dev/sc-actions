@@ -60,4 +60,15 @@ export class MenuService {
       c.category.restaurant._id.equals(restaurantId),
     );
   }
+
+  async findById(restaurantId: string, id: string): Promise<MenuItems> {
+    const idValidation = await this.mongoose.isValidObjectId(restaurantId);
+    if (!idValidation) {
+      throw new BadRequestException(MenuBusinessErrors.BadRequest);
+    }
+
+    const menuItem = await this.courseModel.find();
+
+    return menuItem.find((c) => c._id.equals(id));
+  }
 }

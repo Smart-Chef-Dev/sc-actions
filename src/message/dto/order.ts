@@ -1,5 +1,5 @@
 export class OrderDto {
   name: string;
   count: string;
-  person: string;
+  personCount: string;
 }

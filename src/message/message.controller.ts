@@ -74,7 +74,7 @@ export class MessageController {
     const restaurant = await this.restaurantService.findById(restaurantId);
     const table = restaurant.tables.find((t) => t._id.equals(tableId));
 
-    let text = `person: ${orderDto[0].person}, ${table.name} -`;
+    let text = `person: ${orderDto[0].personCount}, ${table.name} -`;
     for (let i = 1; i < orderDto.length; i++) {
       text = text + ` ${orderDto[i].name}(${orderDto[i].count}),`;
     }

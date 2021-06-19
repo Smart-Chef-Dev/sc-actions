@@ -8,6 +8,8 @@ import { TableSchema, Table } from './schemas/table.schema';
 import { RestaurantService } from './restaurant.service';
 import { RestaurantController } from './restaurant.controller';
 import { AnalyticsModule } from '../analytics/analytics.module';
+import { MenuModule } from '../menu/menu.module';
+import { CategoryModule } from '../category/category.module';
 
 @Module({
   imports: [
@@ -17,6 +19,8 @@ import { AnalyticsModule } from '../analytics/analytics.module';
       { name: Table.name, schema: TableSchema },
     ]),
     AnalyticsModule,
+    CategoryModule,
+    MenuModule,
   ],
   providers: [RestaurantService, ConfigService],
   controllers: [RestaurantController],
