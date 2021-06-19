@@ -20,6 +20,7 @@ import configuration from './config/configuration';
     }),
     ServeStaticModule.forRoot({
       rootPath: join(__dirname, '/../client'),
+      serveRoot: '/client',
     }),
     MongooseModule.forRootAsync({
       imports: [ConfigModule],

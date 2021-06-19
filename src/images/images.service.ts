@@ -9,7 +9,7 @@ import { ImagesBusinessErrors } from '../shared/errors/images/images.business-er
 export class ImagesService {
   constructor(private restaurantService: RestaurantService) {}
 
-  async uploadFile(buffer: Uint8Array, restaurantId: string) {
+  async uploadFile(buffer: Uint8Array, restaurantId: string, typeFile: string) {
     const doesRestaurantExist = await this.restaurantService.findById(
       restaurantId,
     );
@@ -23,12 +23,9 @@ export class ImagesService {
     }
 
     const fileId = nanoid();
-    fs.writeFile(
-      `client/menuPhotos/${restaurantId}/${fileId}.png`,
-      buffer,
-      () => {},
-    );
+    const file = `${fileId}.${typeFile}`;
+    fs.writeFile(`client/menuPhotos/${restaurantId}/${file}`, buffer, () => {});
 
-    return fileId;
+    return file;
   }
 }

@@ -134,7 +134,7 @@ export class RestaurantController {
     }
   }
 
-  @Post('/menuItems')
+  @Post('/menuItem')
   async createMenuItem(@Body() courseDto: MenuItemsDto, @Res() res) {
     try {
       const menuItem = await this.menuService.create(courseDto);

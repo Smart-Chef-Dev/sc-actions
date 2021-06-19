@@ -23,9 +23,12 @@ export class ImagesController {
     @Res() res,
   ) {
     try {
+      const typeFile = file.originalname.split('.').pop();
+
       const fileId = await this.imagesService.uploadFile(
         file.buffer,
         restaurantId,
+        typeFile,
       );
 
       return res.status(HttpStatus.OK).json(fileId);

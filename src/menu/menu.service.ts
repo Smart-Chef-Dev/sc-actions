@@ -33,7 +33,7 @@ export class MenuService {
     if (category) {
       const newMenuItem = new this.courseModel({
         name: dto.name,
-        pictureUrl: `${process.env.FRONTEND_URL}/menuPhotos/${category.restaurant._id}/${dto.pictureId}.png`,
+        pictureUrl: `${process.env.FRONTEND_URL}/client/menuPhotos/${category.restaurant._id}/${dto.file}`,
         price: dto.price,
         weight: dto.weight,
         time: dto.time,
