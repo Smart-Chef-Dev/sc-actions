@@ -8,11 +8,11 @@ import { join } from 'path';
 import { MenuService } from './menu.service';
 
 import { Category, CategorySchema } from '../category/schemas/category.schema';
-import { Course, CourseSchema } from './schemas/menuItems.shema';
+import { MenuItems, MenuItemsSchema } from './schemas/menuItems.shema';
 import { CategoryService } from '../category/category.service';
 
 let mongod: MongoMemoryServer;
-let mongoose = require('mongoose');
+const mongoose = require('mongoose');
 
 describe('MenuService', () => {
   let service: MenuService;
@@ -31,7 +31,7 @@ describe('MenuService', () => {
         }),
         MongooseModule.forFeature([
           { name: Category.name, schema: CategorySchema },
-          { name: Course.name, schema: CourseSchema },
+          { name: MenuItems.name, schema: MenuItemsSchema },
         ]),
         ServeStaticModule.forRoot({
           rootPath: join(__filename, '../photos'),
@@ -70,7 +70,7 @@ describe('MenuService', () => {
   });
 
   const name = 'green tea';
-  const pictureUrl = 'http://localhost:3000/pancake.png';
+  const photoName = '5mOgdEHrsql_H0kxdNpSu.svg';
   const price = '0.1';
   const weight = '200';
   const time = '3';
@@ -78,7 +78,7 @@ describe('MenuService', () => {
   const createMenuItems = async () => {
     return await service.create({
       name: name,
-      pictureUrl: pictureUrl,
+      photoName: photoName,
       price: price,
       weight: weight,
       time: time,
@@ -97,7 +97,7 @@ describe('MenuService', () => {
     expect(menuItems).toBeDefined();
     expect(menuItems._id).toBeDefined();
     expect(menuItems.name).toBe(name);
-    expect(menuItems.pictureUrl).toBe(pictureUrl);
+    expect(menuItems.pictureUrl).toBeDefined();
     expect(menuItems.price).toBe(price);
     expect(menuItems.weight).toBe(weight);
     expect(menuItems.time).toBe(time);
@@ -114,19 +114,37 @@ describe('MenuService', () => {
     expect(allMenuItems).toBeDefined();
     expect(allMenuItems.length).toBe(2);
     expect(allMenuItems[0].name).toStrictEqual(menuItems1.name);
-    expect(allMenuItems[0].pictureUrl).toStrictEqual(menuItems1.pictureUrl);
+    expect(allMenuItems[0].pictureUrl).toBeDefined();
     expect(allMenuItems[0].price).toStrictEqual(menuItems1.price);
     expect(allMenuItems[0].weight).toStrictEqual(menuItems1.weight);
     expect(allMenuItems[0].time).toStrictEqual(menuItems1.time);
     expect(allMenuItems[0].description).toStrictEqual(menuItems1.description);
     expect(allMenuItems[0].category.restaurant._id).toStrictEqual(restaurantId);
     expect(allMenuItems[1].name).toStrictEqual(menuItems2.name);
-    expect(allMenuItems[1].pictureUrl).toStrictEqual(menuItems2.pictureUrl);
+    expect(allMenuItems[1].pictureUrl).toBeDefined();
     expect(allMenuItems[1].price).toStrictEqual(menuItems2.price);
     expect(allMenuItems[1].weight).toStrictEqual(menuItems2.weight);
     expect(allMenuItems[1].time).toStrictEqual(menuItems2.time);
     expect(allMenuItems[1].description).toStrictEqual(menuItems2.description);
     expect(allMenuItems[1].category.restaurant._id).toStrictEqual(restaurantId);
     expect(allMenuItems[0]._id).not.toBe(allMenuItems[1]._id);
+  });
+
+  it('should return menuItems by id', async () => {
+    const creatMenuItems = await createMenuItems();
+
+    const findMenuItems = await service.findById(
+      restaurantId,
+      creatMenuItems._id,
+    );
+
+    expect(findMenuItems).toBeDefined();
+    expect(findMenuItems.name).toStrictEqual(creatMenuItems.name);
+    expect(findMenuItems.pictureUrl).toBeDefined();
+    expect(findMenuItems.price).toStrictEqual(creatMenuItems.price);
+    expect(findMenuItems.weight).toStrictEqual(creatMenuItems.weight);
+    expect(findMenuItems.time).toStrictEqual(creatMenuItems.time);
+    expect(findMenuItems.description).toStrictEqual(creatMenuItems.description);
+    expect(findMenuItems.category.restaurant._id).toStrictEqual(restaurantId);
   });
 });

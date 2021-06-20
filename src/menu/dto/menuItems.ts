@@ -1,6 +1,6 @@
 export class MenuItemsDto {
   name: string;
-  file: string;
+  photoName: string;
   price: string;
   weight: string;
   time: string;

@@ -27,4 +27,4 @@ export class MenuItems extends Document {
   category: Category;
 }
 
-export const CourseSchema = SchemaFactory.createForClass(MenuItems);
+export const MenuItemsSchema = SchemaFactory.createForClass(MenuItems);

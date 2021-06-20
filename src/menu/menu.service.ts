@@ -22,7 +22,7 @@ export class MenuService {
     private readonly mongoose: Mongoose,
   ) {}
 
-  async create(dto: MenuItemsDto) {
+  async create(dto: MenuItemsDto): Promise<MenuItems> {
     const idValidation = await this.mongoose.isValidObjectId(dto.categoryId);
     if (!idValidation) {
       throw new BadRequestException(MenuBusinessErrors.BadRequest);
@@ -33,7 +33,7 @@ export class MenuService {
     if (category) {
       const newMenuItem = new this.courseModel({
         name: dto.name,
-        pictureUrl: `${process.env.FRONTEND_URL}/client/menuPhotos/${category.restaurant._id}/${dto.file}`,
+        pictureUrl: `${process.env.FRONTEND_URL}/client/menuPhotos/${category.restaurant._id}/${dto.photoName}`,
         price: dto.price,
         weight: dto.weight,
         time: dto.time,
