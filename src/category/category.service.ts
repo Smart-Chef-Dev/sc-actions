@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { CreateCategoryDto } from './dto/create-category.dto';
 import { InjectModel } from '@nestjs/mongoose';
-import { Model } from 'mongoose';
+import { Model, Types } from 'mongoose';
 
 import { Category } from './schemas/category.schema';
 
@@ -21,10 +21,10 @@ export class CategoryService {
     return newCategory;
   }
 
-  async findAll(restaurantId: string): Promise<Category[]> {
-    const category = await this.categoryModel.find();
-
-    return category.filter((c) => c.restaurant._id.equals(restaurantId));
+  findAll(restaurantId: string) {
+    return this.categoryModel.findOne({
+      'restaurant._id': Types.ObjectId(restaurantId),
+    });
   }
 
   public async findById(id: string): Promise<Category> {

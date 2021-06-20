@@ -6,7 +6,6 @@ import {
   Param,
   Body,
   HttpStatus,
-  HttpException,
   BadRequestException,
   NotFoundException,
 } from '@nestjs/common';

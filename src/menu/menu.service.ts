@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { Model } from 'mongoose';
+import { Model, Types } from 'mongoose';
 
 import { MenuItems } from './schemas/menuItems.shema';
 import { Category } from '../category/schemas/category.schema';
@@ -30,22 +30,20 @@ export class MenuService {
   }
 
   async findAll(restaurantId: string): Promise<MenuItems[]> {
-    const menuItem = await this.courseModel.find();
-
-    return menuItem.filter((c) =>
-      c.category.restaurant._id.equals(restaurantId),
-    );
+    return this.courseModel.find({
+      'category.restaurant._id': Types.ObjectId(restaurantId),
+    });
   }
 
   async findById(id: string): Promise<MenuItems> {
-    const menuItem = await this.courseModel.find();
-
-    return menuItem.find((c) => c._id.equals(id));
+    return this.courseModel.findById({
+      _id: id,
+    });
   }
 
   async findByIdCategory(categoryId: string): Promise<MenuItems[]> {
-    const menuItem = await this.courseModel.find();
-
-    return menuItem.filter((c) => c.category._id.equals(categoryId));
+    return this.courseModel.find({
+      'category._id': Types.ObjectId(categoryId),
+    });
   }
 }

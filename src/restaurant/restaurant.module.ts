@@ -10,6 +10,7 @@ import { RestaurantController } from './restaurant.controller';
 import { AnalyticsModule } from '../analytics/analytics.module';
 import { MenuModule } from '../menu/menu.module';
 import { CategoryModule } from '../category/category.module';
+import { Mongoose } from 'mongoose';
 
 @Module({
   imports: [
@@ -22,7 +23,7 @@ import { CategoryModule } from '../category/category.module';
     CategoryModule,
     MenuModule,
   ],
-  providers: [RestaurantService, ConfigService],
+  providers: [RestaurantService, ConfigService, Mongoose],
   controllers: [RestaurantController],
   exports: [RestaurantService],
 })
