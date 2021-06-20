@@ -19,8 +19,8 @@ import configuration from './config/configuration';
       load: [configuration],
     }),
     ServeStaticModule.forRoot({
-      rootPath: join(__dirname, '/../client'),
-      serveRoot: '/client',
+      rootPath: join(__dirname, '/../public'),
+      serveRoot: '/public',
     }),
     MongooseModule.forRootAsync({
       imports: [ConfigModule],
