@@ -7,6 +7,8 @@ import {
   Body,
   HttpStatus,
   HttpException,
+  BadRequestException,
+  NotFoundException,
 } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 
@@ -20,6 +22,9 @@ import { CreateCategoryDto } from '../category/dto/create-category.dto';
 import { CategoryService } from '../category/category.service';
 import { MenuItemsDto } from '../menu/dto/menuItems';
 import { MenuService } from '../menu/menu.service';
+import { CategoryBusinessErrors } from '../shared/errors/category/catrgory.business-errors';
+import { Mongoose } from 'mongoose';
+import { MenuBusinessErrors } from '../shared/errors/menu/menu.business-errors';
 
 @Controller('restaurant')
 export class RestaurantController {
@@ -29,6 +34,7 @@ export class RestaurantController {
     private readonly analyticsService: AnalyticsService,
     private readonly categoryService: CategoryService,
     private readonly menuService: MenuService,
+    private readonly mongoose: Mongoose,
   ) {}
 
   @Get()
@@ -101,67 +107,54 @@ export class RestaurantController {
   }
 
   @Post('/category')
-  async createCategory(
-    @Body() createCategoryDto: CreateCategoryDto,
-    @Res() res,
-  ) {
-    try {
-      const category = await this.categoryService.create(createCategoryDto);
-      return res.status(HttpStatus.OK).json(category);
-    } catch (err) {
-      if (err.status) {
-        throw new HttpException(err.response, err.status);
-      }
-
-      throw new HttpException(err.message, HttpStatus.INTERNAL_SERVER_ERROR);
+  async createCategory(@Body() dto: CreateCategoryDto) {
+    const idValidation = await this.mongoose.isValidObjectId(dto.restaurantId);
+    if (!idValidation) {
+      throw new BadRequestException(CategoryBusinessErrors.BadRequest);
     }
+
+    const restaurant = await this.restaurantService.findById(dto.restaurantId);
+
+    if (restaurant) {
+      throw new NotFoundException(CategoryBusinessErrors.NotFoundCategory);
+    }
+
+    return this.categoryService.create(dto, restaurant);
   }
 
   @Get(':restaurantId/category')
-  async findAllCategory(
-    @Param('restaurantId') restaurantId: string,
-    @Res() res,
-  ) {
-    try {
-      const allCategories = await this.categoryService.findAll(restaurantId);
-      return res.status(HttpStatus.OK).json(allCategories);
-    } catch (err) {
-      if (err.status) {
-        throw new HttpException(err.response, err.status);
-      }
-
-      throw new HttpException(err.message, HttpStatus.INTERNAL_SERVER_ERROR);
+  async findAllCategory(@Param('restaurantId') restaurantId: string) {
+    const idValidation = await this.mongoose.isValidObjectId(restaurantId);
+    if (!idValidation) {
+      throw new BadRequestException(CategoryBusinessErrors.BadRequest);
     }
+
+    return this.categoryService.findAll(restaurantId);
   }
 
   @Post('/menuItem')
-  async createMenuItem(@Body() courseDto: MenuItemsDto, @Res() res) {
-    try {
-      const menuItem = await this.menuService.create(courseDto);
-      return res.status(HttpStatus.OK).json(menuItem);
-    } catch (err) {
-      if (err.status) {
-        throw new HttpException(err.response, err.status);
-      }
-
-      throw new HttpException(err.message, HttpStatus.INTERNAL_SERVER_ERROR);
+  async createMenuItem(@Body() dto: MenuItemsDto) {
+    const idValidation = await this.mongoose.isValidObjectId(dto.categoryId);
+    if (!idValidation) {
+      throw new BadRequestException(MenuBusinessErrors.BadRequest);
     }
+
+    const category = await this.categoryService.findById(dto.categoryId);
+
+    if (category) {
+      throw new NotFoundException(MenuBusinessErrors.NotFoundCategory);
+    }
+
+    return this.menuService.create(dto, category);
   }
 
   @Get(':restaurantId/menuItems')
-  async findAllMenuItems(
-    @Res() res,
-    @Param('restaurantId') restaurantId: string,
-  ) {
-    try {
-      const allMenuItem = await this.menuService.findAll(restaurantId);
-      return res.status(HttpStatus.OK).json(allMenuItem);
-    } catch (err) {
-      if (err.status) {
-        throw new HttpException(err.response, err.status);
-      }
-
-      throw new HttpException(err.message, HttpStatus.INTERNAL_SERVER_ERROR);
+  async findAllMenuItems(@Param('restaurantId') restaurantId: string) {
+    const idValidation = await this.mongoose.isValidObjectId(restaurantId);
+    if (!idValidation) {
+      throw new BadRequestException(MenuBusinessErrors.BadRequest);
     }
+
+    return this.menuService.findAll(restaurantId);
   }
 }
