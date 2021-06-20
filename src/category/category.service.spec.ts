@@ -1,7 +1,6 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { MongooseModule } from '@nestjs/mongoose';
-import { Mongoose } from 'mongoose';
-import * as mongoose from 'mongoose';
+import { Mongoose, Types } from 'mongoose';
 import { MongoMemoryServer } from 'mongodb-memory-server';
 
 import { RestaurantService } from '../restaurant/restaurant.service';
@@ -45,7 +44,7 @@ describe('CategoryService', () => {
     restaurantService = module.get<RestaurantService>(RestaurantService);
   });
 
-  const restaurantId = mongoose.Types.ObjectId('569ed8269353e9f4c51617aa');
+  const restaurantId = Types.ObjectId('569ed8269353e9f4c51617aa');
   beforeEach(() => {
     restaurantService.findById = jest.fn().mockReturnValue({
       _id: restaurantId,
@@ -58,10 +57,7 @@ describe('CategoryService', () => {
 
   const name = 'teas';
   const createCategory = () => {
-    return service.create({
-      name: name,
-      restaurantId: String(restaurantId),
-    });
+    return service.create(name, String(restaurantId));
   };
 
   it('should be defined', () => {

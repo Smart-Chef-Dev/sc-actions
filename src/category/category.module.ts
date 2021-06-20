@@ -5,7 +5,6 @@ import { CategoryService } from './category.service';
 import { RestaurantModule } from '../restaurant/restaurant.module';
 
 import { Category, CategorySchema } from './schemas/category.schema';
-import { Mongoose } from 'mongoose';
 import { CategoryController } from './category.controller';
 import { MenuModule } from '../menu/menu.module';
 
@@ -17,7 +16,7 @@ import { MenuModule } from '../menu/menu.module';
     forwardRef(() => RestaurantModule),
     forwardRef(() => MenuModule),
   ],
-  providers: [CategoryService, Mongoose],
+  providers: [CategoryService],
   exports: [CategoryService],
   controllers: [CategoryController],
 })

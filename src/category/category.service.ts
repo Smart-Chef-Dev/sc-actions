@@ -1,19 +1,22 @@
 import { Injectable } from '@nestjs/common';
-import { CreateCategoryDto } from './dto/create-category.dto';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model, Types } from 'mongoose';
 
 import { Category } from './schemas/category.schema';
+import { RestaurantService } from '../restaurant/restaurant.service';
 
 @Injectable()
 export class CategoryService {
   constructor(
     @InjectModel(Category.name) private categoryModel: Model<Category>,
+    private readonly restaurantService: RestaurantService,
   ) {}
 
-  async create(dto: CreateCategoryDto, restaurant): Promise<Category> {
+  async create(name: string, restaurantId: string): Promise<Category> {
+    const restaurant = await this.restaurantService.findById(restaurantId);
+
     const newCategory = new this.categoryModel({
-      name: dto.name,
+      name: name,
       restaurant: restaurant,
     });
 
@@ -21,13 +24,13 @@ export class CategoryService {
     return newCategory;
   }
 
-  findAll(restaurantId: string) {
-    return this.categoryModel.findOne({
+  async findAll(restaurantId: string): Promise<Category[]> {
+    return this.categoryModel.find({
       'restaurant._id': Types.ObjectId(restaurantId),
     });
   }
 
-  public async findById(id: string): Promise<Category> {
+  async findById(id: string): Promise<Category> {
     return this.categoryModel.findById({ _id: id });
   }
 }

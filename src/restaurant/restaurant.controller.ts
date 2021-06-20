@@ -118,7 +118,7 @@ export class RestaurantController {
       throw new NotFoundException(CategoryBusinessErrors.NotFoundCategory);
     }
 
-    return this.categoryService.create(dto, restaurant);
+    return this.categoryService.create(dto.name, dto.restaurantId);
   }
 
   @Get(':restaurantId/category')
@@ -144,7 +144,7 @@ export class RestaurantController {
       throw new NotFoundException(MenuBusinessErrors.NotFoundCategory);
     }
 
-    return this.menuService.create(dto, category);
+    return this.menuService.create(dto);
   }
 
   @Get(':restaurantId/menuItems')
