@@ -70,7 +70,8 @@ describe('MenuService', () => {
   });
 
   const name = 'green tea';
-  const photoName = '5mOgdEHrsql_H0kxdNpSu.svg';
+  const pictureUrl =
+    '"http://localhost:3000/client/menuPhotos/60ca9434728fea71f83b5f3f/_wTKrQUmgDataCxYvs4ZR.svg"';
   const price = '0.1';
   const weight = '200';
   const time = '3';
@@ -78,7 +79,7 @@ describe('MenuService', () => {
   const createMenuItems = async () => {
     return await service.create({
       name: name,
-      photoName: photoName,
+      pictureUrl: pictureUrl,
       price: price,
       weight: weight,
       time: time,
@@ -97,7 +98,7 @@ describe('MenuService', () => {
     expect(menuItems).toBeDefined();
     expect(menuItems._id).toBeDefined();
     expect(menuItems.name).toBe(name);
-    expect(menuItems.pictureUrl).toBeDefined();
+    expect(menuItems.pictureUrl).toBe(pictureUrl);
     expect(menuItems.price).toBe(price);
     expect(menuItems.weight).toBe(weight);
     expect(menuItems.time).toBe(time);
@@ -114,14 +115,14 @@ describe('MenuService', () => {
     expect(allMenuItems).toBeDefined();
     expect(allMenuItems.length).toBe(2);
     expect(allMenuItems[0].name).toStrictEqual(menuItems1.name);
-    expect(allMenuItems[0].pictureUrl).toBeDefined();
+    expect(allMenuItems[0].pictureUrl).toBe(pictureUrl);
     expect(allMenuItems[0].price).toStrictEqual(menuItems1.price);
     expect(allMenuItems[0].weight).toStrictEqual(menuItems1.weight);
     expect(allMenuItems[0].time).toStrictEqual(menuItems1.time);
     expect(allMenuItems[0].description).toStrictEqual(menuItems1.description);
     expect(allMenuItems[0].category.restaurant._id).toStrictEqual(restaurantId);
     expect(allMenuItems[1].name).toStrictEqual(menuItems2.name);
-    expect(allMenuItems[1].pictureUrl).toBeDefined();
+    expect(allMenuItems[1].pictureUrl).toBe(pictureUrl);
     expect(allMenuItems[1].price).toStrictEqual(menuItems2.price);
     expect(allMenuItems[1].weight).toStrictEqual(menuItems2.weight);
     expect(allMenuItems[1].time).toStrictEqual(menuItems2.time);
@@ -133,18 +134,40 @@ describe('MenuService', () => {
   it('should return menuItems by id', async () => {
     const creatMenuItems = await createMenuItems();
 
-    const findMenuItems = await service.findById(
-      String(restaurantId),
-      creatMenuItems._id,
-    );
+    const findMenuItems = await service.findById(creatMenuItems._id);
 
     expect(findMenuItems).toBeDefined();
     expect(findMenuItems.name).toStrictEqual(creatMenuItems.name);
-    expect(findMenuItems.pictureUrl).toBeDefined();
+    expect(findMenuItems.pictureUrl).toBe(pictureUrl);
     expect(findMenuItems.price).toStrictEqual(creatMenuItems.price);
     expect(findMenuItems.weight).toStrictEqual(creatMenuItems.weight);
     expect(findMenuItems.time).toStrictEqual(creatMenuItems.time);
     expect(findMenuItems.description).toStrictEqual(creatMenuItems.description);
     expect(findMenuItems.category.restaurant._id).toStrictEqual(restaurantId);
+  });
+
+  it('should return all menu Items by category id', async () => {
+    const menuItems1 = await createMenuItems();
+    const menuItems2 = await createMenuItems();
+
+    const allMenuItems = await service.findByIdCategory(String(categoryId));
+
+    expect(allMenuItems).toBeDefined();
+    expect(allMenuItems.length).toBe(2);
+    expect(allMenuItems[0].name).toStrictEqual(menuItems1.name);
+    expect(allMenuItems[0].pictureUrl).toBe(pictureUrl);
+    expect(allMenuItems[0].price).toStrictEqual(menuItems1.price);
+    expect(allMenuItems[0].weight).toStrictEqual(menuItems1.weight);
+    expect(allMenuItems[0].time).toStrictEqual(menuItems1.time);
+    expect(allMenuItems[0].description).toStrictEqual(menuItems1.description);
+    expect(allMenuItems[0].category.restaurant._id).toStrictEqual(restaurantId);
+    expect(allMenuItems[1].name).toStrictEqual(menuItems2.name);
+    expect(allMenuItems[1].pictureUrl).toBe(pictureUrl);
+    expect(allMenuItems[1].price).toStrictEqual(menuItems2.price);
+    expect(allMenuItems[1].weight).toStrictEqual(menuItems2.weight);
+    expect(allMenuItems[1].time).toStrictEqual(menuItems2.time);
+    expect(allMenuItems[1].description).toStrictEqual(menuItems2.description);
+    expect(allMenuItems[1].category.restaurant._id).toStrictEqual(restaurantId);
+    expect(allMenuItems[0]._id).not.toBe(allMenuItems[1]._id);
   });
 });
