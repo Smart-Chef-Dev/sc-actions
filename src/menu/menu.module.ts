@@ -7,6 +7,7 @@ import { MenuService } from './menu.service';
 import { MenuItems, MenuItemsSchema } from './schemas/menuItems.shema';
 import { Category, CategorySchema } from '../category/schemas/category.schema';
 import { CategoryModule } from '../category/category.module';
+import { MenuController } from './menu.controller';
 
 @Module({
   imports: [
@@ -18,5 +19,6 @@ import { CategoryModule } from '../category/category.module';
   ],
   providers: [MenuService, Mongoose],
   exports: [MenuService],
+  controllers: [MenuController],
 })
 export class MenuModule {}

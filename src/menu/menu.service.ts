@@ -33,7 +33,7 @@ export class MenuService {
     if (category) {
       const newMenuItem = new this.courseModel({
         name: dto.name,
-        pictureUrl: `${process.env.FRONTEND_URL}/client/menuPhotos/${category.restaurant._id}/${dto.photoName}`,
+        pictureUrl: dto.pictureUrl,
         price: dto.price,
         weight: dto.weight,
         time: dto.time,
@@ -61,14 +61,15 @@ export class MenuService {
     );
   }
 
-  async findById(restaurantId: string, id: string): Promise<MenuItems> {
-    const idValidation = await this.mongoose.isValidObjectId(restaurantId);
-    if (!idValidation) {
-      throw new BadRequestException(MenuBusinessErrors.BadRequest);
-    }
-
+  async findById(id: string): Promise<MenuItems> {
     const menuItem = await this.courseModel.find();
 
     return menuItem.find((c) => c._id.equals(id));
+  }
+
+  async findByIdCategory(categoryId: string): Promise<MenuItems[]> {
+    const menuItem = await this.courseModel.find();
+
+    return menuItem.filter((c) => c.category._id.equals(categoryId));
   }
 }

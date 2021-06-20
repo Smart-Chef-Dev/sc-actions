@@ -164,22 +164,4 @@ export class RestaurantController {
       throw new HttpException(err.message, HttpStatus.INTERNAL_SERVER_ERROR);
     }
   }
-
-  @Get(':restaurantId/menuItem/:id')
-  async findByIdItems(
-    @Res() res,
-    @Param('restaurantId') restaurantId: string,
-    @Param('id') id: string,
-  ) {
-    try {
-      const allMenuItem = await this.menuService.findById(restaurantId, id);
-      return res.status(HttpStatus.OK).json(allMenuItem);
-    } catch (err) {
-      if (err.status) {
-        throw new HttpException(err.response, err.status);
-      }
-
-      throw new HttpException(err.message, HttpStatus.INTERNAL_SERVER_ERROR);
-    }
-  }
 }

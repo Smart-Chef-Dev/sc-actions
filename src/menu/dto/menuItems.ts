@@ -1,6 +1,6 @@
 export class MenuItemsDto {
   name: string;
-  photoName: string;
+  pictureUrl: string;
   price: string;
   weight: string;
   time: string;

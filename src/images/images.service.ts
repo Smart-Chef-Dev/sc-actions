@@ -1,4 +1,5 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 import { nanoid } from 'nanoid';
 import * as fs from 'fs';
 
@@ -7,7 +8,10 @@ import { ImagesBusinessErrors } from '../shared/errors/images/images.business-er
 
 @Injectable()
 export class ImagesService {
-  constructor(private restaurantService: RestaurantService) {}
+  constructor(
+    private restaurantService: RestaurantService,
+    private configService: ConfigService,
+  ) {}
 
   async uploadFile(buffer: Uint8Array, restaurantId: string, typeFile: string) {
     const doesRestaurantExist = await this.restaurantService.findById(
@@ -26,6 +30,8 @@ export class ImagesService {
     const file = `${fileId}.${typeFile}`;
     await fs.writeFileSync(`client/menuPhotos/${restaurantId}/${file}`, buffer);
 
-    return file;
+    return `${this.configService.get<string>(
+      'FRONTEND_URL',
+    )}/client/menuPhotos/${restaurantId}/${file}`;
   }
 }
