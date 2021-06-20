@@ -52,6 +52,17 @@ export class TelegramService implements OnModuleInit {
   }
 
   @autobind
+  async sendMessageToMultipleUsers(
+    text: string,
+    replyMarkup: string,
+    username: Array<string>,
+  ) {
+    for (const name of username) {
+      await this.sendMessage(name, text, { replyMarkup });
+    }
+  }
+
+  @autobind
   createInlineKeyboard(buttons) {
     return this.bot.inlineKeyboard([buttons]);
   }

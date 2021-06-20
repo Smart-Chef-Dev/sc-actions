@@ -43,22 +43,23 @@ export class MessageController {
       this.telegramService.createInlineButton('✅', 'confirm'),
     ]);
 
+    await this.telegramService.sendMessageToMultipleUsers(
+      text,
+      replyMarkup,
+      restaurant.usernames,
+    );
+
     this.logger.log(
       `New message for restaurantId: ${restaurant._id}, tableId: ${table._id}}, action: ${action._id}, message: ${action.message}`,
       loggerContext,
     );
+
     await this.analyticsService.create({
       type: AnalyticType.ACTION_CALL,
       restaurantId: restaurant._id,
       tableId: table._id,
       actionId: action._id,
     });
-
-    await this.messageService.sendMessages(
-      text,
-      replyMarkup,
-      restaurant.usernames,
-    );
 
     res.status(HttpStatus.OK).json({ ok: true });
   }
@@ -73,20 +74,25 @@ export class MessageController {
     const restaurant = await this.restaurantService.findById(restaurantId);
     const table = restaurant.tables.find((t) => t._id.equals(tableId));
 
-    let text = `person: ${orderDto[0].personCount}, ${table.name} -`;
-    for (let i = 1; i < orderDto.length; i++) {
-      text = text + ` ${orderDto[i].name}(${orderDto[i].count}),`;
-    }
+    const text = orderDto.reduce((previousValues, currentValue) => {
+      return previousValues + `${currentValue.name}(${currentValue.count}), `;
+    }, `person: ${orderDto[0].personCount}, ${table.name} - `);
 
     const replyMarkup = this.telegramService.createInlineKeyboard([
       this.telegramService.createInlineButton('✅', 'confirm'),
     ]);
 
-    await this.messageService.sendMessages(
+    await this.telegramService.sendMessageToMultipleUsers(
       text,
       replyMarkup,
       restaurant.usernames,
     );
+
+    await this.analyticsService.create({
+      type: AnalyticType.ACTION_CALL,
+      restaurantId: restaurant._id,
+      tableId: table._id,
+    });
 
     res.status(HttpStatus.OK).json({ ok: true });
   }

@@ -131,7 +131,7 @@ export class RestaurantController {
     return this.categoryService.findAll(restaurantId);
   }
 
-  @Post('/menuItem')
+  @Post('/menu-item')
   async createMenuItem(@Body() dto: MenuItemsDto) {
     const idValidation = await this.mongoose.isValidObjectId(dto.categoryId);
     if (!idValidation) {
@@ -147,7 +147,7 @@ export class RestaurantController {
     return this.menuService.create(dto);
   }
 
-  @Get(':restaurantId/menuItems')
+  @Get(':restaurantId/menu-items')
   async findAllMenuItems(@Param('restaurantId') restaurantId: string) {
     const idValidation = await this.mongoose.isValidObjectId(restaurantId);
     if (!idValidation) {
