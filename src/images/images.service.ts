@@ -24,7 +24,7 @@ export class ImagesService {
 
     const fileId = nanoid();
     const file = `${fileId}.${typeFile}`;
-    fs.writeFile(`client/menuPhotos/${restaurantId}/${file}`, buffer, () => {});
+    await fs.writeFileSync(`client/menuPhotos/${restaurantId}/${file}`, buffer);
 
     return file;
   }

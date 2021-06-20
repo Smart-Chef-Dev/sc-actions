@@ -3,6 +3,7 @@ import { MongooseModule } from '@nestjs/mongoose';
 import { ServeStaticModule } from '@nestjs/serve-static';
 import { MongoMemoryServer } from 'mongodb-memory-server';
 import { Mongoose } from 'mongoose';
+import * as mongoose from 'mongoose';
 import { join } from 'path';
 
 import { MenuService } from './menu.service';
@@ -12,7 +13,6 @@ import { MenuItems, MenuItemsSchema } from './schemas/menuItems.shema';
 import { CategoryService } from '../category/category.service';
 
 let mongod: MongoMemoryServer;
-const mongoose = require('mongoose');
 
 describe('MenuService', () => {
   let service: MenuService;
@@ -83,7 +83,7 @@ describe('MenuService', () => {
       weight: weight,
       time: time,
       description: description,
-      categoryId: categoryId,
+      categoryId: String(categoryId),
     });
   };
 
@@ -109,7 +109,7 @@ describe('MenuService', () => {
     const menuItems1 = await createMenuItems();
     const menuItems2 = await createMenuItems();
 
-    const allMenuItems = await service.findAll(restaurantId);
+    const allMenuItems = await service.findAll(String(restaurantId));
 
     expect(allMenuItems).toBeDefined();
     expect(allMenuItems.length).toBe(2);
@@ -134,7 +134,7 @@ describe('MenuService', () => {
     const creatMenuItems = await createMenuItems();
 
     const findMenuItems = await service.findById(
-      restaurantId,
+      String(restaurantId),
       creatMenuItems._id,
     );
 

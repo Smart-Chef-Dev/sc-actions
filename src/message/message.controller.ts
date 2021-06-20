@@ -9,7 +9,6 @@ import {
 } from '@nestjs/common';
 
 import { MessageService } from './message.service';
-import { CreateMessageDto } from './dto/create-message.dto';
 import { OrderDto } from './dto/order';
 import { AnalyticType } from '../analytics/enums/analytic-type.enum';
 import { RestaurantService } from '../restaurant/restaurant.service';

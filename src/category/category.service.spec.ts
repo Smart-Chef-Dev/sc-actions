@@ -1,6 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { MongooseModule } from '@nestjs/mongoose';
 import { Mongoose } from 'mongoose';
+import * as mongoose from 'mongoose';
 import { MongoMemoryServer } from 'mongodb-memory-server';
 
 import { RestaurantService } from '../restaurant/restaurant.service';
@@ -8,7 +9,6 @@ import { CategoryService } from './category.service';
 import { Category, CategorySchema } from './schemas/category.schema';
 
 let mongod: MongoMemoryServer;
-let mongoose = require('mongoose');
 
 describe('CategoryService', () => {
   let service: CategoryService;
@@ -60,7 +60,7 @@ describe('CategoryService', () => {
   const createCategory = () => {
     return service.create({
       name: name,
-      restaurantId: restaurantId,
+      restaurantId: String(restaurantId),
     });
   };
 
@@ -81,7 +81,7 @@ describe('CategoryService', () => {
     const category1 = await createCategory();
     const category2 = await createCategory();
 
-    const allCategory = await service.findAll(restaurantId);
+    const allCategory = await service.findAll(String(restaurantId));
 
     expect(allCategory).toBeDefined();
     expect(allCategory.length).toBe(2);

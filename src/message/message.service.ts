@@ -3,12 +3,9 @@ import { ConfigService } from '@nestjs/config';
 import autobind from 'autobind-decorator';
 
 import { RestaurantService } from '../restaurant/restaurant.service';
-import { CreateMessageDto } from './dto/create-message.dto';
 import { TelegramService } from '../telegram/telegram.service';
 import { AnalyticsService } from '../analytics/analytics.service';
 import { AnalyticType } from '../analytics/enums/analytic-type.enum';
-
-import { OrderDto } from './dto/order';
 
 const loggerContext = 'Restaurant';
 
@@ -84,7 +81,7 @@ export class MessageService implements OnModuleInit {
   @autobind
   async sendMessages(
     text: string,
-    replyMarkup: object,
+    replyMarkup: string,
     username: Array<string>,
   ) {
     for (const name of username) {
