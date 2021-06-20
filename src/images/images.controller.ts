@@ -9,12 +9,11 @@ import {
 import { ConfigService } from '@nestjs/config';
 import { nanoid } from 'nanoid';
 import { FileInterceptor } from '@nestjs/platform-express';
+import path from 'path';
 
 import { ImagesService } from './images.service';
 import { ImagesBusinessErrors } from '../shared/errors/images/images.business-errors';
 import { RestaurantService } from '../restaurant/restaurant.service';
-
-const path = require('path');
 
 @Controller('images')
 export class ImagesController {

@@ -10,6 +10,7 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
+import { Mongoose } from 'mongoose';
 
 import { RestaurantService } from './restaurant.service';
 import { RestaurantDto } from './dto/restaurant.dto';
@@ -22,7 +23,6 @@ import { CategoryService } from '../category/category.service';
 import { MenuItemsDto } from '../menu/dto/menuItems';
 import { MenuService } from '../menu/menu.service';
 import { CategoryBusinessErrors } from '../shared/errors/category/catrgory.business-errors';
-import { Mongoose } from 'mongoose';
 import { MenuBusinessErrors } from '../shared/errors/menu/menu.business-errors';
 
 @Controller('restaurant')
