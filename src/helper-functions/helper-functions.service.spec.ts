@@ -1,6 +1,9 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { HelperFunctionsService } from './helper-functions.service';
+import { BadRequestException } from '@nestjs/common';
 import { Mongoose } from 'mongoose';
+
+import { HelperFunctionsService } from './helper-functions.service';
+import { GeneralBusinessErrors } from '../shared/errors/general.business-errors';
 
 describe('HelperFunctionsService', () => {
   let service: HelperFunctionsService;
@@ -22,5 +25,11 @@ describe('HelperFunctionsService', () => {
     expect(await service.objectIdValidation('60ca9434728fea71f83b5f3f')).toBe(
       true,
     );
+
+    try {
+      await service.objectIdValidation('60ca9434728fea71f83b5f3f');
+    } catch (err) {
+      expect(err).toBe(new BadRequestException(GeneralBusinessErrors));
+    }
   });
 });
