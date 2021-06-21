@@ -11,6 +11,7 @@ import { AnalyticsModule } from '../analytics/analytics.module';
 import { MenuModule } from '../menu/menu.module';
 import { CategoryModule } from '../category/category.module';
 import { Mongoose } from 'mongoose';
+import { HelperFunctionsModule } from '../helper-functions/helper-functions.module';
 
 @Module({
   imports: [
@@ -21,6 +22,7 @@ import { Mongoose } from 'mongoose';
     ]),
     AnalyticsModule,
     CategoryModule,
+    HelperFunctionsModule,
     MenuModule,
   ],
   providers: [RestaurantService, ConfigService, Mongoose],

@@ -9,17 +9,19 @@ import {
 import { ConfigService } from '@nestjs/config';
 import { nanoid } from 'nanoid';
 import { FileInterceptor } from '@nestjs/platform-express';
-import path from 'path';
+import * as path from 'path';
 
 import { ImagesService } from './images.service';
 import { ImagesBusinessErrors } from '../shared/errors/images/images.business-errors';
 import { RestaurantService } from '../restaurant/restaurant.service';
+import { HelperFunctionsService } from '../helper-functions/helper-functions.service';
 
 @Controller('images')
 export class ImagesController {
   constructor(
     private readonly imagesService: ImagesService,
     private restaurantService: RestaurantService,
+    private helperFunctionsService: HelperFunctionsService,
     private configService: ConfigService,
   ) {}
 
@@ -29,6 +31,8 @@ export class ImagesController {
     @UploadedFile() file: Express.Multer.File,
     @Param('restaurantId') restaurantId: string,
   ) {
+    await this.helperFunctionsService.objectIdValidation(restaurantId);
+
     const doesRestaurantExist = await this.restaurantService.findById(
       restaurantId,
     );

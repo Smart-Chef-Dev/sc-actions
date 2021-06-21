@@ -66,7 +66,7 @@ export class MessageController {
 
   @Post(':restaurantId/:tableId')
   async sendOrder(
-    @Body() orderDto: OrderDto[],
+    @Body() dto: OrderDto,
     @Param('restaurantId') restaurantId: string,
     @Param('tableId') tableId: string,
     @Res() res,
@@ -74,9 +74,9 @@ export class MessageController {
     const restaurant = await this.restaurantService.findById(restaurantId);
     const table = restaurant.tables.find((t) => t._id.equals(tableId));
 
-    const text = orderDto.reduce((previousValues, currentValue) => {
+    const text = dto.order.reduce((previousValues, currentValue) => {
       return previousValues + `${currentValue.name}(${currentValue.count}), `;
-    }, `person: ${orderDto[0].personCount}, ${table.name} - `);
+    }, `person: ${dto.personCount}, ${table.name} - `);
 
     const replyMarkup = this.telegramService.createInlineKeyboard([
       this.telegramService.createInlineButton('✅', 'confirm'),

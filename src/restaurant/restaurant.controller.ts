@@ -24,6 +24,7 @@ import { MenuItemsDto } from '../menu/dto/menuItems';
 import { MenuService } from '../menu/menu.service';
 import { CategoryBusinessErrors } from '../shared/errors/category/catrgory.business-errors';
 import { MenuBusinessErrors } from '../shared/errors/menu/menu.business-errors';
+import { HelperFunctionsService } from '../helper-functions/helper-functions.service';
 
 @Controller('restaurant')
 export class RestaurantController {
@@ -32,6 +33,7 @@ export class RestaurantController {
     private readonly configService: ConfigService,
     private readonly analyticsService: AnalyticsService,
     private readonly categoryService: CategoryService,
+    private readonly helperFunctionsService: HelperFunctionsService,
     private readonly menuService: MenuService,
     private readonly mongoose: Mongoose,
   ) {}
@@ -107,14 +109,11 @@ export class RestaurantController {
 
   @Post('/category')
   async createCategory(@Body() dto: CreateCategoryDto) {
-    const idValidation = await this.mongoose.isValidObjectId(dto.restaurantId);
-    if (!idValidation) {
-      throw new BadRequestException(CategoryBusinessErrors.BadRequest);
-    }
+    await this.helperFunctionsService.objectIdValidation(dto.restaurantId);
 
     const restaurant = await this.restaurantService.findById(dto.restaurantId);
 
-    if (restaurant) {
+    if (!restaurant) {
       throw new NotFoundException(CategoryBusinessErrors.NotFoundCategory);
     }
 
@@ -123,24 +122,18 @@ export class RestaurantController {
 
   @Get(':restaurantId/category')
   async findAllCategory(@Param('restaurantId') restaurantId: string) {
-    const idValidation = await this.mongoose.isValidObjectId(restaurantId);
-    if (!idValidation) {
-      throw new BadRequestException(CategoryBusinessErrors.BadRequest);
-    }
+    await this.helperFunctionsService.objectIdValidation(restaurantId);
 
     return this.categoryService.findAll(restaurantId);
   }
 
   @Post('/menu-item')
   async createMenuItem(@Body() dto: MenuItemsDto) {
-    const idValidation = await this.mongoose.isValidObjectId(dto.categoryId);
-    if (!idValidation) {
-      throw new BadRequestException(MenuBusinessErrors.BadRequest);
-    }
+    await this.helperFunctionsService.objectIdValidation(dto.categoryId);
 
     const category = await this.categoryService.findById(dto.categoryId);
 
-    if (category) {
+    if (!category) {
       throw new NotFoundException(MenuBusinessErrors.NotFoundCategory);
     }
 
@@ -149,10 +142,7 @@ export class RestaurantController {
 
   @Get(':restaurantId/menu-items')
   async findAllMenuItems(@Param('restaurantId') restaurantId: string) {
-    const idValidation = await this.mongoose.isValidObjectId(restaurantId);
-    if (!idValidation) {
-      throw new BadRequestException(MenuBusinessErrors.BadRequest);
-    }
+    await this.helperFunctionsService.objectIdValidation(restaurantId);
 
     return this.menuService.findAll(restaurantId);
   }
