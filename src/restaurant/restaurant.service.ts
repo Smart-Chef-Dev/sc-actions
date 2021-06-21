@@ -125,11 +125,9 @@ export class RestaurantService {
     restaurantId: string,
     userName: string,
   ): Promise<boolean> {
-    return !!(
-      await this.restaurantModel.find({
-        _id: restaurantId,
-        usernames: userName,
-      })
-    ).length;
+    return !!(await this.restaurantModel.find({
+      _id: restaurantId,
+      usernames: userName,
+    }));
   }
 }
