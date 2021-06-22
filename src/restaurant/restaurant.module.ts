@@ -10,6 +10,7 @@ import { RestaurantController } from './restaurant.controller';
 import { AnalyticsModule } from '../analytics/analytics.module';
 import { MenuModule } from '../menu/menu.module';
 import { CategoryModule } from '../category/category.module';
+import { ImagesModule } from '../images/images.module';
 
 @Module({
   imports: [
@@ -21,6 +22,7 @@ import { CategoryModule } from '../category/category.module';
     AnalyticsModule,
     CategoryModule,
     MenuModule,
+    ImagesModule,
   ],
   providers: [RestaurantService, ConfigService],
   controllers: [RestaurantController],

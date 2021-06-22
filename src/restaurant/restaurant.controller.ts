@@ -7,9 +7,13 @@ import {
   Body,
   HttpStatus,
   NotFoundException,
+  UseInterceptors,
+  UploadedFile,
+  BadRequestException,
 } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { Mongoose } from 'mongoose';
+import { nanoid } from 'nanoid';
+import * as path from 'path';
 
 import { RestaurantService } from './restaurant.service';
 import { RestaurantDto } from './dto/restaurant.dto';
@@ -24,6 +28,9 @@ import { MenuService } from '../menu/menu.service';
 import { CategoryBusinessErrors } from '../shared/errors/category/catrgory.business-errors';
 import { MenuBusinessErrors } from '../shared/errors/menu/menu.business-errors';
 import { objectIdValidation } from '../helper-functions/objectIdValidation';
+import { FileInterceptor } from '@nestjs/platform-express';
+import { ImagesBusinessErrors } from '../shared/errors/images/images.business-errors';
+import { ImagesService } from '../images/images.service';
 
 @Controller('restaurant')
 export class RestaurantController {
@@ -32,6 +39,7 @@ export class RestaurantController {
     private readonly configService: ConfigService,
     private readonly analyticsService: AnalyticsService,
     private readonly categoryService: CategoryService,
+    private readonly imagesService: ImagesService,
     private readonly menuService: MenuService,
   ) {}
 
@@ -142,5 +150,34 @@ export class RestaurantController {
     await objectIdValidation(restaurantId);
 
     return this.menuService.findAll(restaurantId);
+  }
+
+  @Post(':restaurantId/upload-photos')
+  @UseInterceptors(FileInterceptor('file'))
+  async uploadFile(
+    @UploadedFile() file: Express.Multer.File,
+    @Param('restaurantId') restaurantId: string,
+  ) {
+    await objectIdValidation(restaurantId);
+
+    const doesRestaurantExist = await this.restaurantService.findById(
+      restaurantId,
+    );
+
+    if (!doesRestaurantExist) {
+      throw new BadRequestException(ImagesBusinessErrors.NotFoundRestaurant);
+    }
+
+    const typeFile = path.extname(file.originalname);
+    const pathFile = `${this.configService.get<string>(
+      'PATH_PHOTOS_MENU',
+    )}/${restaurantId}/${nanoid()}${typeFile}`;
+
+    await this.imagesService.createDirectory(
+      `${this.configService.get<string>('PATH_PHOTOS_MENU')}/${restaurantId}`,
+    );
+    await this.imagesService.saveFile(pathFile, file.buffer);
+
+    return `${this.configService.get<string>('FRONTEND_URL')}/${pathFile}`;
   }
 }
