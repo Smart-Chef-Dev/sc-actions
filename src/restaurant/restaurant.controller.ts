@@ -27,7 +27,7 @@ import { MenuItemsDto } from '../menu/dto/menuItems';
 import { MenuService } from '../menu/menu.service';
 import { CategoryBusinessErrors } from '../shared/errors/category/catrgory.business-errors';
 import { MenuBusinessErrors } from '../shared/errors/menu/menu.business-errors';
-import { objectIdValidation } from '../helper-functions/objectIdValidation';
+import { checkIsObjectIdValid } from '../utils/checkIsObjectIdValid';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { ImagesBusinessErrors } from '../shared/errors/images/images.business-errors';
 import { ImagesService } from '../images/images.service';
@@ -114,7 +114,7 @@ export class RestaurantController {
 
   @Post('/category')
   async createCategory(@Body() dto: CreateCategoryDto) {
-    await objectIdValidation(dto.restaurantId);
+    await checkIsObjectIdValid(dto.restaurantId);
 
     const restaurant = await this.restaurantService.findById(dto.restaurantId);
 
@@ -127,14 +127,14 @@ export class RestaurantController {
 
   @Get(':restaurantId/category')
   async findAllCategory(@Param('restaurantId') restaurantId: string) {
-    await objectIdValidation(restaurantId);
+    await checkIsObjectIdValid(restaurantId);
 
     return this.categoryService.findAll(restaurantId);
   }
 
   @Post('/menu-item')
   async createMenuItem(@Body() dto: MenuItemsDto) {
-    await objectIdValidation(dto.categoryId);
+    await checkIsObjectIdValid(dto.categoryId);
 
     const category = await this.categoryService.findById(dto.categoryId);
 
@@ -147,7 +147,7 @@ export class RestaurantController {
 
   @Get(':restaurantId/menu-items')
   async findAllMenuItems(@Param('restaurantId') restaurantId: string) {
-    await objectIdValidation(restaurantId);
+    await checkIsObjectIdValid(restaurantId);
 
     return this.menuService.findAll(restaurantId);
   }
@@ -158,13 +158,13 @@ export class RestaurantController {
     @UploadedFile() file: Express.Multer.File,
     @Param('restaurantId') restaurantId: string,
   ) {
-    await objectIdValidation(restaurantId);
+    await checkIsObjectIdValid(restaurantId);
 
-    const doesRestaurantExist = await this.restaurantService.findById(
+    const isReastaurantExist = await this.restaurantService.findById(
       restaurantId,
     );
 
-    if (!doesRestaurantExist) {
+    if (!isReastaurantExist) {
       throw new BadRequestException(ImagesBusinessErrors.NotFoundRestaurant);
     }
 
