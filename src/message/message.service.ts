@@ -36,7 +36,7 @@ export class MessageService implements OnModuleInit {
       msg.chat.id,
     );
 
-    if (!checkIfChatExists) {
+    if (checkIfChatExists) {
       this.logger.warn(
         `A new chat has not been created. Because he already exists`,
         loggerContext,
