@@ -6,7 +6,6 @@ import {
   Param,
   Body,
   HttpStatus,
-  BadRequestException,
   NotFoundException,
 } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
