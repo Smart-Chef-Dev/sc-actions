@@ -235,9 +235,9 @@ describe('RestaurantService', () => {
     const restaurant = await preCreateRestaurant();
 
     expect(
-      await service.checkIfChatExists(restaurant._id, restaurant.usernames[0]),
+      await service.checkIfChatExist(restaurant._id, restaurant.usernames[0]),
     ).toBe(true);
-    expect(await service.checkIfChatExists(restaurant._id, '256847488')).toBe(
+    expect(await service.checkIfChatExist(restaurant._id, '256847488')).toBe(
       false,
     );
   });

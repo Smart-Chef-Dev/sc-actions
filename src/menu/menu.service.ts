@@ -16,8 +16,8 @@ export class MenuService {
     private readonly categoryService: CategoryService,
   ) {}
 
-  async create(dto: MenuItemsDto): Promise<MenuItems> {
-    const category = await this.categoryService.findById(dto.categoryId);
+  async create(dto: MenuItemsDto, categoryId: string): Promise<MenuItems> {
+    const category = await this.categoryService.findById(categoryId);
 
     const newMenuItem = new this.menuItemsModel({
       ...dto,

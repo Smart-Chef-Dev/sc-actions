@@ -31,12 +31,12 @@ export class MessageService implements OnModuleInit {
     const restaurantId = props.match[1];
     const restaurant = await this.restaurantService.findById(restaurantId);
 
-    const checkIfChatExists = await this.restaurantService.checkIfChatExists(
+    const isChatExist = await this.restaurantService.checkIfChatExist(
       restaurantId,
       msg.chat.id,
     );
 
-    if (checkIfChatExists) {
+    if (isChatExist) {
       this.logger.warn(
         `A new chat has not been created. Because he already exists`,
         loggerContext,

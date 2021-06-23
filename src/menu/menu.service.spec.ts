@@ -76,15 +76,17 @@ describe('MenuService', () => {
   const time = '3';
   const description = 'Regular green tea';
   const createMenuItems = async () => {
-    return await service.create({
-      name: name,
-      pictureUrl: pictureUrl,
-      price: price,
-      weight: weight,
-      time: time,
-      description: description,
-      categoryId: String(categoryId),
-    });
+    return await service.create(
+      {
+        name: name,
+        pictureUrl: pictureUrl,
+        price: price,
+        weight: weight,
+        time: time,
+        description: description,
+      },
+      String(categoryId),
+    );
   };
 
   it('should be defined', async () => {

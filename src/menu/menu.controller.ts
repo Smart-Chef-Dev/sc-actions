@@ -7,7 +7,7 @@ export class MenuController {
   constructor(private readonly menuService: MenuService) {}
 
   @Get(':id')
-  findByIdItems(@Param('id') id: string) {
+  findById(@Param('id') id: string) {
     return this.menuService.findById(id);
   }
 }
