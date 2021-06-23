@@ -6,10 +6,10 @@ import { Mongoose, Types } from 'mongoose';
 import { join } from 'path';
 
 import { MenuService } from './menu.service';
+import { CategoryService } from '../category/category.service';
 
 import { Category, CategorySchema } from '../category/schemas/category.schema';
 import { MenuItems, MenuItemsSchema } from './schemas/menuItems.shema';
-import { CategoryService } from '../category/category.service';
 
 let mongod: MongoMemoryServer;
 

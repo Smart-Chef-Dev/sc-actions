@@ -1,13 +1,12 @@
 import { Module } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
-import { Mongoose } from 'mongoose';
 
+import { CategoryModule } from 'src/category/category.module';
+import { MenuController } from './menu.controller';
 import { MenuService } from './menu.service';
 
+import { Category, CategorySchema } from 'src/category/schemas/category.schema';
 import { MenuItems, MenuItemsSchema } from './schemas/menuItems.shema';
-import { Category, CategorySchema } from '../category/schemas/category.schema';
-import { CategoryModule } from '../category/category.module';
-import { MenuController } from './menu.controller';
 
 @Module({
   imports: [
@@ -17,7 +16,7 @@ import { MenuController } from './menu.controller';
     ]),
     CategoryModule,
   ],
-  providers: [MenuService, Mongoose],
+  providers: [MenuService],
   exports: [MenuService],
   controllers: [MenuController],
 })

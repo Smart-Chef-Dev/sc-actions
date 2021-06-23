@@ -2,11 +2,11 @@ import { forwardRef, Module } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
 
 import { CategoryService } from './category.service';
-import { RestaurantModule } from '../restaurant/restaurant.module';
+import { CategoryController } from './category.controller';
+import { RestaurantModule } from 'src/restaurant/restaurant.module';
+import { MenuModule } from 'src/menu/menu.module';
 
 import { Category, CategorySchema } from './schemas/category.schema';
-import { CategoryController } from './category.controller';
-import { MenuModule } from '../menu/menu.module';
 
 @Module({
   imports: [

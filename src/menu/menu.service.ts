@@ -11,9 +11,9 @@ import { CategoryService } from '../category/category.service';
 @Injectable()
 export class MenuService {
   constructor(
-    @InjectModel(Category.name) private categoryModel: Model<Category>,
-    @InjectModel(MenuItems.name) private menuItemsModel: Model<MenuItems>,
-    private readonly categoryService: CategoryService,
+      @InjectModel(Category.name) private categoryModel: Model<Category>,
+      @InjectModel(MenuItems.name) private menuItemsModel: Model<MenuItems>,
+      private readonly categoryService: CategoryService,
   ) {}
 
   async create(dto: MenuItemsDto, categoryId: string): Promise<MenuItems> {

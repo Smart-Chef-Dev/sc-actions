@@ -41,6 +41,7 @@ export class TelegramService implements OnModuleInit {
   @autobind
   async sendMessage(chatId: string, text: string, options: any = {}) {
     try {
+      console.log(options);
       await this.bot.sendMessage(chatId, text, options);
     } catch (err) {
       if (err.error_code === 403) {
@@ -53,12 +54,12 @@ export class TelegramService implements OnModuleInit {
 
   @autobind
   async sendMessageToMultipleUsers(
+    chatsIds: Array<string>,
     text: string,
-    replyMarkup: string,
-    username: Array<string>,
+    options: any = {},
   ) {
-    for (const name of username) {
-      await this.sendMessage(name, text, { replyMarkup });
+    for (const chatId of chatsIds) {
+      await this.sendMessage(chatId, text, options);
     }
   }
 

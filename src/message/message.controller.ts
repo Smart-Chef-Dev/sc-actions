@@ -8,12 +8,12 @@ import {
   Logger,
 } from '@nestjs/common';
 
-import { MessageService } from './message.service';
 import { OrderDto } from './dto/order';
-import { AnalyticType } from '../analytics/enums/analytic-type.enum';
-import { RestaurantService } from '../restaurant/restaurant.service';
-import { TelegramService } from '../telegram/telegram.service';
-import { AnalyticsService } from '../analytics/analytics.service';
+import { AnalyticType } from 'src/analytics/enums/analytic-type.enum';
+import { RestaurantService } from 'src/restaurant/restaurant.service';
+import { TelegramService } from 'src/telegram/telegram.service';
+import { AnalyticsService } from 'src/analytics/analytics.service';
+import { MessageService } from './message.service';
 
 const loggerContext = 'Restaurant';
 
@@ -44,9 +44,9 @@ export class MessageController {
     ]);
 
     await this.telegramService.sendMessageToMultipleUsers(
-      text,
-      replyMarkup,
       restaurant.usernames,
+      text,
+      { replyMarkup },
     );
 
     this.logger.log(
@@ -83,9 +83,14 @@ export class MessageController {
     ]);
 
     await this.telegramService.sendMessageToMultipleUsers(
-      text,
-      replyMarkup,
       restaurant.usernames,
+      text,
+      { replyMarkup },
+    );
+
+    this.logger.log(
+      `New message for restaurantId: ${restaurant._id}, tableId: ${table._id}, message: ${text}`,
+      loggerContext,
     );
 
     await this.analyticsService.create({

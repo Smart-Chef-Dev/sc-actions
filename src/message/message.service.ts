@@ -2,9 +2,9 @@ import { Injectable, Logger, OnModuleInit } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import autobind from 'autobind-decorator';
 
-import { RestaurantService } from '../restaurant/restaurant.service';
-import { TelegramService } from '../telegram/telegram.service';
-import { AnalyticsService } from '../analytics/analytics.service';
+import { RestaurantService } from 'src/restaurant/restaurant.service';
+import { TelegramService } from 'src/telegram/telegram.service';
+import { AnalyticsService } from 'src/analytics/analytics.service';
 import { AnalyticType } from '../analytics/enums/analytic-type.enum';
 
 const loggerContext = 'Restaurant';
