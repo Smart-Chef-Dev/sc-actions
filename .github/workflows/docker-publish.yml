@@ -190,5 +190,5 @@ jobs:
           script: |
             cd ./sc-actions/
             docker-compose stop
-            docker pull docker.pkg.github.com/smart-chef-dev/sc-actions/sc-actions:dev
+            docker pull docker.pkg.github.com/smart-chef-dev/sc-actions/sc-actions:develop
             docker-compose up -d
