@@ -18,7 +18,7 @@ services:
       - mongodbdata:/data/db
 
   client:
-    image: ghcr.io/smart-chef-dev/sc-actions-photos/sc-actions-photos:latest
+    image: ghcr.io/smart-chef-dev/sc-actions-client/sc-actions-client:latest
     restart: unless-stopped
     ports:
       - "80:80"
