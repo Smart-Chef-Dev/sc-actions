@@ -1,11 +1,12 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { UsersService } from './users.service';
-import * as bcrypt from 'bcrypt';
-import { MongooseModule } from '@nestjs/mongoose';
 import { MongoMemoryServer } from 'mongodb-memory-server';
 import { JwtModule, JwtService } from '@nestjs/jwt';
-import { Users, UsersSchema } from './schemas/users.schema';
+import { MongooseModule } from '@nestjs/mongoose';
+import * as bcrypt from 'bcrypt';
 import * as mongoose from 'mongoose';
+
+import { UsersService } from './users.service';
+import { Users, UsersSchema } from './schemas/users.schema';
 
 let mongod: MongoMemoryServer;
 

@@ -5,9 +5,10 @@ import {
   ForbiddenException,
   NotFoundException,
 } from '@nestjs/common';
+import * as bcrypt from 'bcrypt';
+
 import { UsersService } from './users.service';
 import { CreateUserDto } from './dto/create-user.dto';
-import * as bcrypt from 'bcrypt';
 
 @Controller('users')
 export class UsersController {
@@ -18,7 +19,7 @@ export class UsersController {
     const isEmailExists = await this.usersService.findByEmail(dto.email);
 
     if (isEmailExists) {
-      throw new ForbiddenException('Email is already taken');
+      throw new ForbiddenException('This email is already taken');
     }
 
     return this.usersService.signUp(dto);
@@ -27,9 +28,12 @@ export class UsersController {
   @Post('sing-in')
   async singIn(@Body() dto: CreateUserDto) {
     const user = await this.usersService.findByEmail(dto.email);
-    const isPasswordMatches = await bcrypt.compare(dto.password, user.password);
+    const isHashMatchesPassword = await bcrypt.compare(
+      dto.password,
+      user.password,
+    );
 
-    if (!isPasswordMatches) {
+    if (!isHashMatchesPassword) {
       throw new NotFoundException('Wrong login or password');
     }
 
