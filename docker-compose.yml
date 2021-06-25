@@ -43,7 +43,7 @@ services:
       - TELEGRAM_BOT_KEY=<API_KEY>
       - FRONTEND_URL=https://smartchef.pl/
     volumes:
-    - resturants_data:/usr/src/app/dist/public
+    - resturants_data:/usr/src/app/public
     ports:
       - "3000:3000"
 
