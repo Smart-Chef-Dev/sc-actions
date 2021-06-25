@@ -28,13 +28,18 @@ export class UsersController {
   @Post('sing-in')
   async singIn(@Body() dto: CreateUserDto) {
     const user = await this.usersService.findByEmail(dto.email);
+
+    if (!user) {
+      throw new ForbiddenException('This email is not registered');
+    }
+
     const isHashMatchesPassword = await bcrypt.compare(
       dto.password,
       user.password,
     );
 
     if (!isHashMatchesPassword) {
-      throw new NotFoundException('Wrong login or password');
+      throw new NotFoundException('Wrong password');
     }
 
     return this.usersService.singIn(dto);
