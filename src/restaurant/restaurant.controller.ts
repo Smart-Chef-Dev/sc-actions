@@ -6,15 +6,28 @@ import {
   Param,
   Body,
   HttpStatus,
+  NotFoundException,
+  UseInterceptors,
+  UploadedFile,
 } from '@nestjs/common';
+import { FileInterceptor } from '@nestjs/platform-express';
 import { ConfigService } from '@nestjs/config';
+import { nanoid } from 'nanoid';
+import * as path from 'path';
 
+import { CreateCategoryDto } from 'src/category/dto/create-category.dto';
 import { RestaurantService } from './restaurant.service';
 import { RestaurantDto } from './dto/restaurant.dto';
 import { ActionDto } from './dto/action.dto';
 import { TableDto } from './dto/table.dto';
-import { AnalyticsService } from '../analytics/analytics.service';
-import { AnalyticType } from '../analytics/enums/analytic-type.enum';
+
+import { AnalyticsService } from 'src/analytics/analytics.service';
+import { CategoryService } from 'src/category/category.service';
+import { ImagesService } from 'src/images/images.service';
+import { MenuService } from 'src/menu/menu.service';
+
+import { AnalyticType } from 'src/analytics/enums/analytic-type.enum';
+import { checkIsObjectIdValid } from 'src/utils/checkIsObjectIdValid';
 
 @Controller('restaurant')
 export class RestaurantController {
@@ -22,6 +35,9 @@ export class RestaurantController {
     private restaurantService: RestaurantService,
     private readonly configService: ConfigService,
     private readonly analyticsService: AnalyticsService,
+    private readonly categoryService: CategoryService,
+    private readonly imagesService: ImagesService,
+    private readonly menuService: MenuService,
   ) {}
 
   @Get()
@@ -91,5 +107,70 @@ export class RestaurantController {
     );
 
     return res.status(HttpStatus.OK).json(restaurant);
+  }
+
+  @Get(':id/category')
+  async findAllCategory(@Param('id') id: string) {
+    await checkIsObjectIdValid(id);
+
+    const isRestaurantExist = await this.restaurantService.findById(id);
+    if (!isRestaurantExist) {
+      throw new NotFoundException();
+    }
+
+    return this.categoryService.findAll(id);
+  }
+
+  @Post(':id/category')
+  async createCategory(
+    @Body() dto: CreateCategoryDto,
+    @Param('id') id: string,
+  ) {
+    await checkIsObjectIdValid(id);
+
+    const isRestaurantExist = await this.restaurantService.findById(id);
+    if (!isRestaurantExist) {
+      throw new NotFoundException();
+    }
+
+    return this.categoryService.create(dto.name, id);
+  }
+
+  @Get(':id/menu-items')
+  async findAllMenuItems(@Param('id') id: string) {
+    await checkIsObjectIdValid(id);
+
+    const isRestaurantExist = await this.restaurantService.findById(id);
+    if (!isRestaurantExist) {
+      throw new NotFoundException();
+    }
+
+    return this.menuService.findAll(id);
+  }
+
+  @Post(':id/upload-photo')
+  @UseInterceptors(FileInterceptor('file'))
+  async uploadFile(
+    @UploadedFile() file: Express.Multer.File,
+    @Param('id') id: string,
+  ) {
+    await checkIsObjectIdValid(id);
+
+    const isRestaurantExist = await this.restaurantService.findById(id);
+    if (!isRestaurantExist) {
+      throw new NotFoundException();
+    }
+
+    const typeFile = path.extname(file.originalname);
+    const pathFile = `${this.configService.get<string>(
+      'PATH_TO_RESTAURANT_PHOTOS',
+    )}/${id}/${nanoid()}${typeFile}`;
+
+    await this.imagesService.createDirectory(
+      `${this.configService.get<string>('PATH_TO_RESTAURANT_PHOTOS')}/${id}`,
+    );
+    await this.imagesService.saveFile(pathFile, file.buffer);
+
+    return `${this.configService.get<string>('FRONTEND_URL')}/${pathFile}`;
   }
 }
