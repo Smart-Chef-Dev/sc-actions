@@ -128,6 +128,7 @@ describe('RestaurantService', () => {
 
     const dto = new ActionDto({
       name: 'New_ Action_',
+      link: 'new link',
       message: 'new Action message',
     });
     const updatedRestaurant = await service.addActionIntoRestaurant(
@@ -140,6 +141,7 @@ describe('RestaurantService', () => {
     );
     expect(updatedRestaurant.actions.length).toBe(2);
     expect(updatedRestaurant.actions[1].name).toBe(dto.name);
+    expect(updatedRestaurant.actions[1].link).toBe(dto.link);
     expect(updatedRestaurant.actions[1].message).toBe(dto.message);
   });
 
@@ -204,5 +206,39 @@ describe('RestaurantService', () => {
     expect(restaurants[1]._id).toStrictEqual(restaurant2._id);
     expect(restaurants[1].name).toStrictEqual(restaurant2.name);
     expect(restaurants[0]._id).not.toBe(restaurants[1]._id);
+  });
+
+  it('should check restaurant exist status', async () => {
+    const restaurant = await preCreateRestaurant();
+
+    expect(
+      await service.checkTableExistingInRestaurant(
+        restaurant._id,
+        restaurant.tables[0]._id,
+      ),
+    ).toBe(true);
+    expect(
+      await service.checkTableExistingInRestaurant(
+        restaurant.tables[0]._id,
+        restaurant.tables[0]._id,
+      ),
+    ).toBe(false);
+    expect(
+      await service.checkTableExistingInRestaurant(
+        restaurant._id,
+        restaurant._id,
+      ),
+    ).toBe(false);
+  });
+
+  it('should check if the chat', async () => {
+    const restaurant = await preCreateRestaurant();
+
+    expect(
+      await service.checkIfChatExist(restaurant._id, restaurant.usernames[0]),
+    ).toBe(true);
+    expect(await service.checkIfChatExist(restaurant._id, '256847488')).toBe(
+      false,
+    );
   });
 });

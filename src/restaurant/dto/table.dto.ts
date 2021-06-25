@@ -1,6 +1,9 @@
-import { MaxLength, IsNotEmpty, IsString } from 'class-validator';
+import { MaxLength, IsNotEmpty, IsString, IsNumber } from 'class-validator';
 
 export class TableDto {
+  @IsNumber()
+  readonly number: number;
+
   @IsString()
   @MaxLength(30)
   @IsNotEmpty()

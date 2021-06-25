@@ -5,10 +5,14 @@ import { ConfigService } from '@nestjs/config';
 import { RestaurantSchema, Restaurant } from './schemas/restaurant.schema';
 import { ActionSchema, Action } from './schemas/action.schema';
 import { TableSchema, Table } from './schemas/table.schema';
+
+import { AnalyticsModule } from 'src/analytics/analytics.module';
+import { MenuModule } from 'src/menu/menu.module';
+import { CategoryModule } from 'src/category/category.module';
+import { ImagesModule } from 'src/images/images.module';
+
 import { RestaurantService } from './restaurant.service';
 import { RestaurantController } from './restaurant.controller';
-import { QrCodeService } from '../qr-code/qr-code.service';
-import { AnalyticsModule } from '../analytics/analytics.module';
 
 @Module({
   imports: [
@@ -18,8 +22,11 @@ import { AnalyticsModule } from '../analytics/analytics.module';
       { name: Table.name, schema: TableSchema },
     ]),
     AnalyticsModule,
+    CategoryModule,
+    MenuModule,
+    ImagesModule,
   ],
-  providers: [RestaurantService, ConfigService, QrCodeService],
+  providers: [RestaurantService, ConfigService],
   controllers: [RestaurantController],
   exports: [RestaurantService],
 })
