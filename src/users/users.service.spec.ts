@@ -6,7 +6,6 @@ import { MongoMemoryServer } from 'mongodb-memory-server';
 import { JwtModule, JwtService } from '@nestjs/jwt';
 import { Users, UsersSchema } from './schemas/users.schema';
 import * as mongoose from 'mongoose';
-import { ConfigModule, ConfigService } from '@nestjs/config';
 
 let mongod: MongoMemoryServer;
 

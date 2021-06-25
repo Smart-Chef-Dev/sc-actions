@@ -1,4 +1,4 @@
-import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user.dto';
 import * as bcrypt from 'bcrypt';
 import { Model } from 'mongoose';
@@ -13,27 +13,22 @@ export class UsersService {
     private readonly jwtService: JwtService,
   ) {}
 
-  async signUp(createUserDto: CreateUserDto): Promise<Users> {
+  async signUp(dto: CreateUserDto): Promise<Users> {
     const salt = await bcrypt.genSalt();
-    const hash = await bcrypt.hash(createUserDto.password, salt);
+    const hash = await bcrypt.hash(dto.password, salt);
 
     const newUser = new this.usersModel({
-      email: createUserDto.email,
+      email: dto.email,
       password: hash,
     });
 
     return newUser.save();
   }
 
-  async singIn(createUserDto: CreateUserDto): Promise<string> {
-    const user = await this.findByEmail(createUserDto.email);
+  async singIn(dto: CreateUserDto): Promise<string> {
+    const user = await this.findByEmail(dto.email);
 
-    const isMatch = await bcrypt.compare(createUserDto.password, user.password);
-    if (isMatch) {
-      return this.jwtService.sign({ email: user.email });
-    }
-
-    throw Error('Not found');
+    return this.jwtService.sign({ email: user.email });
   }
 
   async findByEmail(email): Promise<Users> {

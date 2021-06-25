@@ -2,34 +2,37 @@ import {
   Controller,
   Post,
   Body,
-  HttpStatus,
-  Res,
-  HttpException,
+  ForbiddenException,
+  NotFoundException,
 } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { CreateUserDto } from './dto/create-user.dto';
+import * as bcrypt from 'bcrypt';
 
 @Controller('users')
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
-  @Post('signUp')
-  async signUp(@Body() createUserDto: CreateUserDto, @Res() res) {
-    try {
-      await this.usersService.signUp(createUserDto);
-      return res.status(HttpStatus.OK).json();
-    } catch (err) {
-      throw new HttpException('Email already taken', HttpStatus.FORBIDDEN);
+  @Post('sign-up')
+  async signUp(@Body() dto: CreateUserDto) {
+    const isEmailExists = await this.usersService.findByEmail(dto.email);
+
+    if (isEmailExists) {
+      throw new ForbiddenException('Email is already taken');
     }
+
+    return this.usersService.signUp(dto);
   }
 
-  @Post('singIn')
-  async singIn(@Body() createUserDto: CreateUserDto, @Res() res) {
-    try {
-      const jwt = await this.usersService.singIn(createUserDto);
-      return res.status(HttpStatus.OK).json(jwt);
-    } catch (err) {
-      throw new HttpException('Not found', HttpStatus.NOT_FOUND);
+  @Post('sing-in')
+  async singIn(@Body() dto: CreateUserDto) {
+    const user = await this.usersService.findByEmail(dto.email);
+    const isPasswordMatches = await bcrypt.compare(dto.password, user.password);
+
+    if (!isPasswordMatches) {
+      throw new NotFoundException('Wrong login or password');
     }
+
+    return this.usersService.singIn(dto);
   }
 }
