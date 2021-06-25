@@ -41,7 +41,7 @@
     "@nestjs/serve-static": "^2.1.4",
     "autobind-decorator": "^2.4.0",
     "class-validator": "^0.13.1",
-    "mongoose": "^5.11.19",
+    "mongoose": "^5.12.14",
     "nanoid": "^3.1.23",
     "reflect-metadata": "^0.1.13",
     "rimraf": "^3.0.2",
