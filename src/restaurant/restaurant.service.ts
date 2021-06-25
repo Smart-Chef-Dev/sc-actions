@@ -55,6 +55,7 @@ export class RestaurantService {
         (a) =>
           new this.actionModel({
             name: a.name,
+            link: a.link,
             message: a.message,
           }),
       ) ?? [],
@@ -85,6 +86,7 @@ export class RestaurantService {
   ): Promise<Restaurant> {
     const action = await new this.actionModel({
       name: dto.name,
+      link: dto.link,
       message: dto.message,
     });
 
@@ -117,5 +119,17 @@ export class RestaurantService {
     const tables = await this.findAllTables(restaurantId);
 
     return !!tables?.find((t) => t._id.equals(tableId)) ?? false;
+  }
+
+  public async checkIfChatExist(
+    restaurantId: string,
+    userName: string,
+  ): Promise<boolean> {
+    return !!(
+      await this.restaurantModel.find({
+        _id: restaurantId,
+        usernames: userName,
+      })
+    ).length;
   }
 }

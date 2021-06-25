@@ -4,6 +4,9 @@ import { Document } from 'mongoose';
 @Schema()
 export class Table extends Document {
   @Prop({ required: true })
+  number: number;
+
+  @Prop({ required: true })
   name: string;
 }
 

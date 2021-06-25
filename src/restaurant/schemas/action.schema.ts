@@ -8,6 +8,9 @@ export class Action extends Document {
 
   @Prop({ required: true })
   message: string;
+
+  @Prop()
+  link: string;
 }
 
 export const ActionSchema = SchemaFactory.createForClass(Action);

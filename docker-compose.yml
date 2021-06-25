@@ -4,11 +4,18 @@ services:
   mongodb:
     container_name: actions-db
     image: mongo:4.4-bionic
+    command: mongod --serviceExecutor adaptive
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: <ROOT_USERNAME>
+      MONGO_INITDB_ROOT_PASSWORD: <ROOT_PASSWORD>
+      MONGO_USERNAME: <USERNAME>
+      MONGO_PASSWORD: <PASSWORD>
+      MONGO_DB: <DB>
     ports:
-      - "27017:27017"
+      - 27017:27017
     volumes:
+      - ./mongo-init.sh:/docker-entrypoint-initdb.d/mongo-init.sh
       - mongodbdata:/data/db
-    command: [--auth]
 
   client:
     image: ghcr.io/smart-chef-dev/sc-actions-client/sc-actions-client:latest
