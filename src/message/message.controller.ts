@@ -1,11 +1,12 @@
- import {
+import {
   Controller,
   Post,
   Res,
   Param,
   HttpStatus,
   Body,
-  Logger, NotFoundException,
+  Logger,
+  NotFoundException,
 } from '@nestjs/common';
 
 import { OrderDto } from './dto/order';
@@ -36,14 +37,18 @@ export class MessageController {
   ) {
     const restaurant = await this.restaurantService.findById(restaurantId);
 
-    if(!restaurant){
-      throw new NotFoundException(`Restaurant with id(${restaurantId}) does not exist`)
+    if (!restaurant) {
+      throw new NotFoundException(
+        `Restaurant with id(${restaurantId}) does not exist`,
+      );
     }
 
     const table = restaurant.tables.find((t) => t._id.equals(tableId));
 
-    if(!table){
-      throw new NotFoundException(`The table with id (${tableId}) does not exist in the restaurant with id (${restaurantId}).`)
+    if (!table) {
+      throw new NotFoundException(
+        `The table with id (${tableId}) does not exist in the restaurant with id (${restaurantId}).`,
+      );
     }
 
     const action = restaurant.actions.find((a) => a._id.equals(actionId));
@@ -83,14 +88,18 @@ export class MessageController {
   ) {
     const restaurant = await this.restaurantService.findById(restaurantId);
 
-    if(!restaurant){
-      throw new NotFoundException(`Restaurant with id(${restaurantId}) does not exist`)
+    if (!restaurant) {
+      throw new NotFoundException(
+        `Restaurant with id(${restaurantId}) does not exist`,
+      );
     }
 
     const table = restaurant.tables.find((t) => t._id.equals(tableId));
 
-    if(!table){
-      throw new NotFoundException(`The table with id (${tableId}) does not exist in the restaurant with id (${restaurantId}).`)
+    if (!table) {
+      throw new NotFoundException(
+        `The table with id (${tableId}) does not exist in the restaurant with id (${restaurantId}).`,
+      );
     }
 
     const text = dto.order.reduce((previousValues, currentValue) => {
