@@ -28,7 +28,7 @@ export class CategoryController {
       throw new NotFoundException();
     }
 
-    return this.menuService.findByIdCategory(id);
+    return this.menuService.findByCategoryId(id);
   }
 
   @Post(':id/menu-item')
