@@ -74,9 +74,29 @@ export class MessageController {
     const restaurant = await this.restaurantService.findById(restaurantId);
     const table = restaurant.tables.find((t) => t._id.equals(tableId));
 
-    const text = dto.order.reduce((previousValues, currentValue) => {
-      return previousValues + `${currentValue.name}(${currentValue.count}), `;
-    }, `person: ${dto.personCount}, ${table.name} - `);
+    const text = dto.order.reduce((previousValues, currentOrder) => {
+      const isModifiers = !!currentOrder.modifiers.find(
+        (m) => m.isIncludedInOrder,
+      );
+
+      if (isModifiers) {
+        const modifiers = currentOrder.modifiers.reduce(
+          (previousModifiers, currentModifiers) =>
+            currentModifiers.isIncludedInOrder
+              ? previousModifiers + `\n  ${currentModifiers.name}`
+              : previousModifiers,
+          `\n modifiers:`,
+        );
+
+        return (
+          previousValues +
+          `\n${currentOrder.name} ${currentOrder.count}` +
+          modifiers
+        );
+      }
+
+      return previousValues + `\n${currentOrder.name} ${currentOrder.count}`;
+    }, '\n' + `person: ${dto.personCount}, ${table.name}`);
 
     const replyMarkup = this.telegramService.createInlineKeyboard([
       this.telegramService.createInlineButton('✅', 'confirm'),
@@ -89,7 +109,7 @@ export class MessageController {
     );
 
     this.logger.log(
-      `New message for restaurantId: ${restaurant._id}, tableId: ${table._id}, message: ${text}`,
+      `New message for restaurantId: ${restaurant._id}, tableId: ${table._id}, \n message: ${text}`,
       loggerContext,
     );
 

@@ -2,6 +2,7 @@ import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Document } from 'mongoose';
 
 import { Category } from '../../category/schemas/category.schema';
+import { Modifiers } from './modifiers.shema';
 
 @Schema()
 export class MenuItems extends Document {
@@ -22,6 +23,9 @@ export class MenuItems extends Document {
 
   @Prop()
   description: string;
+
+  @Prop()
+  modifiers: Modifiers[];
 
   @Prop()
   category: Category;

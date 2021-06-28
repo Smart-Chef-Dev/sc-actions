@@ -7,21 +7,34 @@ import { Category } from '../category/schemas/category.schema';
 
 import { MenuItemsDto } from './dto/menuItems';
 import { CategoryService } from '../category/category.service';
+import { Modifiers } from './schemas/modifiers.shema';
 
 @Injectable()
 export class MenuService {
   constructor(
-      @InjectModel(Category.name) private categoryModel: Model<Category>,
-      @InjectModel(MenuItems.name) private menuItemsModel: Model<MenuItems>,
-      private readonly categoryService: CategoryService,
+    @InjectModel(Category.name) private categoryModel: Model<Category>,
+    @InjectModel(MenuItems.name) private menuItemsModel: Model<MenuItems>,
+    @InjectModel(Modifiers.name) private modifiersModel: Model<Modifiers>,
+    private readonly categoryService: CategoryService,
   ) {}
 
   async create(dto: MenuItemsDto, categoryId: string): Promise<MenuItems> {
     const category = await this.categoryService.findById(categoryId);
 
+    const modifiers = await Promise.all(
+      dto.modifiers.map(
+        (m) =>
+          new this.modifiersModel({
+            name: m.name,
+            price: m.price,
+          }),
+      ) ?? [],
+    );
+
     const newMenuItem = new this.menuItemsModel({
       ...dto,
       category: category,
+      modifiers: modifiers,
     });
 
     await newMenuItem.save();

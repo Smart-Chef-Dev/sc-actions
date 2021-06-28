@@ -1,3 +1,5 @@
+import { ModifiersDto } from './modifiers';
+
 export class MenuItemsDto {
   name: string;
   pictureUrl: string;
@@ -5,4 +7,5 @@ export class MenuItemsDto {
   weight: string;
   time: string;
   description: string;
+  modifiers: ModifiersDto[];
 }

@@ -7,12 +7,14 @@ import { MenuService } from './menu.service';
 
 import { Category, CategorySchema } from 'src/category/schemas/category.schema';
 import { MenuItems, MenuItemsSchema } from './schemas/menuItems.shema';
+import { Modifiers, ModifiersSchema } from './schemas/modifiers.shema';
 
 @Module({
   imports: [
     MongooseModule.forFeature([
       { name: Category.name, schema: CategorySchema },
       { name: MenuItems.name, schema: MenuItemsSchema },
+      { name: Modifiers.name, schema: ModifiersSchema },
     ]),
     CategoryModule,
   ],
