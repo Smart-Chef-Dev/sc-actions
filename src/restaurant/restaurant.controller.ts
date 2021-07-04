@@ -9,6 +9,7 @@ import {
   NotFoundException,
   UseInterceptors,
   UploadedFile,
+  Query,
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { ConfigService } from '@nestjs/config';
@@ -110,7 +111,11 @@ export class RestaurantController {
   }
 
   @Get(':id/category')
-  async findAllCategory(@Param('id') id: string) {
+  async findAllCategory(
+    @Param('id') id: string,
+    @Query('page') page: number,
+    @Query('limit') limit: number,
+  ) {
     await checkIsObjectIdValid(id);
 
     const isRestaurantExist = await this.restaurantService.findById(id);
@@ -118,7 +123,9 @@ export class RestaurantController {
       throw new NotFoundException();
     }
 
-    return this.categoryService.findAll(id);
+    return !!page && !!limit
+      ? this.categoryService.findAllCategoriesInLimit(id, page, limit)
+      : this.categoryService.findAll(id);
   }
 
   @Post(':id/category')

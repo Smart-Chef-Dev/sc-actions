@@ -30,6 +30,34 @@ export class CategoryService {
     });
   }
 
+  async findAllCategoriesInLimit(
+    restaurantId: string,
+    page: number,
+    limit: number,
+  ): Promise<{ categories: Category[]; page: number; totalPages: number }> {
+    const categories = await this.categoryModel
+      .find({
+        'restaurant._id': Types.ObjectId(restaurantId),
+      })
+      .skip(+page)
+      .limit(+limit);
+
+    const totalPages = await this.categoryModel
+      .find({
+        'restaurant._id': Types.ObjectId(restaurantId),
+      })
+      .estimatedDocumentCount();
+
+    const currentPage =
+      +page + +limit - totalPages > 0 ? totalPages : +page + +limit;
+
+    return {
+      categories: categories,
+      page: currentPage,
+      totalPages: totalPages,
+    };
+  }
+
   async findById(id: string): Promise<Category> {
     return this.categoryModel.findById({ _id: id });
   }
