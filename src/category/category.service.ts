@@ -30,7 +30,7 @@ export class CategoryService {
     });
   }
 
-  async findAllCategoriesInLimit(
+  async findAllInLimit(
     restaurantId: string,
     page: number,
     limit: number,

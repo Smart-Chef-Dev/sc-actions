@@ -60,6 +60,34 @@ export class MenuService {
     );
   }
 
+  async findByCategoryIdInLimit(
+    categoryId: string,
+    page: number,
+    limit: number,
+  ): Promise<{ items: MenuItems[]; page: number; totalPages: number }> {
+    const items = await this.menuItemsModel
+      .find({
+        'category._id': Types.ObjectId(categoryId),
+      })
+      .skip(+page)
+      .limit(+limit);
+
+    const totalPages = await this.menuItemsModel
+      .find({
+        'category._id': Types.ObjectId(categoryId),
+      })
+      .count();
+
+    const currentPage =
+      +page + +limit - totalPages > 0 ? totalPages : +page + +limit;
+
+    return {
+      items: items,
+      page: currentPage,
+      totalPages: totalPages,
+    };
+  }
+
   async updateById(
     id: string,
     changes: UpdateQuery<MenuItems>,

@@ -124,7 +124,7 @@ export class RestaurantController {
     }
 
     return !!page && !!limit
-      ? this.categoryService.findAllCategoriesInLimit(id, page, limit)
+      ? this.categoryService.findAllInLimit(id, page, limit)
       : this.categoryService.findAll(id);
   }
 
