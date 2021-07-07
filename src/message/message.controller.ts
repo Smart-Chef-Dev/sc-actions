@@ -76,7 +76,7 @@ export class MessageController {
 
     const text = dto.order.reduce((previousValues, currentValue) => {
       return previousValues + `\n${currentValue.name} ${currentValue.count}`;
-    }, `\nperson: ${dto.personCount}, ${table.name}`);
+    }, `\n person: ${dto.personCount}, ${table.name}`);
 
     const replyMarkup = this.telegramService.createInlineKeyboard([
       this.telegramService.createInlineButton('✅', 'confirm'),
