@@ -70,7 +70,7 @@ describe('MenuService', () => {
 
   const name = 'green tea';
   const pictureUrl =
-    '"http://localhost:3000/client/menuPhotos/60ca9434728fea71f83b5f3f/_wTKrQUmgDataCxYvs4ZR.svg"';
+    'https://images.wallpaperscraft.ru/image/chay_listya_chashka_71596_2560x1600.jpg';
   const price = '0.1';
   const weight = '200';
   const time = '3';
