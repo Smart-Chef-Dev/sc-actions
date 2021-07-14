@@ -10,6 +10,7 @@ import { CategoryService } from '../category/category.service';
 
 import { Category, CategorySchema } from '../category/schemas/category.schema';
 import { MenuItems, MenuItemsSchema } from './schemas/menuItems.shema';
+import { Addons, AddonsSchema } from './schemas/addons.shema';
 
 let mongod: MongoMemoryServer;
 
@@ -31,6 +32,7 @@ describe('MenuService', () => {
         MongooseModule.forFeature([
           { name: Category.name, schema: CategorySchema },
           { name: MenuItems.name, schema: MenuItemsSchema },
+          { name: Addons.name, schema: AddonsSchema },
         ]),
         ServeStaticModule.forRoot({
           rootPath: join(__filename, '../photos'),
@@ -70,7 +72,7 @@ describe('MenuService', () => {
 
   const name = 'green tea';
   const pictureUrl =
-    '"http://localhost:3000/client/menuPhotos/60ca9434728fea71f83b5f3f/_wTKrQUmgDataCxYvs4ZR.svg"';
+    'https://images.wallpaperscraft.ru/image/chay_listya_chashka_71596_2560x1600.jpg';
   const price = '0.1';
   const weight = '200';
   const time = '3';
@@ -84,6 +86,7 @@ describe('MenuService', () => {
         weight: weight,
         time: time,
         description: description,
+        addons: [],
       },
       String(categoryId),
     );
