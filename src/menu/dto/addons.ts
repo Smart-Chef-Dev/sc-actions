@@ -1,6 +1,6 @@
 import { IsNotEmpty, IsString, IsNumber } from 'class-validator';
 
-export class ModifiersDto {
+export class AddonsDto {
   @IsString()
   @IsNotEmpty()
   readonly name: number;

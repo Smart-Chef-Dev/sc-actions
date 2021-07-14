@@ -5,7 +5,7 @@ export class OrderDto {
       name: string;
       count: string;
       productId: string;
-      modifiers: [{ name: string; isIncludedInOrder: boolean }];
+      addons: [{ name: string; isIncludedInOrder: boolean }];
     },
   ];
 }

@@ -75,23 +75,21 @@ export class MessageController {
     const table = restaurant.tables.find((t) => t._id.equals(tableId));
 
     const text = dto.order.reduce((previousValues, currentOrder) => {
-      const isModifiers = !!currentOrder.modifiers.find(
-        (m) => m.isIncludedInOrder,
-      );
+      const isAddons = !!currentOrder.addons.find((m) => m.isIncludedInOrder);
 
-      if (isModifiers) {
-        const modifiers = currentOrder.modifiers.reduce(
-          (previousModifiers, currentModifiers) =>
-            currentModifiers.isIncludedInOrder
-              ? previousModifiers + `\n  ${currentModifiers.name}`
-              : previousModifiers,
-          `\n modifiers:`,
+      if (isAddons) {
+        const addons = currentOrder.addons.reduce(
+          (previousAddons, currentAddons) =>
+            currentAddons.isIncludedInOrder
+              ? previousAddons + `\n  ${currentAddons.name}`
+              : previousAddons,
+          `\n addons:`,
         );
 
         return (
           previousValues +
           `\n${currentOrder.name} ${currentOrder.count}` +
-          modifiers
+          addons
         );
       }
 

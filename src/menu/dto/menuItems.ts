@@ -1,4 +1,4 @@
-import { ModifiersDto } from './modifiers';
+import { AddonsDto } from './addons';
 
 export class MenuItemsDto {
   name: string;
@@ -7,5 +7,5 @@ export class MenuItemsDto {
   weight: string;
   time: string;
   description: string;
-  modifiers: ModifiersDto[];
+  addons: AddonsDto[];
 }
