@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { Model, Types } from 'mongoose';
+import { Model, Types, UpdateQuery } from 'mongoose';
+import * as lqip from 'lqip';
 
 import { MenuItems } from './schemas/menuItems.shema';
 import { Category } from '../category/schemas/category.schema';
@@ -40,9 +41,31 @@ export class MenuService {
     });
   }
 
-  async findByIdCategory(categoryId: string): Promise<MenuItems[]> {
-    return this.menuItemsModel.find({
+  async findByCategoryId(categoryId: string): Promise<MenuItems[]> {
+    const items = await this.menuItemsModel.find({
       'category._id': Types.ObjectId(categoryId),
+    });
+
+    return Promise.all(
+      items.map(async (mi: MenuItems) => {
+        if (!mi.pictureLqipPreview) {
+          mi.pictureLqipPreview = await lqip.base64(mi.pictureUrl);
+          await this.updateById(mi.id, {
+            pictureLqipPreview: mi.pictureLqipPreview,
+          });
+        }
+
+        return mi;
+      }),
+    );
+  }
+
+  async updateById(
+    id: string,
+    changes: UpdateQuery<MenuItems>,
+  ): Promise<MenuItems> {
+    return this.menuItemsModel.findOneAndUpdate({ _id: id }, changes, {
+      new: true,
     });
   }
 }
