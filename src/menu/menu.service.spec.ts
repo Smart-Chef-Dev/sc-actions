@@ -151,7 +151,7 @@ describe('MenuService', () => {
     const menuItems1 = await createMenuItems();
     const menuItems2 = await createMenuItems();
 
-    const allMenuItems = await service.findByIdCategory(String(categoryId));
+    const allMenuItems = await service.findByCategoryId(String(categoryId));
 
     expect(allMenuItems).toBeDefined();
     expect(allMenuItems.length).toBe(2);

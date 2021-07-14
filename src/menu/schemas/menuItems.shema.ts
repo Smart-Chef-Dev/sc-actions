@@ -13,6 +13,9 @@ export class MenuItems extends Document {
   pictureUrl: string;
 
   @Prop()
+  pictureLqipPreview: string;
+
+  @Prop()
   price: string;
 
   @Prop()
