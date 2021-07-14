@@ -65,7 +65,7 @@ export class MenuService {
       .find({
         'category._id': Types.ObjectId(categoryId),
       })
-      .count();
+      .countDocuments();
 
     const currentPage =
       +page + +limit - totalPages > 0 ? totalPages : +page + +limit;
@@ -75,14 +75,5 @@ export class MenuService {
       page: currentPage,
       totalPages: totalPages,
     };
-  }
-
-  async updateById(
-    id: string,
-    changes: UpdateQuery<MenuItems>,
-  ): Promise<MenuItems> {
-    return this.menuItemsModel.findOneAndUpdate({ _id: id }, changes, {
-      new: true,
-    });
   }
 }

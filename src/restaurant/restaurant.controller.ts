@@ -111,11 +111,7 @@ export class RestaurantController {
   }
 
   @Get(':id/category')
-  async findAllCategory(
-    @Param('id') id: string,
-    @Query('page') page: number,
-    @Query('limit') limit: number,
-  ) {
+  async findAllCategory(@Param('id') id: string) {
     await checkIsObjectIdValid(id);
 
     const isRestaurantExist = await this.restaurantService.findById(id);
@@ -123,9 +119,7 @@ export class RestaurantController {
       throw new NotFoundException();
     }
 
-    return !!page && !!limit
-      ? this.categoryService.findAllInLimit(id, page, limit)
-      : this.categoryService.findAll(id);
+    return this.categoryService.findAll(id);
   }
 
   @Post(':id/category')
