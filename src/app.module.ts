@@ -11,14 +11,11 @@ import { AnalyticsModule } from './analytics/analytics.module';
 import { MenuModule } from './menu/menu.module';
 import { CategoryModule } from './category/category.module';
 import { ImagesModule } from './images/images.module';
+import { AppConfigModule } from './config/config.module';
 import { UsersModule } from './users/users.module';
-import configuration from './config/configuration';
 
 @Module({
   imports: [
-    ConfigModule.forRoot({
-      load: [configuration],
-    }),
     ServeStaticModule.forRoot({
       rootPath: join(__dirname, '/../public'),
       serveRoot: '/public',
@@ -31,6 +28,7 @@ import configuration from './config/configuration';
       }),
       inject: [ConfigService],
     }),
+    AppConfigModule,
     RestaurantModule,
     MessageModule,
     TelegramModule,
@@ -38,6 +36,7 @@ import configuration from './config/configuration';
     MenuModule,
     CategoryModule,
     ImagesModule,
+    ConfigModule,
     UsersModule,
   ],
 })
