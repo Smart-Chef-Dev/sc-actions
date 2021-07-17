@@ -10,6 +10,7 @@ import { CategoryService } from '../category/category.service';
 
 import { Category, CategorySchema } from '../category/schemas/category.schema';
 import { MenuItems, MenuItemsSchema } from './schemas/menuItems.shema';
+import { Addons, AddonsSchema } from './schemas/addons.shema';
 
 let mongod: MongoMemoryServer;
 
@@ -31,6 +32,7 @@ describe('MenuService', () => {
         MongooseModule.forFeature([
           { name: Category.name, schema: CategorySchema },
           { name: MenuItems.name, schema: MenuItemsSchema },
+          { name: Addons.name, schema: AddonsSchema },
         ]),
         ServeStaticModule.forRoot({
           rootPath: join(__filename, '../photos'),
@@ -84,6 +86,7 @@ describe('MenuService', () => {
         weight: weight,
         time: time,
         description: description,
+        addons: [],
       },
       String(categoryId),
     );
