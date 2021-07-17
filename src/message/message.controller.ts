@@ -6,6 +6,7 @@ import {
   HttpStatus,
   Body,
   Logger,
+  NotFoundException,
 } from '@nestjs/common';
 
 import { OrderDto } from './dto/order';
@@ -35,7 +36,21 @@ export class MessageController {
     @Param('actionId') actionId,
   ) {
     const restaurant = await this.restaurantService.findById(restaurantId);
+
+    if (!restaurant) {
+      throw new NotFoundException(
+        `Restaurant with id(${restaurantId}) does not exist`,
+      );
+    }
+
     const table = restaurant.tables.find((t) => t._id.equals(tableId));
+
+    if (!table) {
+      throw new NotFoundException(
+        `The table with id (${tableId}) does not exist in the restaurant with id (${restaurantId}).`,
+      );
+    }
+
     const action = restaurant.actions.find((a) => a._id.equals(actionId));
 
     const text = `${table.name} - ${action.message}`;
@@ -72,11 +87,24 @@ export class MessageController {
     @Res() res,
   ) {
     const restaurant = await this.restaurantService.findById(restaurantId);
+
+    if (!restaurant) {
+      throw new NotFoundException(
+        `Restaurant with id(${restaurantId}) does not exist`,
+      );
+    }
+
     const table = restaurant.tables.find((t) => t._id.equals(tableId));
 
+    if (!table) {
+      throw new NotFoundException(
+        `The table with id (${tableId}) does not exist in the restaurant with id (${restaurantId}).`,
+      );
+    }
+
     const text = dto.order.reduce((previousValues, currentValue) => {
-      return previousValues + `${currentValue.name}(${currentValue.count}), `;
-    }, `person: ${dto.personCount}, ${table.name} - `);
+      return previousValues + `\n${currentValue.name} ${currentValue.count}`;
+    }, `\n person: ${dto.personCount}, ${table.name}`);
 
     const replyMarkup = this.telegramService.createInlineKeyboard([
       this.telegramService.createInlineButton('✅', 'confirm'),
@@ -89,7 +117,7 @@ export class MessageController {
     );
 
     this.logger.log(
-      `New message for restaurantId: ${restaurant._id}, tableId: ${table._id}, message: ${text}`,
+      `New message for restaurantId: ${restaurant._id}, tableId: ${table._id}, \n message: ${text}`,
       loggerContext,
     );
 

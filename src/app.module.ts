@@ -12,6 +12,7 @@ import { MenuModule } from './menu/menu.module';
 import { CategoryModule } from './category/category.module';
 import { ImagesModule } from './images/images.module';
 import { AppConfigModule } from './config/config.module';
+import { UsersModule } from './users/users.module';
 
 @Module({
   imports: [
@@ -36,6 +37,7 @@ import { AppConfigModule } from './config/config.module';
     CategoryModule,
     ImagesModule,
     ConfigModule,
+    UsersModule,
   ],
 })
 export class AppModule {}
