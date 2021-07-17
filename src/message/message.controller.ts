@@ -103,8 +103,8 @@ export class MessageController {
     }
 
     const text = dto.order.reduce((previousValues, currentValue) => {
-      return previousValues + `${currentValue.name}(${currentValue.count}), `;
-    }, `person: ${dto.personCount}, ${table.name} - `);
+      return previousValues + `\n${currentValue.name} ${currentValue.count}`;
+    }, `\n person: ${dto.personCount}, ${table.name}`);
 
     const replyMarkup = this.telegramService.createInlineKeyboard([
       this.telegramService.createInlineButton('✅', 'confirm'),
@@ -117,7 +117,7 @@ export class MessageController {
     );
 
     this.logger.log(
-      `New message for restaurantId: ${restaurant._id}, tableId: ${table._id}, message: ${text}`,
+      `New message for restaurantId: ${restaurant._id}, tableId: ${table._id}, \n message: ${text}`,
       loggerContext,
     );
 
