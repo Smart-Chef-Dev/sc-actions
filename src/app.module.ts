@@ -11,6 +11,7 @@ import { AnalyticsModule } from './analytics/analytics.module';
 import { MenuModule } from './menu/menu.module';
 import { CategoryModule } from './category/category.module';
 import { ImagesModule } from './images/images.module';
+import { UsersModule } from './users/users.module';
 import configuration from './config/configuration';
 
 @Module({
@@ -37,6 +38,7 @@ import configuration from './config/configuration';
     MenuModule,
     CategoryModule,
     ImagesModule,
+    UsersModule,
   ],
 })
 export class AppModule {}

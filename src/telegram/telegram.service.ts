@@ -41,7 +41,6 @@ export class TelegramService implements OnModuleInit {
   @autobind
   async sendMessage(chatId: string, text: string, options: any = {}) {
     try {
-      console.log(options);
       await this.bot.sendMessage(chatId, text, options);
     } catch (err) {
       if (err.error_code === 403) {
