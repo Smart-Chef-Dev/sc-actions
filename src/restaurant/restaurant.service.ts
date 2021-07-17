@@ -64,6 +64,7 @@ export class RestaurantService {
     const restaurant = await new this.restaurantModel({
       name: dto.name,
       usernames: dto.usernames,
+      currencyCode: dto.currencyCode,
       tables: tables,
       actions: actions,
     });

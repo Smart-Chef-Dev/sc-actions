@@ -95,16 +95,34 @@ export class MessageController {
     }
 
     const table = restaurant.tables.find((t) => t._id.equals(tableId));
-
+    
     if (!table) {
       throw new NotFoundException(
         `The table with id (${tableId}) does not exist in the restaurant with id (${restaurantId}).`,
       );
     }
+      
+    const text = dto.order.reduce((previousValues, currentOrder) => {
+      const isAddons = !!currentOrder.addons.find((m) => m.isIncludedInOrder);
 
-    const text = dto.order.reduce((previousValues, currentValue) => {
-      return previousValues + `\n${currentValue.name} ${currentValue.count}`;
-    }, `\n person: ${dto.personCount}, ${table.name}`);
+      if (isAddons) {
+        const addons = currentOrder.addons.reduce(
+          (previousAddons, currentAddons) =>
+            currentAddons.isIncludedInOrder
+              ? previousAddons + `\n  ${currentAddons.name}`
+              : previousAddons,
+          `\n addons:`,
+        );
+
+        return (
+          previousValues +
+          `\n${currentOrder.name} ${currentOrder.count}` +
+          addons
+        );
+      }
+
+      return previousValues + `\n${currentOrder.name} ${currentOrder.count}`;
+    }, '\n' + `person: ${dto.personCount}, ${table.name}`);
 
     const replyMarkup = this.telegramService.createInlineKeyboard([
       this.telegramService.createInlineButton('✅', 'confirm'),
