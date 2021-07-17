@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { Model, Types, UpdateQuery } from 'mongoose';
+import { Model, Types } from 'mongoose';
 import * as lqip from 'lqip';
 
 import { MenuItems } from './schemas/menuItems.shema';
@@ -37,6 +37,7 @@ export class MenuService {
       ...dto,
       category: category,
       pictureLqipPreview: pictureLqipPreview,
+      addons: addons,
     });
 
     await newMenuItem.save();
