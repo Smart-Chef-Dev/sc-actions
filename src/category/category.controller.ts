@@ -5,6 +5,7 @@ import {
   NotFoundException,
   Param,
   Post,
+  Query,
 } from '@nestjs/common';
 
 import { MenuService } from 'src/menu/menu.service';
@@ -20,7 +21,11 @@ export class CategoryController {
   ) {}
 
   @Get(':id/menu-item')
-  async findMenuItemsByIdCategory(@Param('id') id: string) {
+  async findMenuItemsByIdCategory(
+    @Param('id') id: string,
+    @Query('page') page: number,
+    @Query('limit') limit: number,
+  ) {
     await checkIsObjectIdValid(id);
 
     const isCategoryExists = await this.categoryService.findById(id);
@@ -28,7 +33,9 @@ export class CategoryController {
       throw new NotFoundException();
     }
 
-    return this.menuService.findByCategoryId(id);
+    return !!page && !!limit
+      ? this.menuService.findByCategoryIdInLimit(id, page, limit)
+      : this.menuService.findByCategoryId(id);
   }
 
   @Post(':id/menu-item')

@@ -21,6 +21,7 @@ export class MenuService {
 
   async create(dto: MenuItemsDto, categoryId: string): Promise<MenuItems> {
     const category = await this.categoryService.findById(categoryId);
+    const pictureLqipPreview = await lqip.base64(dto.pictureUrl);
 
     const addons = await Promise.all(
       dto.addons?.map(
@@ -35,7 +36,7 @@ export class MenuService {
     const newMenuItem = new this.menuItemsModel({
       ...dto,
       category: category,
-      addons: addons,
+      pictureLqipPreview: pictureLqipPreview,
     });
 
     await newMenuItem.save();
@@ -55,30 +56,36 @@ export class MenuService {
   }
 
   async findByCategoryId(categoryId: string): Promise<MenuItems[]> {
-    const items = await this.menuItemsModel.find({
+    return this.menuItemsModel.find({
       'category._id': Types.ObjectId(categoryId),
     });
-
-    return Promise.all(
-      items.map(async (mi: MenuItems) => {
-        if (!mi.pictureLqipPreview) {
-          mi.pictureLqipPreview = await lqip.base64(mi.pictureUrl);
-          await this.updateById(mi.id, {
-            pictureLqipPreview: mi.pictureLqipPreview,
-          });
-        }
-
-        return mi;
-      }),
-    );
   }
 
-  async updateById(
-    id: string,
-    changes: UpdateQuery<MenuItems>,
-  ): Promise<MenuItems> {
-    return this.menuItemsModel.findOneAndUpdate({ _id: id }, changes, {
-      new: true,
-    });
+  async findByCategoryIdInLimit(
+    categoryId: string,
+    page: number,
+    limit: number,
+  ): Promise<{ items: MenuItems[]; page: number; totalPages: number }> {
+    const items = await this.menuItemsModel
+      .find({
+        'category._id': Types.ObjectId(categoryId),
+      })
+      .skip(+page)
+      .limit(+limit);
+
+    const totalPages = await this.menuItemsModel
+      .find({
+        'category._id': Types.ObjectId(categoryId),
+      })
+      .countDocuments();
+
+    const currentPage =
+      +page + +limit - totalPages > 0 ? totalPages : +page + +limit;
+
+    return {
+      items: items,
+      page: currentPage,
+      totalPages: totalPages,
+    };
   }
 }
