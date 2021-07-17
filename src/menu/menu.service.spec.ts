@@ -174,4 +174,43 @@ describe('MenuService', () => {
     expect(allMenuItems[1].category.restaurant._id).toStrictEqual(restaurantId);
     expect(allMenuItems[0]._id).not.toBe(allMenuItems[1]._id);
   });
+
+  it('should return a certain amount of menu item', async () => {
+    await createMenuItems();
+    const menuItems2 = await createMenuItems();
+    const menuItems3 = await createMenuItems();
+
+    const page = 1;
+    const menuItems = await service.findByCategoryIdInLimit(
+      String(categoryId),
+      page,
+      2,
+    );
+
+    expect(menuItems).toBeDefined();
+    expect(menuItems.items.length).toBe(2);
+    expect(menuItems.totalPages).toStrictEqual(3);
+    expect(menuItems.items[0].pictureUrl).toBe(pictureUrl);
+    expect(menuItems.items[0].price).toStrictEqual(menuItems2.price);
+    expect(menuItems.items[0].weight).toStrictEqual(menuItems2.weight);
+    expect(menuItems.items[0].time).toStrictEqual(menuItems2.time);
+    expect(menuItems.items[0].description).toStrictEqual(
+      menuItems2.description,
+    );
+    expect(menuItems.items[0].category.restaurant._id).toStrictEqual(
+      restaurantId,
+    );
+    expect(menuItems.items[1].name).toStrictEqual(menuItems3.name);
+    expect(menuItems.items[1].pictureUrl).toBe(pictureUrl);
+    expect(menuItems.items[1].price).toStrictEqual(menuItems3.price);
+    expect(menuItems.items[1].weight).toStrictEqual(menuItems3.weight);
+    expect(menuItems.items[1].time).toStrictEqual(menuItems3.time);
+    expect(menuItems.items[1].description).toStrictEqual(
+      menuItems3.description,
+    );
+    expect(menuItems.items[1].category.restaurant._id).toStrictEqual(
+      restaurantId,
+    );
+    expect(menuItems.items[0]._id).not.toBe(menuItems.items[1]._id);
+  });
 });
