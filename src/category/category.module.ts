@@ -7,6 +7,8 @@ import { RestaurantModule } from 'src/restaurant/restaurant.module';
 import { MenuModule } from 'src/menu/menu.module';
 
 import { Category, CategorySchema } from './schemas/category.schema';
+import { ConfigService } from '@nestjs/config';
+import { ImagesModule } from '../images/images.module';
 
 @Module({
   imports: [
@@ -15,8 +17,9 @@ import { Category, CategorySchema } from './schemas/category.schema';
     ]),
     forwardRef(() => RestaurantModule),
     forwardRef(() => MenuModule),
+    ImagesModule,
   ],
-  providers: [CategoryService],
+  providers: [CategoryService, ConfigService],
   exports: [CategoryService],
   controllers: [CategoryController],
 })
