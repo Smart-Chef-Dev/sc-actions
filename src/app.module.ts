@@ -13,6 +13,7 @@ import { CategoryModule } from './category/category.module';
 import { ImagesModule } from './images/images.module';
 import { AppConfigModule } from './config/config.module';
 import { UsersModule } from './users/users.module';
+import { SubscriptionsModule } from './subscriptions/subscriptions.module';
 
 @Module({
   imports: [
@@ -38,6 +39,7 @@ import { UsersModule } from './users/users.module';
     ImagesModule,
     ConfigModule,
     UsersModule,
+    SubscriptionsModule,
   ],
 })
 export class AppModule {}
