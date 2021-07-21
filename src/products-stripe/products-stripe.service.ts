@@ -9,4 +9,8 @@ export class ProductsStripeService {
   findAll() {
     return this.stripeClient.products.list({ active: true });
   }
+
+  findAllPrice() {
+    return this.stripeClient.prices.list({ active: true });
+  }
 }

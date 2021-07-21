@@ -4,15 +4,22 @@ import {
   Body,
   ForbiddenException,
   NotFoundException,
+  Get,
+  Headers,
+  Delete,
 } from '@nestjs/common';
 import * as bcrypt from 'bcrypt';
 
 import { UsersService } from './users.service';
 import { CreateUserDto } from './dto/create-user.dto';
+import { JwtService } from '@nestjs/jwt';
 
 @Controller('users')
 export class UsersController {
-  constructor(private readonly usersService: UsersService) {}
+  constructor(
+    private readonly usersService: UsersService,
+    private readonly jwtService: JwtService,
+  ) {}
 
   @Post('sign-up')
   async signUp(@Body() dto: CreateUserDto) {
@@ -43,5 +50,32 @@ export class UsersController {
     }
 
     return this.usersService.singIn(dto);
+  }
+
+  @Get('subscription')
+  async getSubscriptions(@Headers('authorization') authorization) {
+    const jwt = authorization.split(' ')[1];
+    const payload = await this.jwtService.verify(jwt);
+
+    const user = await this.usersService.findByEmail(payload.email);
+    if (!user.subscription) {
+      throw new ForbiddenException('Not subscribed');
+    }
+
+    return this.usersService.getSubscription(user.subscription);
+  }
+
+  @Delete('subscription')
+  async deleteSubscriptions(@Headers('authorization') authorization) {
+    const jwt = authorization.split(' ')[1];
+    const payload = await this.jwtService.verify(jwt);
+
+    const user = await this.usersService.findByEmail(payload.email);
+    if (!user.subscription) {
+      throw new ForbiddenException('Not subscribed');
+    }
+
+    await this.usersService.updateById(user.id, { subscription: null });
+    return this.usersService.deleteSubscriptions(user.subscription);
   }
 }

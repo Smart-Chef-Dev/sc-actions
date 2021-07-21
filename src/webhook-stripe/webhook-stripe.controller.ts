@@ -1,14 +1,10 @@
 import { Controller, HttpStatus, Post, Req, Res } from '@nestjs/common';
 
 import { UsersService } from '../users/users.service';
-import { SubscriptionsService } from '../subscriptions/subscriptions.service';
 
 @Controller('webhook-stripe')
 export class WebhookStripeController {
-  constructor(
-    private readonly usersService: UsersService,
-    private readonly subscriptionsService: SubscriptionsService,
-  ) {}
+  constructor(private readonly usersService: UsersService) {}
 
   @Post()
   async webhook(@Req() req, @Res() res) {
@@ -19,9 +15,8 @@ export class WebhookStripeController {
         event.data.object.customer_email,
       );
 
-      console.log(user.subscription);
       if (user.subscription) {
-        await this.subscriptionsService.deleteSubscriptions(user.subscription);
+        await this.usersService.deleteSubscriptions(user.subscription);
       }
 
       await this.usersService.updateById(user._id, {
