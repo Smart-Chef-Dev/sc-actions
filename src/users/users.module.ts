@@ -19,6 +19,7 @@ import { Users, UsersSchema } from './schemas/users.schema';
       inject: [ConfigService],
     }),
   ],
+  exports: [UsersService],
   controllers: [UsersController],
   providers: [UsersService],
 })

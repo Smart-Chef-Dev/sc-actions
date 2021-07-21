@@ -13,6 +13,8 @@ import { CategoryModule } from './category/category.module';
 import { ImagesModule } from './images/images.module';
 import { AppConfigModule } from './config/config.module';
 import { UsersModule } from './users/users.module';
+import { ProductsStripeModule } from './products-stripe/products-stripe.module';
+import { WebhookStripeModule } from './webhook-stripe/webhook-stripe.module';
 
 @Module({
   imports: [
@@ -38,6 +40,8 @@ import { UsersModule } from './users/users.module';
     ImagesModule,
     ConfigModule,
     UsersModule,
+    ProductsStripeModule,
+    WebhookStripeModule,
   ],
 })
 export class AppModule {}

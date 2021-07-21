@@ -8,6 +8,9 @@ export class Users extends Document {
 
   @Prop()
   password: string;
+
+  @Prop()
+  subscription: string;
 }
 
 export const UsersSchema = SchemaFactory.createForClass(Users);
