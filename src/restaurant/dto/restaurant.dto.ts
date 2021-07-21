@@ -8,6 +8,9 @@ export class RestaurantDto {
   @IsNotEmpty()
   readonly name: string;
 
+  @IsNotEmpty()
+  readonly currencyCode: string;
+
   @IsArray()
   readonly usernames: string[];
 
