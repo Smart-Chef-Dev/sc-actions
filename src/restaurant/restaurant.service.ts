@@ -64,6 +64,7 @@ export class RestaurantService {
     const restaurant = await new this.restaurantModel({
       name: dto.name,
       usernames: dto.usernames,
+      currencyCode: dto.currencyCode,
       tables: tables,
       actions: actions,
     });
@@ -119,5 +120,17 @@ export class RestaurantService {
     const tables = await this.findAllTables(restaurantId);
 
     return !!tables?.find((t) => t._id.equals(tableId)) ?? false;
+  }
+
+  public async checkIfChatExist(
+    restaurantId: string,
+    userName: string,
+  ): Promise<boolean> {
+    return !!(
+      await this.restaurantModel.find({
+        _id: restaurantId,
+        usernames: userName,
+      })
+    ).length;
   }
 }
