@@ -30,7 +30,7 @@ export class UsersController {
     const user = await this.usersService.findByEmail(dto.email);
 
     if (!user) {
-      throw new ForbiddenException('This email is not registered');
+      throw new NotFoundException('This email is not registered');
     }
 
     const isHashMatchesPassword = await bcrypt.compare(
