@@ -1,9 +1,9 @@
 import { Module } from '@nestjs/common';
-import { SubscriptionsService } from './subscriptions.service';
-import { SubscriptionsController } from './subscriptions.controller';
+import { PriceStripeService } from './price-stripe.service';
+import { PriceStripeController } from './price-stripe.controller';
 import { StripeModule } from 'nestjs-stripe';
 import { ConfigModule, ConfigService } from '@nestjs/config';
-import { UsersModule } from '../users/users.module';
+import { SubscriptionsModule } from 'src/subscriptions/subscriptions.module';
 import { JwtModule } from '@nestjs/jwt';
 
 @Module({
@@ -23,10 +23,9 @@ import { JwtModule } from '@nestjs/jwt';
       }),
       inject: [ConfigService],
     }),
-    UsersModule,
+    SubscriptionsModule,
   ],
-  exports: [SubscriptionsService],
-  controllers: [SubscriptionsController],
-  providers: [SubscriptionsService, ConfigService],
+  controllers: [PriceStripeController],
+  providers: [PriceStripeService],
 })
-export class SubscriptionsModule {}
+export class PriceStripeModule {}

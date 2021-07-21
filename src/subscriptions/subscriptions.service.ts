@@ -14,10 +14,6 @@ export class SubscriptionsService {
     return this.stripeClient.subscriptions.retrieve(id);
   }
 
-  async getAllSubscriptionsPrices() {
-    return this.stripeClient.prices.list({ active: true });
-  }
-
   async createCheckoutSession(pricesId, email) {
     return this.stripeClient.checkout.sessions.create({
       customer_email: email,

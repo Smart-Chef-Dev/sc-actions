@@ -15,6 +15,8 @@ import { AppConfigModule } from './config/config.module';
 import { UsersModule } from './users/users.module';
 import { SubscriptionsModule } from './subscriptions/subscriptions.module';
 import { ProductsStripeModule } from './products-stripe/products-stripe.module';
+import { PriceStripeModule } from './price-stripe/price-stripe.module';
+import { WebhookStripeModule } from './webhook-stripe/webhook-stripe.module';
 
 @Module({
   imports: [
@@ -42,6 +44,8 @@ import { ProductsStripeModule } from './products-stripe/products-stripe.module';
     UsersModule,
     SubscriptionsModule,
     ProductsStripeModule,
+    PriceStripeModule,
+    WebhookStripeModule,
   ],
 })
 export class AppModule {}
