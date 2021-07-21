@@ -3,6 +3,7 @@ import { SubscriptionsService } from './subscriptions.service';
 import { SubscriptionsController } from './subscriptions.controller';
 import { StripeModule } from 'nestjs-stripe';
 import { ConfigService } from '@nestjs/config';
+import { UsersModule } from '../users/users.module';
 
 @Module({
   imports: [
@@ -13,6 +14,7 @@ import { ConfigService } from '@nestjs/config';
         apiVersion: '2020-08-27',
       }),
     }),
+    UsersModule,
   ],
   controllers: [SubscriptionsController],
   providers: [SubscriptionsService, ConfigService],

@@ -35,4 +35,21 @@ export class UsersService {
   async findByEmail(email): Promise<Users> {
     return this.usersModel.findOne({ email: email });
   }
+
+  async decodeJwt(jwt: string): Promise<string | { [key: string]: any }> {
+    return this.jwtService.decode(jwt);
+  }
+
+  async updateById(
+    id: string,
+    changes: { [key in string | number]: any },
+  ): Promise<Users> {
+    return this.usersModel.findOneAndUpdate(
+      { _id: id },
+      { $set: changes },
+      {
+        new: true,
+      },
+    );
+  }
 }

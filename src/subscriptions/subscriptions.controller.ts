@@ -1,9 +1,22 @@
-import { Controller, Get, Param, Post, Redirect, Res } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  HttpStatus,
+  Param,
+  Post,
+  Req,
+  Res,
+  Headers,
+} from '@nestjs/common';
 import { SubscriptionsService } from './subscriptions.service';
+import { UsersService } from 'src/users/users.service';
 
 @Controller('subscriptions')
 export class SubscriptionsController {
-  constructor(private readonly subscriptionsService: SubscriptionsService) {}
+  constructor(
+    private readonly subscriptionsService: SubscriptionsService,
+    private readonly usersService: UsersService,
+  ) {}
 
   @Get()
   getAllSubscriptions() {
@@ -15,25 +28,35 @@ export class SubscriptionsController {
     return this.subscriptionsService.getAllSubscriptionsPrices();
   }
 
-  @Post(':subscriptionsId/prices/:pricesId/create-checkout-session')
+  @Post('/prices/:pricesId/create-checkout-session')
   async createCheckoutSession(
-    @Param('subscriptionsId') subscriptionsId: string,
     @Param('pricesId') pricesId: string,
-    @Res() res,
+    @Headers('authorization') authorization,
   ) {
-    const subscriptions = await this.subscriptionsService.getSubscription(
-      subscriptionsId,
-    );
-    const subscriptionPrice =
-      await this.subscriptionsService.getSubscriptionPrice(pricesId);
+    const jwt = authorization.split(' ')[1];
+    const payload = await this.usersService.decodeJwt(jwt);
 
     const session = await this.subscriptionsService.createCheckoutSession(
-      subscriptions.name,
-      subscriptions.images,
-      subscriptionPrice.unit_amount,
-      subscriptionPrice.currency,
+      pricesId,
+      payload['email'],
     );
 
-    return res.redirect(session.url);
+    return session.url;
+  }
+
+  @Post('/webhook')
+  async webhook(@Req() req, @Res() res) {
+    const event = req.body;
+
+    if (event.type === 'invoice.payment_succeeded') {
+      const user = await this.usersService.findByEmail(
+        event.data.object.customer_email,
+      );
+      await this.usersService.updateById(user._id, {
+        subscription: event.data.object.subscription,
+      });
+    }
+
+    return res.status(HttpStatus.OK).json();
   }
 }
