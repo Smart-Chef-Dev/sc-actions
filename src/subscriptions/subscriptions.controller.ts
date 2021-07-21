@@ -1,7 +1,8 @@
 import { Controller, Get, Headers, ForbiddenException } from '@nestjs/common';
+import { JwtService } from '@nestjs/jwt';
+
 import { SubscriptionsService } from './subscriptions.service';
 import { UsersService } from 'src/users/users.service';
-import { JwtService } from '@nestjs/jwt';
 
 @Controller('subscriptions')
 export class SubscriptionsController {

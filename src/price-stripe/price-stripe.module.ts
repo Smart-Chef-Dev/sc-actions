@@ -1,10 +1,11 @@
 import { Module } from '@nestjs/common';
-import { PriceStripeService } from './price-stripe.service';
-import { PriceStripeController } from './price-stripe.controller';
+import { JwtModule } from '@nestjs/jwt';
 import { StripeModule } from 'nestjs-stripe';
 import { ConfigModule, ConfigService } from '@nestjs/config';
+
+import { PriceStripeService } from './price-stripe.service';
+import { PriceStripeController } from './price-stripe.controller';
 import { SubscriptionsModule } from 'src/subscriptions/subscriptions.module';
-import { JwtModule } from '@nestjs/jwt';
 
 @Module({
   imports: [

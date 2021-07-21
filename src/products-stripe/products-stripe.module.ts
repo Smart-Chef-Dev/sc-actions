@@ -1,8 +1,9 @@
 import { Module } from '@nestjs/common';
-import { ProductsStripeService } from './products-stripe.service';
-import { ProductsStripeController } from './products-stripe.controller';
 import { StripeModule } from 'nestjs-stripe';
 import { ConfigService } from '@nestjs/config';
+
+import { ProductsStripeService } from './products-stripe.service';
+import { ProductsStripeController } from './products-stripe.controller';
 
 @Module({
   imports: [

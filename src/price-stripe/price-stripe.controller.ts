@@ -1,7 +1,8 @@
 import { Controller, Get, Headers, Param, Post } from '@nestjs/common';
+import { JwtService } from '@nestjs/jwt';
+
 import { PriceStripeService } from './price-stripe.service';
 import { SubscriptionsService } from '../subscriptions/subscriptions.service';
-import { JwtService } from '@nestjs/jwt';
 
 @Controller('price-stripe')
 export class PriceStripeController {
