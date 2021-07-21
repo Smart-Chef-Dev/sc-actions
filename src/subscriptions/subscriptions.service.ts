@@ -14,6 +14,10 @@ export class SubscriptionsService {
     return this.stripeClient.subscriptions.retrieve(id);
   }
 
+  deleteSubscriptions(id) {
+    return this.stripeClient.subscriptions.del(id);
+  }
+
   async createCheckoutSession(pricesId, email) {
     return this.stripeClient.checkout.sessions.create({
       customer_email: email,
