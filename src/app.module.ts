@@ -14,6 +14,7 @@ import { ImagesModule } from './images/images.module';
 import { AppConfigModule } from './config/config.module';
 import { UsersModule } from './users/users.module';
 import { SubscriptionsModule } from './subscriptions/subscriptions.module';
+import { ProductsStripeModule } from './products-stripe/products-stripe.module';
 
 @Module({
   imports: [
@@ -40,6 +41,7 @@ import { SubscriptionsModule } from './subscriptions/subscriptions.module';
     ConfigModule,
     UsersModule,
     SubscriptionsModule,
+    ProductsStripeModule,
   ],
 })
 export class AppModule {}

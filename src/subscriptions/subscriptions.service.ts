@@ -10,8 +10,8 @@ export class SubscriptionsService {
     private readonly configService: ConfigService,
   ) {}
 
-  getAllSubscriptions() {
-    return this.stripeClient.products.list({ active: true });
+  getSubscription(id) {
+    return this.stripeClient.subscriptions.retrieve(id);
   }
 
   async getAllSubscriptionsPrices() {
