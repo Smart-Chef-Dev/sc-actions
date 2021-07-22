@@ -54,7 +54,7 @@ export class UsersService {
     );
   }
 
-  getSubscription(id) {
+  getSubscriptionById(id) {
     return this.stripeClient.subscriptions.retrieve(id);
   }
 
@@ -62,13 +62,13 @@ export class UsersService {
     return this.stripeClient.subscriptions.del(id);
   }
 
-  async createCheckoutSession(pricesId, email) {
+  async createCheckoutSession(priceId, email) {
     return this.stripeClient.checkout.sessions.create({
       customer_email: email,
       payment_method_types: ['card'],
       line_items: [
         {
-          price: pricesId,
+          price: priceId,
           quantity: 1,
         },
       ],

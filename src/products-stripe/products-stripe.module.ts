@@ -1,19 +1,22 @@
 import { Module } from '@nestjs/common';
 import { StripeModule } from 'nestjs-stripe';
 import { ConfigModule, ConfigService } from '@nestjs/config';
+import { JwtModule } from '@nestjs/jwt';
+import { MongooseModule } from '@nestjs/mongoose';
 
 import { ProductsStripeService } from './products-stripe.service';
 import { ProductsStripeController } from './products-stripe.controller';
-import { JwtModule } from '@nestjs/jwt';
 import { UsersModule } from '../users/users.module';
+import { Users, UsersSchema } from '../users/schemas/users.schema';
 
 @Module({
   imports: [
+    MongooseModule.forFeature([{ name: Users.name, schema: UsersSchema }]),
     StripeModule.forRootAsync({
       inject: [ConfigService],
       useFactory: (configService: ConfigService) => ({
         apiKey: configService.get('STRIPE_KEY'),
-        apiVersion: '2020-08-27',
+        apiVersion: configService.get('STRIPE_API_VERSION'),
       }),
     }),
     JwtModule.registerAsync({

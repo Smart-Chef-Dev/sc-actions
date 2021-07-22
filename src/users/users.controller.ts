@@ -5,20 +5,24 @@ import {
   ForbiddenException,
   NotFoundException,
   Get,
-  Headers,
   Delete,
+  Req,
 } from '@nestjs/common';
 import * as bcrypt from 'bcrypt';
+import { Model } from 'mongoose';
+import { UseGuards } from '@nestjs/common';
+import { InjectModel } from '@nestjs/mongoose';
 
 import { UsersService } from './users.service';
 import { CreateUserDto } from './dto/create-user.dto';
-import { JwtService } from '@nestjs/jwt';
+import { JwtGuard } from '../guard/jwt.guard';
+import { Users } from './schemas/users.schema';
 
 @Controller('users')
 export class UsersController {
   constructor(
     private readonly usersService: UsersService,
-    private readonly jwtService: JwtService,
+    @InjectModel(Users.name) private usersModel: Model<Users>,
   ) {}
 
   @Post('sign-up')
@@ -52,25 +56,23 @@ export class UsersController {
     return this.usersService.singIn(dto);
   }
 
+  @UseGuards(JwtGuard)
   @Get('subscription')
-  async getSubscriptions(@Headers('authorization') authorization) {
-    const jwt = authorization.split(' ')[1];
-    const payload = await this.jwtService.verify(jwt);
+  async getSubscriptionById(@Req() req) {
+    const user: Users = req.user;
 
-    const user = await this.usersService.findByEmail(payload.email);
     if (!user.subscription) {
       throw new ForbiddenException('Not subscribed');
     }
 
-    return this.usersService.getSubscription(user.subscription);
+    return this.usersService.getSubscriptionById(user.subscription);
   }
 
+  @UseGuards(JwtGuard)
   @Delete('subscription')
-  async deleteSubscriptions(@Headers('authorization') authorization) {
-    const jwt = authorization.split(' ')[1];
-    const payload = await this.jwtService.verify(jwt);
+  async deleteSubscriptions(@Req() req) {
+    const user: Users = req.user;
 
-    const user = await this.usersService.findByEmail(payload.email);
     if (!user.subscription) {
       throw new ForbiddenException('Not subscribed');
     }

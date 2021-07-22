@@ -1,12 +1,17 @@
-import { Controller, Get, Headers, Param, Post } from '@nestjs/common';
+import { Controller, Get, Param, Post, Req, UseGuards } from '@nestjs/common';
+import { InjectModel } from '@nestjs/mongoose';
 import { JwtService } from '@nestjs/jwt';
+import { Model } from 'mongoose';
 
 import { ProductsStripeService } from './products-stripe.service';
 import { UsersService } from '../users/users.service';
+import { Users } from '../users/schemas/users.schema';
+import { JwtGuard } from '../guard/jwt.guard';
 
 @Controller('products-stripe')
 export class ProductsStripeController {
   constructor(
+    @InjectModel(Users.name) private usersModel: Model<Users>,
     private readonly productsStripeService: ProductsStripeService,
     private readonly jwtService: JwtService,
     private readonly usersService: UsersService,
@@ -22,17 +27,14 @@ export class ProductsStripeController {
     return this.productsStripeService.findAllPrice();
   }
 
-  @Post('price/:pricesId/create-checkout-session')
-  async createCheckoutSession(
-    @Param('pricesId') pricesId: string,
-    @Headers('authorization') authorization,
-  ) {
-    const jwt = authorization.split(' ')[1];
-    const payload = await this.jwtService.decode(jwt);
+  @UseGuards(JwtGuard)
+  @Post('price/:priceId/create-checkout-session')
+  async createCheckoutSession(@Param('priceId') priceId: string, @Req() req) {
+    const user: Users = req.user;
 
     const session = await this.usersService.createCheckoutSession(
-      pricesId,
-      payload['email'],
+      priceId,
+      user.email,
     );
 
     return session.url;

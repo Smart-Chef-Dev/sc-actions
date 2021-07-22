@@ -9,6 +9,7 @@ const appConfig = () => ({
   backendUrl: process.env.BACKEND_URL,
   pathToRestaurant: process.env.PATH_TO_RESTAURANT_PHOTOS,
   stripeKey: process.env.STRIPE_KEY,
+  stripeApiVersion: process.env.STRIPE_API_VERSION,
   jwtSecret: process.env.JWT_SECRET,
   jwtExpiresIN: process.env.JWT_EXPIRES_IN,
 });
@@ -22,6 +23,7 @@ const ConfigValidationSchema = Joi.object({
   stripeKey: Joi.string().required(),
   jwtSecret: Joi.string().required(),
   jwtExpiresIN: Joi.string().required(),
+  stripeApiVersion: Joi.string().required(),
 });
 
 export interface EnvironmentVariables {
@@ -32,6 +34,7 @@ export interface EnvironmentVariables {
   pathToRestaurant: string;
   stripeKey: string;
   jwtExpiresIN: string;
+  stripeApiVersion: string;
 }
 
 export const validateConfig = (): EnvironmentVariables => {
