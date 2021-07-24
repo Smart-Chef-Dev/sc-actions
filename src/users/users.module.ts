@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { forwardRef, Module } from '@nestjs/common';
 import { JwtModule } from '@nestjs/jwt';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { MongooseModule } from '@nestjs/mongoose';
@@ -34,7 +34,7 @@ import {
         apiVersion: configService.get('STRIPE_API_VERSION'),
       }),
     }),
-    RestaurantModule,
+    forwardRef(() => RestaurantModule),
   ],
   exports: [UsersService],
   controllers: [UsersController],

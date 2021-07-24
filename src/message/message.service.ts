@@ -63,16 +63,12 @@ export class MessageService implements OnModuleInit {
       type: AnalyticType.NEW_WAITER,
       restaurantId,
     });
-    await this.usersService.creatAccount({
+    const user = await this.usersService.creatAccount({
       telegramId: msg.chat.id,
       name,
       restaurantId,
     });
-    await this.usersService.assignUserToTable(
-      restaurantId,
-      tableId,
-      msg.chat.id,
-    );
+    return this.usersService.assignUserToTable(restaurantId, tableId, user._id);
   }
 
   @autobind

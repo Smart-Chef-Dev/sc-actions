@@ -58,6 +58,10 @@ export class UsersService {
     return this.usersModel.findOne({ email: email });
   }
 
+  async findById(id): Promise<Users> {
+    return this.usersModel.findById(id);
+  }
+
   async checkIfUsernameExistsInRestaurant(
     name: string,
     restaurantId: string,

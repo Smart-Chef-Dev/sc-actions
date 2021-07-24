@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { forwardRef, Module } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
 import { ConfigService } from '@nestjs/config';
 
@@ -13,6 +13,7 @@ import { ImagesModule } from 'src/images/images.module';
 
 import { RestaurantService } from './restaurant.service';
 import { RestaurantController } from './restaurant.controller';
+import { UsersModule } from '../users/users.module';
 
 @Module({
   imports: [
@@ -25,6 +26,7 @@ import { RestaurantController } from './restaurant.controller';
     CategoryModule,
     MenuModule,
     ImagesModule,
+    forwardRef(() => UsersModule),
   ],
   providers: [RestaurantService, ConfigService],
   controllers: [RestaurantController],
