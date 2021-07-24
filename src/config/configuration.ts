@@ -12,6 +12,7 @@ const appConfig = () => ({
   stripeApiVersion: process.env.STRIPE_API_VERSION,
   jwtSecret: process.env.JWT_SECRET,
   jwtExpiresIN: process.env.JWT_EXPIRES_IN,
+  telegramStartCmdDelimiter: process.env.TELEGRAM_START_CMD_DELIMITER,
 });
 
 const ConfigValidationSchema = Joi.object({
@@ -24,6 +25,7 @@ const ConfigValidationSchema = Joi.object({
   jwtSecret: Joi.string().required(),
   jwtExpiresIN: Joi.string().required(),
   stripeApiVersion: Joi.string().required(),
+  telegramStartCmdDelimiter: Joi.string().required(),
 });
 
 export interface EnvironmentVariables {
@@ -35,6 +37,7 @@ export interface EnvironmentVariables {
   stripeKey: string;
   jwtExpiresIN: string;
   stripeApiVersion: string;
+  telegramStartCmdDelimiter: string;
 }
 
 export const validateConfig = (): EnvironmentVariables => {

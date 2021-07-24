@@ -8,6 +8,9 @@ export class Table extends Document {
 
   @Prop({ required: true })
   name: string;
+
+  @Prop()
+  userId: [string];
 }
 
 export const TableSchema = SchemaFactory.createForClass(Table);

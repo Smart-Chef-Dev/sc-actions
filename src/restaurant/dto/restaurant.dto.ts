@@ -11,9 +11,6 @@ export class RestaurantDto {
   @IsNotEmpty()
   readonly currencyCode: string;
 
-  @IsArray()
-  readonly usernames: string[];
-
   readonly tables: TableDto[];
 
   readonly actions: ActionDto[];

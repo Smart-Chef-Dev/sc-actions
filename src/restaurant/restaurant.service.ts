@@ -46,6 +46,7 @@ export class RestaurantService {
         (t) =>
           new this.tableModel({
             name: t.name,
+            userId: [],
           }),
       ) ?? [],
     );
@@ -63,7 +64,6 @@ export class RestaurantService {
 
     const restaurant = await new this.restaurantModel({
       name: dto.name,
-      usernames: dto.usernames,
       currencyCode: dto.currencyCode,
       tables: tables,
       actions: actions,

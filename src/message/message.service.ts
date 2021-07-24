@@ -6,6 +6,7 @@ import { RestaurantService } from 'src/restaurant/restaurant.service';
 import { TelegramService } from 'src/telegram/telegram.service';
 import { AnalyticsService } from 'src/analytics/analytics.service';
 import { AnalyticType } from '../analytics/enums/analytic-type.enum';
+import { UsersService } from 'src/users/users.service';
 
 const loggerContext = 'Restaurant';
 
@@ -17,6 +18,7 @@ export class MessageService implements OnModuleInit {
     private readonly logger: Logger,
     private readonly telegramService: TelegramService,
     private readonly analyticsService: AnalyticsService,
+    private readonly usersService: UsersService,
   ) {}
 
   onModuleInit() {
@@ -28,17 +30,21 @@ export class MessageService implements OnModuleInit {
 
   @autobind
   async handleStartCommand(msg, props) {
-    const restaurantId = props.match[1];
+    const [restaurantId, tableId, name] = props.match[1].split(
+      this.configService.get<string>('TELEGRAM_START_CMD_DELIMITER'),
+    );
     const restaurant = await this.restaurantService.findById(restaurantId);
 
-    const isChatExist = await this.restaurantService.checkIfChatExist(
+    const isUser = await this.usersService.checkIfUsernameExistsInRestaurant(
+      name,
       restaurantId,
-      msg.chat.id,
     );
-
-    if (isChatExist) {
+    if (isUser) {
+      await msg.reply.text(
+        `Sorry, the name ${name} is already taken. Try to create a chat again`,
+      );
       this.logger.warn(
-        `A new chat has not been created. Because he already exists`,
+        `The chat was not created for the reason: the user with the name ${name} already exists`,
         loggerContext,
       );
       return;
@@ -49,18 +55,24 @@ export class MessageService implements OnModuleInit {
       loggerContext,
     );
 
-    await this.analyticsService.create({
-      type: AnalyticType.NEW_WAITER,
-      restaurantId,
-    });
-
     await msg.reply.text(
       `You were added to the restaurant "${restaurant.name}" successfully`,
     );
 
-    return this.restaurantService.updateById(restaurantId, {
-      $push: { usernames: msg.chat.id },
+    await this.analyticsService.create({
+      type: AnalyticType.NEW_WAITER,
+      restaurantId,
     });
+    await this.usersService.creatAccount({
+      telegramId: msg.chat.id,
+      name,
+      restaurantId,
+    });
+    await this.usersService.assignUserToTable(
+      restaurantId,
+      tableId,
+      msg.chat.id,
+    );
   }
 
   @autobind

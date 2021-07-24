@@ -33,7 +33,7 @@ export class UsersController {
       throw new ForbiddenException('This email is already taken');
     }
 
-    return this.usersService.signUp(dto);
+    return this.usersService.creatAccount(dto);
   }
 
   @Post('sing-in')

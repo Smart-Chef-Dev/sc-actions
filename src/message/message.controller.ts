@@ -59,7 +59,7 @@ export class MessageController {
     ]);
 
     await this.telegramService.sendMessageToMultipleUsers(
-      restaurant.usernames,
+      ['restaurant.usernames'],
       text,
       { replyMarkup },
     );
@@ -95,13 +95,13 @@ export class MessageController {
     }
 
     const table = restaurant.tables.find((t) => t._id.equals(tableId));
-    
+
     if (!table) {
       throw new NotFoundException(
         `The table with id (${tableId}) does not exist in the restaurant with id (${restaurantId}).`,
       );
     }
-      
+
     const text = dto.order.reduce((previousValues, currentOrder) => {
       const isAddons = !!currentOrder.addons.find((m) => m.isIncludedInOrder);
 
@@ -129,7 +129,7 @@ export class MessageController {
     ]);
 
     await this.telegramService.sendMessageToMultipleUsers(
-      restaurant.usernames,
+      ['restaurant.usernames'],
       text,
       { replyMarkup },
     );

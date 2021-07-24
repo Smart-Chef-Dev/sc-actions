@@ -11,6 +11,15 @@ export class Users extends Document {
 
   @Prop()
   subscription: string;
+
+  @Prop()
+  telegramId: string;
+
+  @Prop()
+  restaurantId: string;
+
+  @Prop()
+  name: string;
 }
 
 export const UsersSchema = SchemaFactory.createForClass(Users);

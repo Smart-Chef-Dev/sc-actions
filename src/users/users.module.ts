@@ -7,10 +7,18 @@ import { StripeModule } from 'nestjs-stripe';
 import { UsersService } from './users.service';
 import { UsersController } from './users.controller';
 import { Users, UsersSchema } from './schemas/users.schema';
+import { RestaurantModule } from '../restaurant/restaurant.module';
+import {
+  Restaurant,
+  RestaurantSchema,
+} from '../restaurant/schemas/restaurant.schema';
 
 @Module({
   imports: [
-    MongooseModule.forFeature([{ name: Users.name, schema: UsersSchema }]),
+    MongooseModule.forFeature([
+      { name: Users.name, schema: UsersSchema },
+      { name: Restaurant.name, schema: RestaurantSchema },
+    ]),
     JwtModule.registerAsync({
       imports: [ConfigModule],
       useFactory: async (configService: ConfigService) => ({
@@ -26,6 +34,7 @@ import { Users, UsersSchema } from './schemas/users.schema';
         apiVersion: configService.get('STRIPE_API_VERSION'),
       }),
     }),
+    RestaurantModule,
   ],
   exports: [UsersService],
   controllers: [UsersController],
