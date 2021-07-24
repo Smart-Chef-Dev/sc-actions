@@ -63,7 +63,7 @@ export class UsersService {
   }
 
   async createCheckoutSession(priceId, email) {
-    const frontendUrlSubscription = '/back-office/dashboard';
+    const frontendUrlSubscription = '/back-office/dashboard/?purchase=';
 
     return this.stripeClient.checkout.sessions.create({
       customer_email: email,
@@ -77,10 +77,10 @@ export class UsersService {
       mode: 'subscription',
       success_url: `${this.configService.get<string>(
         'FRONTEND_URL',
-      )}${frontendUrlSubscription}/?purchase=success`,
+      )}${frontendUrlSubscription}success`,
       cancel_url: `${this.configService.get<string>(
         'FRONTEND_URL',
-      )}${frontendUrlSubscription}/?purchase=canceled`,
+      )}${frontendUrlSubscription}canceled`,
     });
   }
 }
