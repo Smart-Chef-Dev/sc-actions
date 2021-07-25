@@ -19,6 +19,9 @@ export class Users extends Document {
   restaurantId: string;
 
   @Prop()
+  role: string;
+
+  @Prop()
   name: string;
 }
 

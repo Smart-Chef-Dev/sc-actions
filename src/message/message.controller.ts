@@ -58,9 +58,13 @@ export class MessageController {
       this.telegramService.createInlineButton('✅', 'confirm'),
     ]);
 
-    await this.telegramService.sendMessageToMultipleUsers(table.userId, text, {
-      replyMarkup,
-    });
+    await this.telegramService.sendMessageToAssignedWaiters(
+      table.userIds,
+      text,
+      {
+        replyMarkup,
+      },
+    );
 
     this.logger.log(
       `New message for restaurantId: ${restaurant._id}, tableId: ${table._id}}, action: ${action._id}, message: ${action.message}`,
@@ -126,9 +130,13 @@ export class MessageController {
       this.telegramService.createInlineButton('✅', 'confirm'),
     ]);
 
-    await this.telegramService.sendMessageToMultipleUsers(table.userId, text, {
-      replyMarkup,
-    });
+    await this.telegramService.sendMessageToAssignedWaiters(
+      table.userIds,
+      text,
+      {
+        replyMarkup,
+      },
+    );
 
     this.logger.log(
       `New message for restaurantId: ${restaurant._id}, tableId: ${table._id}, \n message: ${text}`,

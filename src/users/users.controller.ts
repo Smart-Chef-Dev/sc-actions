@@ -17,6 +17,7 @@ import { UsersService } from './users.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { JwtGuard } from '../guard/jwt.guard';
 import { Users } from './schemas/users.schema';
+import { Role } from './enums/role.enum';
 
 @Controller('users')
 export class UsersController {
@@ -33,7 +34,7 @@ export class UsersController {
       throw new ForbiddenException('This email is already taken');
     }
 
-    return this.usersService.creatAccount(dto);
+    return this.usersService.creatAccount(dto, Role.RESTAURANT_ADMIN);
   }
 
   @Post('sing-in')

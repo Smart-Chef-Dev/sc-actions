@@ -10,7 +10,7 @@ export class Table extends Document {
   name: string;
 
   @Prop()
-  userId: [string];
+  userIds: [string];
 }
 
 export const TableSchema = SchemaFactory.createForClass(Table);

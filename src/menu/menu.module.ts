@@ -1,7 +1,6 @@
 import { Module } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
 
-import { CategoryModule } from '../category/category.module';
 import { MenuController } from './menu.controller';
 import { MenuService } from './menu.service';
 
@@ -16,7 +15,6 @@ import { Addons, AddonsSchema } from './schemas/addons.shema';
       { name: MenuItems.name, schema: MenuItemsSchema },
       { name: Addons.name, schema: AddonsSchema },
     ]),
-    CategoryModule,
   ],
   providers: [MenuService],
   exports: [MenuService],

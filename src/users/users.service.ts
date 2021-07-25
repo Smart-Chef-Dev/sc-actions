@@ -9,43 +9,53 @@ import { CreateUserDto } from './dto/create-user.dto';
 import { Users } from './schemas/users.schema';
 import { ConfigService } from '@nestjs/config';
 import { InjectStripe } from 'nestjs-stripe';
-import { RestaurantService } from '../restaurant/restaurant.service';
-import { Restaurant } from '../restaurant/schemas/restaurant.schema';
+import { Role } from './enums/role.enum';
 
 @Injectable()
 export class UsersService {
   constructor(
     @InjectStripe() private readonly stripeClient: Stripe,
     @InjectModel(Users.name) private usersModel: Model<Users>,
-    @InjectModel(Restaurant.name)
-    private readonly restaurantModel: Model<Restaurant>,
     private readonly jwtService: JwtService,
     private readonly configService: ConfigService,
-    private readonly restaurantService: RestaurantService,
   ) {}
 
-  async creatAccount(dto: {
-    telegramId?: string;
-    name?: string;
-    password?: string;
-    email?: string;
-    restaurantId?: string;
-  }): Promise<Users> {
-    if (dto.password) {
-      const salt = await bcrypt.genSalt();
-      const hash = await bcrypt.hash(dto.password, salt);
+  async creatAccount(
+    dto: {
+      telegramId?: string;
+      name?: string;
+      password?: string;
+      email?: string;
+      restaurantId?: string;
+    },
+    role: string,
+  ): Promise<Users> {
+    let newUser;
 
-      return new this.usersModel({
-        email: dto.email,
-        password: hash,
-      }).save();
+    switch (role) {
+      case Role.RESTAURANT_ADMIN:
+        const salt = await bcrypt.genSalt();
+        const hash = await bcrypt.hash(dto.password, salt);
+
+        newUser = await new this.usersModel({
+          email: dto.email,
+          password: hash,
+          role: Role.RESTAURANT_ADMIN,
+        });
+
+        break;
+      case Role.WAITER:
+        newUser = await new this.usersModel({
+          name: dto.name,
+          telegramId: dto.telegramId,
+          restaurantId: dto.restaurantId,
+          role: Role.WAITER,
+        });
+
+        break;
     }
 
-    return new this.usersModel({
-      name: dto.name,
-      telegramId: dto.telegramId,
-      restaurantId: dto.restaurantId,
-    }).save();
+    return newUser.save();
   }
 
   async singIn(dto: CreateUserDto): Promise<string> {
@@ -83,26 +93,6 @@ export class UsersService {
         new: true,
       },
     );
-  }
-
-  async assignUserToTable(
-    restaurantId: string,
-    tableId: string,
-    userId: string,
-  ): Promise<Restaurant> {
-    const restaurant = await this.restaurantService.findById(restaurantId);
-    const changedRestaurant = restaurant.tables.map((table) =>
-      table._id.equals(tableId)
-        ? {
-            ...table,
-            userId: [...table.userId, userId],
-          }
-        : table,
-    );
-
-    return this.restaurantService.updateById(restaurantId, {
-      $set: { tables: changedRestaurant },
-    });
   }
 
   getSubscriptionById(id) {

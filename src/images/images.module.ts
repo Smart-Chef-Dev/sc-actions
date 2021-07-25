@@ -1,11 +1,8 @@
-import { forwardRef, Module } from '@nestjs/common';
-import { ConfigModule } from '@nestjs/config';
+import { Module } from '@nestjs/common';
 
 import { ImagesService } from './images.service';
-import { RestaurantModule } from '../restaurant/restaurant.module';
 
 @Module({
-  imports: [forwardRef(() => RestaurantModule), ConfigModule],
   providers: [ImagesService],
   exports: [ImagesService],
 })

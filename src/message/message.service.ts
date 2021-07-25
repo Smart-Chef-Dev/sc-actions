@@ -7,6 +7,7 @@ import { TelegramService } from '../telegram/telegram.service';
 import { AnalyticsService } from '../analytics/analytics.service';
 import { AnalyticType } from '../analytics/enums/analytic-type.enum';
 import { UsersService } from '../users/users.service';
+import { Role } from '../users/enums/role.enum';
 
 const loggerContext = 'Restaurant';
 
@@ -50,6 +51,20 @@ export class MessageService implements OnModuleInit {
       return;
     }
 
+    const user = await this.usersService.creatAccount(
+      {
+        telegramId: msg.chat.id,
+        name,
+        restaurantId,
+      },
+      Role.WAITER,
+    );
+    await this.restaurantService.assignUserToTable(
+      restaurantId,
+      tableId,
+      user._id,
+    );
+
     this.logger.log(
       `Add new chat into restaurant, restaurantId: ${restaurantId}`,
       loggerContext,
@@ -63,12 +78,6 @@ export class MessageService implements OnModuleInit {
       type: AnalyticType.NEW_WAITER,
       restaurantId,
     });
-    const user = await this.usersService.creatAccount({
-      telegramId: msg.chat.id,
-      name,
-      restaurantId,
-    });
-    return this.usersService.assignUserToTable(restaurantId, tableId, user._id);
   }
 
   @autobind

@@ -46,7 +46,7 @@ export class RestaurantService {
         (t) =>
           new this.tableModel({
             name: t.name,
-            userId: [],
+            userIds: [],
           }),
       ) ?? [],
     );
@@ -120,5 +120,25 @@ export class RestaurantService {
     const tables = await this.findAllTables(restaurantId);
 
     return !!tables?.find((t) => t._id.equals(tableId)) ?? false;
+  }
+
+  async assignUserToTable(
+    restaurantId: string,
+    tableId: string,
+    userId: string,
+  ): Promise<Restaurant> {
+    const restaurant = await this.findById(restaurantId);
+    const changedRestaurant = restaurant.tables.map((table) =>
+      table._id.equals(tableId)
+        ? {
+            ...table,
+            userIds: [...table.userIds, userId],
+          }
+        : table,
+    );
+
+    return this.updateById(restaurantId, {
+      $set: { tables: changedRestaurant },
+    });
   }
 }

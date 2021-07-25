@@ -3,18 +3,17 @@ import { InjectModel } from '@nestjs/mongoose';
 import { Model, Types } from 'mongoose';
 
 import { Category } from './schemas/category.schema';
-import { RestaurantService } from '../restaurant/restaurant.service';
+import { Restaurant } from '../restaurant/schemas/restaurant.schema';
 
 @Injectable()
 export class CategoryService {
   constructor(
     @InjectModel(Category.name) private categoryModel: Model<Category>,
-    private readonly restaurantService: RestaurantService,
+    @InjectModel(Restaurant.name)
+    private readonly restaurantModel: Model<Restaurant>,
   ) {}
 
-  async create(name: string, restaurantId: string): Promise<Category> {
-    const restaurant = await this.restaurantService.findById(restaurantId);
-
+  async create(name: string, restaurant: Restaurant): Promise<Category> {
     const newCategory = new this.categoryModel({
       name: name,
       restaurant: restaurant,

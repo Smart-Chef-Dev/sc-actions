@@ -148,7 +148,11 @@ export class RestaurantController {
       throw new NotFoundException('User with this id does not exist');
     }
 
-    return this.usersService.assignUserToTable(restaurantId, tableId, userId);
+    return this.restaurantService.assignUserToTable(
+      restaurantId,
+      tableId,
+      userId,
+    );
   }
 
   @Post(':id/category')
@@ -158,12 +162,12 @@ export class RestaurantController {
   ) {
     await checkIsObjectIdValid(id);
 
-    const isRestaurantExist = await this.restaurantService.findById(id);
-    if (!isRestaurantExist) {
+    const restaurant = await this.restaurantService.findById(id);
+    if (!restaurant) {
       throw new NotFoundException();
     }
 
-    return this.categoryService.create(dto.name, id);
+    return this.categoryService.create(dto.name, restaurant);
   }
 
   @Get(':id/menu-items')

@@ -1,19 +1,24 @@
-import { forwardRef, Module } from '@nestjs/common';
+import { Module } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
-import { ConfigService } from '@nestjs/config';
+import { ConfigModule, ConfigService } from '@nestjs/config';
+import { JwtModule } from '@nestjs/jwt';
 
 import { RestaurantSchema, Restaurant } from './schemas/restaurant.schema';
 import { ActionSchema, Action } from './schemas/action.schema';
 import { TableSchema, Table } from './schemas/table.schema';
 
-import { AnalyticsModule } from '../analytics/analytics.module';
-import { MenuModule } from '../menu/menu.module';
-import { CategoryModule } from '../category/category.module';
-import { ImagesModule } from '../images/images.module';
-
 import { RestaurantService } from './restaurant.service';
 import { RestaurantController } from './restaurant.controller';
-import { UsersModule } from '../users/users.module';
+import { AnalyticsService } from '../analytics/analytics.service';
+import { CategoryService } from '../category/category.service';
+import { MenuService } from '../menu/menu.service';
+import { ImagesService } from '../images/images.service';
+import { UsersService } from '../users/users.service';
+import { Analytic, AnalyticSchema } from '../analytics/schemas/analytic.schema';
+import { Category, CategorySchema } from '../category/schemas/category.schema';
+import { MenuItems, MenuItemsSchema } from '../menu/schemas/menuItems.shema';
+import { Addons, AddonsSchema } from '../menu/schemas/addons.shema';
+import { Users, UsersSchema } from '../users/schemas/users.schema';
 
 @Module({
   imports: [
@@ -21,14 +26,30 @@ import { UsersModule } from '../users/users.module';
       { name: Restaurant.name, schema: RestaurantSchema },
       { name: Action.name, schema: ActionSchema },
       { name: Table.name, schema: TableSchema },
+      { name: Analytic.name, schema: AnalyticSchema },
+      { name: Category.name, schema: CategorySchema },
+      { name: MenuItems.name, schema: MenuItemsSchema },
+      { name: Addons.name, schema: AddonsSchema },
+      { name: Users.name, schema: UsersSchema },
     ]),
-    AnalyticsModule,
-    CategoryModule,
-    MenuModule,
-    ImagesModule,
-    forwardRef(() => UsersModule),
+    JwtModule.registerAsync({
+      imports: [ConfigModule],
+      useFactory: async (configService: ConfigService) => ({
+        secret: configService.get('JWT_SECRET'),
+        signOptions: { expiresIn: configService.get('JWT_EXPIRES_IN') },
+      }),
+      inject: [ConfigService],
+    }),
   ],
-  providers: [RestaurantService, ConfigService],
+  providers: [
+    RestaurantService,
+    ConfigService,
+    AnalyticsService,
+    CategoryService,
+    MenuService,
+    ImagesService,
+    UsersService,
+  ],
   controllers: [RestaurantController],
   exports: [RestaurantService],
 })
