@@ -15,6 +15,7 @@ import {
 } from '../restaurant/schemas/restaurant.schema';
 import { RestaurantService } from '../restaurant/restaurant.service';
 import { ConfigService } from '@nestjs/config';
+import { Role } from './enums/role.enum';
 
 let mongod: MongoMemoryServer;
 
@@ -71,10 +72,13 @@ describe('UsersService', () => {
   const telegramId = '185249578';
 
   const preCreateUsers = async (email, password) => {
-    return service.creatAccount({
-      email: email,
-      password: password,
-    });
+    return service.creatAccount(
+      {
+        email: email,
+        password: password,
+      },
+      Role.RESTAURANT_ADMIN,
+    );
   };
 
   const preCreateUsersWithRoleOfWaiter = async (
@@ -82,11 +86,14 @@ describe('UsersService', () => {
     restaurantId,
     telegramId,
   ) => {
-    return service.creatAccount({
-      name: name,
-      telegramId: telegramId,
-      restaurantId: restaurantId,
-    });
+    return service.creatAccount(
+      {
+        name: name,
+        telegramId: telegramId,
+        restaurantId: restaurantId,
+      },
+      Role.WAITER,
+    );
   };
 
   it('should be defined', () => {
@@ -133,26 +140,26 @@ describe('UsersService', () => {
   it('should check if username exists in restaurant', async () => {
     await preCreateUsersWithRoleOfWaiter(name, restaurantId, telegramId);
 
-    const isUser1 = await service.checkIfUsernameExistsInRestaurant(
+    const isUserExist1 = await service.checkIfUsernameExistsInRestaurant(
       name,
       restaurantId,
     );
-    expect(isUser1).toBeDefined();
-    expect(isUser1).toBe(true);
+    expect(isUserExist1).toBeDefined();
+    expect(isUserExist1).toBe(true);
 
-    const isUser2 = await service.checkIfUsernameExistsInRestaurant(
+    const isUserExist2 = await service.checkIfUsernameExistsInRestaurant(
       'Namee',
       restaurantId,
     );
-    expect(isUser2).toBeDefined();
-    expect(isUser2).toBe(false);
+    expect(isUserExist2).toBeDefined();
+    expect(isUserExist2).toBe(false);
 
-    const isUser3 = await service.checkIfUsernameExistsInRestaurant(
+    const isUserExist3 = await service.checkIfUsernameExistsInRestaurant(
       name,
       '60c5165a27ab938e4f96e49f',
     );
-    expect(isUser3).toBeDefined();
-    expect(isUser3).toBe(false);
+    expect(isUserExist3).toBeDefined();
+    expect(isUserExist3).toBe(false);
   });
 
   it('should update by id', async () => {

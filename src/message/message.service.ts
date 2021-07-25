@@ -2,9 +2,9 @@ import { Injectable, Logger, OnModuleInit } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import autobind from 'autobind-decorator';
 
-import { RestaurantService } from '../restaurant/restaurant.service';
-import { TelegramService } from '../telegram/telegram.service';
-import { AnalyticsService } from '../analytics/analytics.service';
+import { RestaurantService } from 'src/restaurant/restaurant.service';
+import { TelegramService } from 'src/telegram/telegram.service';
+import { AnalyticsService } from 'src/analytics/analytics.service';
 import { AnalyticType } from '../analytics/enums/analytic-type.enum';
 import { UsersService } from '../users/users.service';
 import { Role } from '../users/enums/role.enum';
@@ -36,11 +36,12 @@ export class MessageService implements OnModuleInit {
     );
     const restaurant = await this.restaurantService.findById(restaurantId);
 
-    const isUser = await this.usersService.checkIfUsernameExistsInRestaurant(
-      name,
-      restaurantId,
-    );
-    if (isUser) {
+    const isUserExist =
+      await this.usersService.checkIfUsernameExistsInRestaurant(
+        name,
+        restaurantId,
+      );
+    if (isUserExist) {
       await msg.reply.text(
         `Sorry, the name ${name} is already taken. Try to create a chat again`,
       );

@@ -15,16 +15,16 @@ import { ConfigService } from '@nestjs/config';
 import { nanoid } from 'nanoid';
 import * as path from 'path';
 
-import { CreateCategoryDto } from '../category/dto/create-category.dto';
+import { CreateCategoryDto } from 'src/category/dto/create-category.dto';
 import { RestaurantService } from './restaurant.service';
 import { RestaurantDto } from './dto/restaurant.dto';
 import { ActionDto } from './dto/action.dto';
 import { TableDto } from './dto/table.dto';
 
-import { AnalyticsService } from '../analytics/analytics.service';
-import { CategoryService } from '../category/category.service';
-import { ImagesService } from '../images/images.service';
-import { MenuService } from '../menu/menu.service';
+import { AnalyticsService } from 'src/analytics/analytics.service';
+import { CategoryService } from 'src/category/category.service';
+import { ImagesService } from 'src/images/images.service';
+import { MenuService } from 'src/menu/menu.service';
 
 import { AnalyticType } from '../analytics/enums/analytic-type.enum';
 import { checkIsObjectIdValid } from '../utils/checkIsObjectIdValid';

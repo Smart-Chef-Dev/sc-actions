@@ -9,10 +9,10 @@ import { TableSchema, Table } from './schemas/table.schema';
 
 import { RestaurantService } from './restaurant.service';
 import { RestaurantController } from './restaurant.controller';
-import { AnalyticsService } from '../analytics/analytics.service';
-import { CategoryService } from '../category/category.service';
-import { MenuService } from '../menu/menu.service';
-import { ImagesService } from '../images/images.service';
+import { AnalyticsService } from 'src/analytics/analytics.service';
+import { CategoryService } from 'src/category/category.service';
+import { MenuService } from 'src/menu/menu.service';
+import { ImagesService } from 'src/images/images.service';
 import { UsersService } from '../users/users.service';
 import { Analytic, AnalyticSchema } from '../analytics/schemas/analytic.schema';
 import { Category, CategorySchema } from '../category/schemas/category.schema';
