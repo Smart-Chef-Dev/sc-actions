@@ -3,13 +3,13 @@ import { InjectModel } from '@nestjs/mongoose';
 import { JwtService } from '@nestjs/jwt';
 import { Model } from 'mongoose';
 import * as bcrypt from 'bcrypt';
+import Stripe from 'stripe';
 
 import { CreateUserDto } from './dto/create-user.dto';
 import { Users } from './schemas/users.schema';
 import { ConfigService } from '@nestjs/config';
 import { InjectStripe } from 'nestjs-stripe';
-import Stripe from 'stripe';
-import { RestaurantService } from 'src/restaurant/restaurant.service';
+import { RestaurantService } from '../restaurant/restaurant.service';
 import { Restaurant } from '../restaurant/schemas/restaurant.schema';
 
 @Injectable()

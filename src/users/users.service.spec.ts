@@ -2,11 +2,19 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { MongoMemoryServer } from 'mongodb-memory-server';
 import { JwtModule, JwtService } from '@nestjs/jwt';
 import { MongooseModule } from '@nestjs/mongoose';
+import { Types } from 'mongoose';
 import * as bcrypt from 'bcrypt';
 import * as mongoose from 'mongoose';
 
+import { StripeModule } from 'nestjs-stripe';
 import { UsersService } from './users.service';
 import { Users, UsersSchema } from './schemas/users.schema';
+import {
+  Restaurant,
+  RestaurantSchema,
+} from '../restaurant/schemas/restaurant.schema';
+import { RestaurantService } from '../restaurant/restaurant.service';
+import { ConfigService } from '@nestjs/config';
 
 let mongod: MongoMemoryServer;
 
@@ -27,13 +35,29 @@ describe('UsersService', () => {
             useFindAndModify: false,
           }),
         }),
-        MongooseModule.forFeature([{ name: Users.name, schema: UsersSchema }]),
+        MongooseModule.forFeature([
+          { name: Users.name, schema: UsersSchema },
+          { name: Restaurant.name, schema: RestaurantSchema },
+        ]),
         JwtModule.register({
           secret: 'Test',
           signOptions: { expiresIn: '60s' },
         }),
+        StripeModule.forRoot({
+          apiKey: 'sk_test_secret_key',
+          apiVersion: '2020-08-27',
+        }),
       ],
-      providers: [UsersService],
+      providers: [
+        UsersService,
+        {
+          provide: RestaurantService,
+          useValue: {
+            findById: jest.fn(),
+          },
+        },
+        ConfigService,
+      ],
     }).compile();
 
     service = module.get<UsersService>(UsersService);
@@ -42,11 +66,26 @@ describe('UsersService', () => {
 
   const email = 'test@gmail.com';
   const password = 'test123';
+  const name = 'Name';
+  const restaurantId = '60fc8883908d543aa77f5df7';
+  const telegramId = '185249578';
 
   const preCreateUsers = async (email, password) => {
-    return service.signUp({
+    return service.creatAccount({
       email: email,
       password: password,
+    });
+  };
+
+  const preCreateUsersWithRoleOfWaiter = async (
+    name,
+    restaurantId,
+    telegramId,
+  ) => {
+    return service.creatAccount({
+      name: name,
+      telegramId: telegramId,
+      restaurantId: restaurantId,
     });
   };
 
@@ -55,12 +94,85 @@ describe('UsersService', () => {
   });
 
   it('should create an account', async () => {
-    const addedUser = await preCreateUsers(email, password);
+    const addedUser1 = await preCreateUsers(email, password);
 
-    expect(addedUser).toBeDefined();
-    expect(addedUser.email).toBe(email);
-    expect(addedUser.password).not.toBe(password);
-    expect(addedUser._id).toBeDefined();
+    expect(addedUser1).toBeDefined();
+    expect(addedUser1.email).toBe(email);
+    expect(addedUser1.password).not.toBe(password);
+    expect(addedUser1._id).toBeDefined();
+
+    const addedUser2 = await preCreateUsersWithRoleOfWaiter(
+      name,
+      restaurantId,
+      telegramId,
+    );
+
+    expect(addedUser2).toBeDefined();
+    expect(addedUser2.name).toBe(name);
+    expect(addedUser2.telegramId).toBe(telegramId);
+    expect(addedUser2.restaurantId).toBe(restaurantId);
+    expect(addedUser2._id).toBeDefined();
+  });
+
+  it('must find a user by id', async () => {
+    const addedUser = await preCreateUsers(email, password);
+    const foundUser1 = await service.findById(addedUser._id);
+
+    expect(foundUser1).toBeDefined();
+    expect(foundUser1.email).toBe(addedUser.email);
+    expect(foundUser1.password).toBe(addedUser.password);
+    expect(foundUser1._id).toStrictEqual(addedUser._id);
+
+    const foundUser2 = await service.findById(
+      Types.ObjectId('60c5165a27ab938e4f96e49f'),
+    );
+    expect(foundUser2).toBeDefined();
+    expect(foundUser2).toBe(null);
+  });
+
+  it('should check if username exists in restaurant', async () => {
+    await preCreateUsersWithRoleOfWaiter(name, restaurantId, telegramId);
+
+    const isUser1 = await service.checkIfUsernameExistsInRestaurant(
+      name,
+      restaurantId,
+    );
+    expect(isUser1).toBeDefined();
+    expect(isUser1).toBe(true);
+
+    const isUser2 = await service.checkIfUsernameExistsInRestaurant(
+      'Namee',
+      restaurantId,
+    );
+    expect(isUser2).toBeDefined();
+    expect(isUser2).toBe(false);
+
+    const isUser3 = await service.checkIfUsernameExistsInRestaurant(
+      name,
+      '60c5165a27ab938e4f96e49f',
+    );
+    expect(isUser3).toBeDefined();
+    expect(isUser3).toBe(false);
+  });
+
+  it('should update by id', async () => {
+    const addedUser = await preCreateUsersWithRoleOfWaiter(
+      name,
+      restaurantId,
+      telegramId,
+    );
+
+    const newUserName = 'newName';
+    const updateUser = await service.updateById(addedUser.id, {
+      name: newUserName,
+    });
+
+    expect(updateUser).toBeDefined();
+    expect(updateUser.name).toBe(newUserName);
+    expect(updateUser.name).not.toBe(name);
+    expect(updateUser.telegramId).toBe(telegramId);
+    expect(updateUser.restaurantId).toBe(restaurantId);
+    expect(updateUser._id).toBeDefined();
   });
 
   it('should return the user with the specified email', async () => {

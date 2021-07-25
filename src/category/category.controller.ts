@@ -8,9 +8,9 @@ import {
   Query,
 } from '@nestjs/common';
 
-import { MenuService } from 'src/menu/menu.service';
-import { MenuItemsDto } from 'src/menu/dto/menuItems';
-import { checkIsObjectIdValid } from 'src/utils/checkIsObjectIdValid';
+import { MenuService } from '../menu/menu.service';
+import { MenuItemsDto } from '../menu/dto/menuItems';
+import { checkIsObjectIdValid } from '../utils/checkIsObjectIdValid';
 import { CategoryService } from './category.service';
 
 @Controller('category')

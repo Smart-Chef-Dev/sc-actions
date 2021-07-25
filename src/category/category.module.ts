@@ -3,8 +3,8 @@ import { MongooseModule } from '@nestjs/mongoose';
 
 import { CategoryService } from './category.service';
 import { CategoryController } from './category.controller';
-import { RestaurantModule } from 'src/restaurant/restaurant.module';
-import { MenuModule } from 'src/menu/menu.module';
+import { RestaurantModule } from '../restaurant/restaurant.module';
+import { MenuModule } from '../menu/menu.module';
 
 import { Category, CategorySchema } from './schemas/category.schema';
 

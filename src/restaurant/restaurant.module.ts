@@ -6,10 +6,10 @@ import { RestaurantSchema, Restaurant } from './schemas/restaurant.schema';
 import { ActionSchema, Action } from './schemas/action.schema';
 import { TableSchema, Table } from './schemas/table.schema';
 
-import { AnalyticsModule } from 'src/analytics/analytics.module';
-import { MenuModule } from 'src/menu/menu.module';
-import { CategoryModule } from 'src/category/category.module';
-import { ImagesModule } from 'src/images/images.module';
+import { AnalyticsModule } from '../analytics/analytics.module';
+import { MenuModule } from '../menu/menu.module';
+import { CategoryModule } from '../category/category.module';
+import { ImagesModule } from '../images/images.module';
 
 import { RestaurantService } from './restaurant.service';
 import { RestaurantController } from './restaurant.controller';
