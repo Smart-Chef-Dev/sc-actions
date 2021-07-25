@@ -2,7 +2,6 @@ import { Module } from '@nestjs/common';
 import { JwtModule } from '@nestjs/jwt';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { MongooseModule } from '@nestjs/mongoose';
-import { StripeModule } from 'nestjs-stripe';
 
 import { UsersService } from './users.service';
 import { UsersController } from './users.controller';
@@ -26,15 +25,8 @@ import {
       }),
       inject: [ConfigService],
     }),
-    StripeModule.forRootAsync({
-      inject: [ConfigService],
-      useFactory: (configService: ConfigService) => ({
-        apiKey: configService.get('STRIPE_KEY'),
-        apiVersion: configService.get('STRIPE_API_VERSION'),
-      }),
-    }),
   ],
-  exports: [UsersService],
+  exports: [UsersService, JwtModule],
   controllers: [UsersController],
   providers: [UsersService],
 })

@@ -19,6 +19,7 @@ import { Category, CategorySchema } from '../category/schemas/category.schema';
 import { MenuItems, MenuItemsSchema } from '../menu/schemas/menuItems.shema';
 import { Addons, AddonsSchema } from '../menu/schemas/addons.shema';
 import { Users, UsersSchema } from '../users/schemas/users.schema';
+import { UsersModule } from '../users/users.module';
 
 @Module({
   imports: [
@@ -32,14 +33,7 @@ import { Users, UsersSchema } from '../users/schemas/users.schema';
       { name: Addons.name, schema: AddonsSchema },
       { name: Users.name, schema: UsersSchema },
     ]),
-    JwtModule.registerAsync({
-      imports: [ConfigModule],
-      useFactory: async (configService: ConfigService) => ({
-        secret: configService.get('JWT_SECRET'),
-        signOptions: { expiresIn: configService.get('JWT_EXPIRES_IN') },
-      }),
-      inject: [ConfigService],
-    }),
+    UsersModule,
   ],
   providers: [
     RestaurantService,
