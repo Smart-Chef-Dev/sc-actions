@@ -46,6 +46,7 @@ export class RestaurantService {
         (t) =>
           new this.tableModel({
             name: t.name,
+            userIds: [],
           }),
       ) ?? [],
     );
@@ -63,7 +64,6 @@ export class RestaurantService {
 
     const restaurant = await new this.restaurantModel({
       name: dto.name,
-      usernames: dto.usernames,
       currencyCode: dto.currencyCode,
       tables: tables,
       actions: actions,
@@ -122,15 +122,23 @@ export class RestaurantService {
     return !!tables?.find((t) => t._id.equals(tableId)) ?? false;
   }
 
-  public async checkIfChatExist(
+  async assignUserToTable(
     restaurantId: string,
-    userName: string,
-  ): Promise<boolean> {
-    return !!(
-      await this.restaurantModel.find({
-        _id: restaurantId,
-        usernames: userName,
-      })
-    ).length;
+    tableId: string,
+    userId: string,
+  ): Promise<Restaurant> {
+    const restaurant = await this.findById(restaurantId);
+    const changedRestaurant = restaurant.tables.map((table) =>
+      table._id.equals(tableId)
+        ? {
+            ...table,
+            userIds: [...table.userIds, userId],
+          }
+        : table,
+    );
+
+    return this.updateById(restaurantId, {
+      $set: { tables: changedRestaurant },
+    });
   }
 }

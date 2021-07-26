@@ -42,11 +42,11 @@ export class CategoryController {
   async createMenuItem(@Body() dto: MenuItemsDto, @Param('id') id: string) {
     await checkIsObjectIdValid(id);
 
-    const isCategoryExists = await this.categoryService.findById(id);
-    if (!isCategoryExists) {
+    const category = await this.categoryService.findById(id);
+    if (!category) {
       throw new NotFoundException();
     }
 
-    return this.menuService.create(dto, id);
+    return this.menuService.create(dto, category);
   }
 }

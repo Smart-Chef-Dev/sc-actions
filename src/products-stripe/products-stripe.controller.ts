@@ -13,7 +13,6 @@ export class ProductsStripeController {
   constructor(
     @InjectModel(Users.name) private usersModel: Model<Users>,
     private readonly productsStripeService: ProductsStripeService,
-    private readonly jwtService: JwtService,
     private readonly usersService: UsersService,
   ) {}
 

@@ -49,7 +49,6 @@ describe('RestaurantService', () => {
   const preCreateRestaurant = async () => {
     const dto = new RestaurantDto({
       name: 'Restaurant Name',
-      usernames: ['test'],
       actions: [
         new ActionDto({ name: 'Action_1', message: 'Action_1_message' }),
       ],
@@ -66,13 +65,11 @@ describe('RestaurantService', () => {
   it('should create restaurant without actions and tables', async () => {
     const dto = new RestaurantDto({
       name: 'Restaurant Name',
-      usernames: ['test'],
     });
 
     const restaurant = await service.create(dto);
 
     expect(restaurant.name).toBe(dto.name);
-    expect(restaurant.usernames[0]).toBe(dto.usernames[0]);
     expect(restaurant.actions.length).toBe(0);
     expect(restaurant.tables.length).toBe(0);
   });
@@ -80,7 +77,6 @@ describe('RestaurantService', () => {
   it('should create restaurant with actions and tables', async () => {
     const dto = new RestaurantDto({
       name: 'Restaurant Name',
-      usernames: ['test'],
       actions: [
         new ActionDto({ name: 'Action_1', message: 'Action_1_message' }),
       ],
@@ -90,7 +86,6 @@ describe('RestaurantService', () => {
     const restaurant = await service.create(dto);
 
     expect(restaurant.name).toBe(dto.name);
-    expect(restaurant.usernames[0]).toBe(dto.usernames[0]);
     expect(restaurant.actions[0].name).toBe(dto.actions[0].name);
     expect(restaurant.actions[0].message).toBe(dto.actions[0].message);
     expect(restaurant.tables[0].name).toBe(dto.tables[0].name);
@@ -99,25 +94,12 @@ describe('RestaurantService', () => {
   it('should update by id', async () => {
     const restaurant = await preCreateRestaurant();
 
-    expect(restaurant).toBeDefined();
-    expect(restaurant.usernames.length).toBe(1);
-
-    const newUserName = 'newValue';
-
-    const updatedRestaurant = await service.updateById(restaurant._id, {
-      $push: { usernames: newUserName },
-    });
-
-    expect(updatedRestaurant.usernames.length).toBe(2);
-    expect(updatedRestaurant.usernames[1]).toBe(newUserName);
-
     const newRestaurantName = ' new name';
-    const updatedRestaurant2 = await service.updateById(restaurant._id, {
+    const updatedRestaurant = await service.updateById(restaurant._id, {
       name: newRestaurantName,
     });
 
-    expect(updatedRestaurant.name).not.toBe(updatedRestaurant2.name);
-    expect(updatedRestaurant2.name).toBe(newRestaurantName);
+    expect(updatedRestaurant.name).toBe(newRestaurantName);
   });
 
   it('should add action into restaurant', async () => {
@@ -229,16 +211,5 @@ describe('RestaurantService', () => {
         restaurant._id,
       ),
     ).toBe(false);
-  });
-
-  it('should check if the chat', async () => {
-    const restaurant = await preCreateRestaurant();
-
-    expect(
-      await service.checkIfChatExist(restaurant._id, restaurant.usernames[0]),
-    ).toBe(true);
-    expect(await service.checkIfChatExist(restaurant._id, '256847488')).toBe(
-      false,
-    );
   });
 });

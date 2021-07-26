@@ -3,12 +3,13 @@ import { InjectModel } from '@nestjs/mongoose';
 import { JwtService } from '@nestjs/jwt';
 import { Model } from 'mongoose';
 import * as bcrypt from 'bcrypt';
+import Stripe from 'stripe';
 
 import { CreateUserDto } from './dto/create-user.dto';
 import { Users } from './schemas/users.schema';
 import { ConfigService } from '@nestjs/config';
 import { InjectStripe } from 'nestjs-stripe';
-import Stripe from 'stripe';
+import { Role } from './enums/role.enum';
 
 @Injectable()
 export class UsersService {
@@ -19,14 +20,40 @@ export class UsersService {
     private readonly configService: ConfigService,
   ) {}
 
-  async signUp(dto: CreateUserDto): Promise<Users> {
-    const salt = await bcrypt.genSalt();
-    const hash = await bcrypt.hash(dto.password, salt);
+  async creatAccount(
+    dto: {
+      telegramId?: string;
+      name?: string;
+      password?: string;
+      email?: string;
+      restaurantId?: string;
+    },
+    role: string,
+  ): Promise<Users> {
+    let newUser;
 
-    const newUser = new this.usersModel({
-      email: dto.email,
-      password: hash,
-    });
+    switch (role) {
+      case Role.RESTAURANT_ADMIN:
+        const salt = await bcrypt.genSalt();
+        const hash = await bcrypt.hash(dto.password, salt);
+
+        newUser = await new this.usersModel({
+          email: dto.email,
+          password: hash,
+          role: Role.RESTAURANT_ADMIN,
+        });
+
+        break;
+      case Role.WAITER:
+        newUser = await new this.usersModel({
+          name: dto.name,
+          telegramId: dto.telegramId,
+          restaurantId: dto.restaurantId,
+          role: Role.WAITER,
+        });
+
+        break;
+    }
 
     return newUser.save();
   }
@@ -39,6 +66,20 @@ export class UsersService {
 
   async findByEmail(email): Promise<Users> {
     return this.usersModel.findOne({ email: email });
+  }
+
+  async findById(id): Promise<Users> {
+    return this.usersModel.findById(id);
+  }
+
+  async checkIfUsernameExistsInRestaurant(
+    name: string,
+    restaurantId: string,
+  ): Promise<boolean> {
+    return !!(await this.usersModel.findOne({
+      name: name,
+      restaurantId: restaurantId,
+    }));
   }
 
   async updateById(

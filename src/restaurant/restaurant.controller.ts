@@ -26,8 +26,9 @@ import { CategoryService } from 'src/category/category.service';
 import { ImagesService } from 'src/images/images.service';
 import { MenuService } from 'src/menu/menu.service';
 
-import { AnalyticType } from 'src/analytics/enums/analytic-type.enum';
-import { checkIsObjectIdValid } from 'src/utils/checkIsObjectIdValid';
+import { AnalyticType } from '../analytics/enums/analytic-type.enum';
+import { checkIsObjectIdValid } from '../utils/checkIsObjectIdValid';
+import { UsersService } from '../users/users.service';
 
 @Controller('restaurant')
 export class RestaurantController {
@@ -38,6 +39,7 @@ export class RestaurantController {
     private readonly categoryService: CategoryService,
     private readonly imagesService: ImagesService,
     private readonly menuService: MenuService,
+    private readonly usersService: UsersService,
   ) {}
 
   @Get()
@@ -121,6 +123,38 @@ export class RestaurantController {
     return this.categoryService.findAll(id);
   }
 
+  @Get(':restaurantId/table/:tableId/user/:userId')
+  async assignUserToTable(
+    @Param('restaurantId') restaurantId: string,
+    @Param('tableId') tableId: string,
+    @Param('userId') userId: string,
+  ) {
+    await checkIsObjectIdValid(restaurantId);
+    await checkIsObjectIdValid(tableId);
+    await checkIsObjectIdValid(userId);
+
+    const restaurant = await this.restaurantService.findById(restaurantId);
+    if (!restaurant) {
+      throw new NotFoundException('Restaurant with this id does not exist');
+    }
+
+    const table = restaurant.tables.find((table) => table._id.equals(tableId));
+    if (!table) {
+      throw new NotFoundException('Table with such id does not exist');
+    }
+
+    const user = await this.usersService.findById(userId);
+    if (!user) {
+      throw new NotFoundException('User with this id does not exist');
+    }
+
+    return this.restaurantService.assignUserToTable(
+      restaurantId,
+      tableId,
+      userId,
+    );
+  }
+
   @Post(':id/category')
   async createCategory(
     @Body() dto: CreateCategoryDto,
@@ -128,12 +162,12 @@ export class RestaurantController {
   ) {
     await checkIsObjectIdValid(id);
 
-    const isRestaurantExist = await this.restaurantService.findById(id);
-    if (!isRestaurantExist) {
+    const restaurant = await this.restaurantService.findById(id);
+    if (!restaurant) {
       throw new NotFoundException();
     }
 
-    return this.categoryService.create(dto.name, id);
+    return this.categoryService.create(dto.name, restaurant);
   }
 
   @Get(':id/menu-items')

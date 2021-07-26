@@ -52,7 +52,7 @@ export class TelegramService implements OnModuleInit {
   }
 
   @autobind
-  async sendMessageToMultipleUsers(
+  async sendMessageToAssignedWaiters(
     chatsIds: Array<string>,
     text: string,
     options: any = {},
