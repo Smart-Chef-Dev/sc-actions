@@ -1,22 +1,24 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { MongooseModule } from '@nestjs/mongoose';
-import { ServeStaticModule } from '@nestjs/serve-static';
 import { MongoMemoryServer } from 'mongodb-memory-server';
-import { Mongoose, Types } from 'mongoose';
-import { join } from 'path';
+import { Mongoose, Types, Model } from 'mongoose';
 
 import { MenuService } from './menu.service';
-import { CategoryService } from '../category/category.service';
 
 import { Category, CategorySchema } from '../category/schemas/category.schema';
 import { MenuItems, MenuItemsSchema } from './schemas/menuItems.shema';
 import { Addons, AddonsSchema } from './schemas/addons.shema';
+import {
+  Restaurant,
+  RestaurantSchema,
+} from '../restaurant/schemas/restaurant.schema';
 
 let mongod: MongoMemoryServer;
 
 describe('MenuService', () => {
   let service: MenuService;
-  let categoryService: CategoryService;
+  let categoryModel: Model<Category>;
+  let restaurantModel: Model<Restaurant>;
 
   beforeEach(async () => {
     mongod = new MongoMemoryServer();
@@ -33,42 +35,19 @@ describe('MenuService', () => {
           { name: Category.name, schema: CategorySchema },
           { name: MenuItems.name, schema: MenuItemsSchema },
           { name: Addons.name, schema: AddonsSchema },
+          { name: Restaurant.name, schema: RestaurantSchema },
         ]),
-        ServeStaticModule.forRoot({
-          rootPath: join(__filename, '../photos'),
-        }),
       ],
-      providers: [
-        MenuService,
-        Mongoose,
-        {
-          provide: CategoryService,
-          useValue: {
-            findById: jest.fn(),
-          },
-        },
-      ],
+      providers: [MenuService, Mongoose],
     }).compile();
 
     service = module.get<MenuService>(MenuService);
-    categoryService = module.get<CategoryService>(CategoryService);
+    categoryModel = module.get<Model<Category>>(Category.name + 'Model');
+    restaurantModel = module.get<Model<Restaurant>>(Restaurant.name + 'Model');
   });
 
   const categoryId = Types.ObjectId('60c51b3d9345459e3ac60d5d');
   const restaurantId = Types.ObjectId('60c5165a27ab938e4f96e49f');
-  beforeEach(() => {
-    categoryService.findById = jest.fn().mockReturnValue({
-      _id: categoryId,
-      category: 'teas',
-      restaurant: {
-        _id: restaurantId,
-        actions: [],
-        tables: [],
-        usernames: [],
-        name: 'Bit Adventure 2',
-      },
-    });
-  });
 
   const name = 'green tea';
   const pictureUrl =
@@ -78,6 +57,19 @@ describe('MenuService', () => {
   const time = '3';
   const description = 'Regular green tea';
   const createMenuItems = async () => {
+    const restaurant = new restaurantModel({
+      _id: restaurantId,
+      actions: [],
+      tables: [],
+      currencyCode: 'USD',
+      name: 'Bit Adventure 2',
+    });
+    const category = new categoryModel({
+      _id: categoryId,
+      name: 'tea',
+      restaurant: restaurant,
+    });
+
     return await service.create(
       {
         name: name,
@@ -88,7 +80,7 @@ describe('MenuService', () => {
         description: description,
         addons: [],
       },
-      String(categoryId),
+      category,
     );
   };
 

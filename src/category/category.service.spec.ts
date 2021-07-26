@@ -1,17 +1,20 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { MongooseModule } from '@nestjs/mongoose';
-import { Mongoose, Types } from 'mongoose';
+import { Model, Mongoose, Types } from 'mongoose';
 import { MongoMemoryServer } from 'mongodb-memory-server';
 
-import { RestaurantService } from '../restaurant/restaurant.service';
 import { CategoryService } from './category.service';
 import { Category, CategorySchema } from './schemas/category.schema';
+import {
+  Restaurant,
+  RestaurantSchema,
+} from '../restaurant/schemas/restaurant.schema';
 
 let mongod: MongoMemoryServer;
 
 describe('CategoryService', () => {
   let service: CategoryService;
-  let restaurantService: RestaurantService;
+  let restaurantModel: Model<Restaurant>;
 
   beforeEach(async () => {
     mongod = new MongoMemoryServer();
@@ -26,38 +29,28 @@ describe('CategoryService', () => {
         }),
         MongooseModule.forFeature([
           { name: Category.name, schema: CategorySchema },
+          { name: Restaurant.name, schema: RestaurantSchema },
         ]),
       ],
-      providers: [
-        CategoryService,
-        Mongoose,
-        {
-          provide: RestaurantService,
-          useValue: {
-            findById: jest.fn(),
-          },
-        },
-      ],
+      providers: [CategoryService, Mongoose],
     }).compile();
 
     service = module.get<CategoryService>(CategoryService);
-    restaurantService = module.get<RestaurantService>(RestaurantService);
+    restaurantModel = module.get<Model<Restaurant>>(Restaurant.name + 'Model');
   });
 
   const restaurantId = Types.ObjectId('569ed8269353e9f4c51617aa');
-  beforeEach(() => {
-    restaurantService.findById = jest.fn().mockReturnValue({
-      _id: restaurantId,
-      name: 'Restaurant',
-      usernames: [],
-      tables: [],
-      actions: [],
-    });
-  });
 
   const name = 'teas';
   const createCategory = () => {
-    return service.create(name, String(restaurantId));
+    const restaurant = new restaurantModel({
+      _id: restaurantId,
+      actions: [],
+      tables: [],
+      currencyCode: 'USD',
+      name: 'Bit Adventure 2',
+    });
+    return service.create(name, restaurant);
   };
 
   it('should be defined', () => {
