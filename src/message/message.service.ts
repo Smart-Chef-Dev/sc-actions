@@ -61,7 +61,7 @@ export class MessageService implements OnModuleInit {
       Role.WAITER,
     );
     await this.restaurantService.assignUserToTable(
-      restaurantId,
+      restaurant,
       tableId,
       user._id,
     );

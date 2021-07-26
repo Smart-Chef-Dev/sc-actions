@@ -52,7 +52,7 @@ describe('RestaurantService', () => {
       actions: [
         new ActionDto({ name: 'Action_1', message: 'Action_1_message' }),
       ],
-      tables: [new TableDto({ name: 'Table №1' })],
+      tables: [new TableDto({ name: 'Table №1', userIds: [] })],
     });
 
     return service.create(dto);

@@ -123,7 +123,7 @@ export class RestaurantController {
     return this.categoryService.findAll(id);
   }
 
-  @Get(':restaurantId/table/:tableId/user/:userId')
+  @Post(':restaurantId/table/:tableId/user/:userId')
   async assignUserToTable(
     @Param('restaurantId') restaurantId: string,
     @Param('tableId') tableId: string,
@@ -149,7 +149,7 @@ export class RestaurantController {
     }
 
     return this.restaurantService.assignUserToTable(
-      restaurantId,
+      restaurant,
       tableId,
       userId,
     );

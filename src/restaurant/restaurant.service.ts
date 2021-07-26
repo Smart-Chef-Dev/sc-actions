@@ -123,11 +123,20 @@ export class RestaurantService {
   }
 
   async assignUserToTable(
-    restaurantId: string,
+    restaurant: Restaurant,
     tableId: string,
     userId: string,
   ): Promise<Restaurant> {
-    const restaurant = await this.findById(restaurantId);
+    const table = restaurant.tables.find((table) => table._id.equals(tableId));
+
+    const isUserAlreadyAssignedToTable = table.userIds.find(
+      (userId) => userId === userId,
+    );
+
+    if (isUserAlreadyAssignedToTable) {
+      return restaurant;
+    }
+
     const changedRestaurant = restaurant.tables.map((table) =>
       table._id.equals(tableId)
         ? {
@@ -137,7 +146,7 @@ export class RestaurantService {
         : table,
     );
 
-    return this.updateById(restaurantId, {
+    return this.updateById(restaurant._id, {
       $set: { tables: changedRestaurant },
     });
   }
