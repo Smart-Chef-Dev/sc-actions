@@ -42,8 +42,8 @@ describe('MenuService', () => {
     }).compile();
 
     service = module.get<MenuService>(MenuService);
-    categoryModel = module.get<Model<Category>>(Category.name + 'Model');
-    restaurantModel = module.get<Model<Restaurant>>(Restaurant.name + 'Model');
+    categoryModel = module.get<Model<Category>>('CategoryModel');
+    restaurantModel = module.get<Model<Restaurant>>('RestaurantModel');
   });
 
   const categoryId = Types.ObjectId('60c51b3d9345459e3ac60d5d');

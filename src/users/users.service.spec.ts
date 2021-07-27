@@ -140,21 +140,21 @@ describe('UsersService', () => {
   it('should check if username exists in restaurant', async () => {
     await preCreateUsersWithRoleOfWaiter(name, restaurantId, telegramId);
 
-    const isUserExist1 = await service.checkIfUsernameExistsInRestaurant(
+    const isUserExist1 = await service.findUserByUsernameInRestaurant(
       name,
       restaurantId,
     );
     expect(isUserExist1).toBeDefined();
     expect(isUserExist1).toBe(true);
 
-    const isUserExist2 = await service.checkIfUsernameExistsInRestaurant(
+    const isUserExist2 = await service.findUserByUsernameInRestaurant(
       'Namee',
       restaurantId,
     );
     expect(isUserExist2).toBeDefined();
     expect(isUserExist2).toBe(false);
 
-    const isUserExist3 = await service.checkIfUsernameExistsInRestaurant(
+    const isUserExist3 = await service.findUserByUsernameInRestaurant(
       name,
       '60c5165a27ab938e4f96e49f',
     );

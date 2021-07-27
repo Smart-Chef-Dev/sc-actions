@@ -9,8 +9,8 @@ export class Table extends Document {
   @Prop({ required: true })
   name: string;
 
-  @Prop()
-  userIds: [string];
+  @Prop([String])
+  userIds: string[];
 }
 
 export const TableSchema = SchemaFactory.createForClass(Table);

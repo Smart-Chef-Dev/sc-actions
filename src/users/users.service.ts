@@ -72,14 +72,14 @@ export class UsersService {
     return this.usersModel.findById(id);
   }
 
-  async checkIfUsernameExistsInRestaurant(
+  async findUserByUsernameInRestaurant(
     name: string,
     restaurantId: string,
-  ): Promise<boolean> {
-    return !!(await this.usersModel.findOne({
+  ): Promise<Users> {
+    return this.usersModel.findOne({
       name: name,
       restaurantId: restaurantId,
-    }));
+    });
   }
 
   async updateById(

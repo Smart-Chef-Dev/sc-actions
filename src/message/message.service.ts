@@ -1,4 +1,9 @@
-import { Injectable, Logger, OnModuleInit } from '@nestjs/common';
+import {
+  ForbiddenException,
+  Injectable,
+  Logger,
+  OnModuleInit,
+} from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import autobind from 'autobind-decorator';
 
@@ -35,24 +40,25 @@ export class MessageService implements OnModuleInit {
       this.configService.get<string>('TELEGRAM_START_CMD_DELIMITER'),
     );
     const restaurant = await this.restaurantService.findById(restaurantId);
+    const table = restaurant.tables.find((table) => table._id.equals(tableId));
 
-    const isUserExist =
-      await this.usersService.checkIfUsernameExistsInRestaurant(
-        name,
-        restaurantId,
-      );
-    if (isUserExist) {
+    const user = await this.usersService.findUserByUsernameInRestaurant(
+      name,
+      restaurantId,
+    );
+    if (+user?.telegramId === +msg.chat.id) {
+      await msg.reply.text(`Welcome back ${name}`);
+      return;
+    }
+
+    if (user) {
       await msg.reply.text(
         `Sorry, the name ${name} is already taken. Try to create a chat again`,
-      );
-      this.logger.warn(
-        `The chat was not created for the reason: the user with the name ${name} already exists`,
-        loggerContext,
       );
       return;
     }
 
-    const user = await this.usersService.creatAccount(
+    const newUser = await this.usersService.creatAccount(
       {
         telegramId: msg.chat.id,
         name,
@@ -60,11 +66,14 @@ export class MessageService implements OnModuleInit {
       },
       Role.WAITER,
     );
-    await this.restaurantService.assignUserToTable(
-      restaurant,
-      tableId,
-      user._id,
+
+    const isUserAlreadyAssignedToTable = table.userIds.find((userId) =>
+      newUser._id.equals(userId),
     );
+    if (isUserAlreadyAssignedToTable) {
+      return;
+    }
+    await this.restaurantService.assignUserToTable(restaurant, table, newUser);
 
     this.logger.log(
       `Add new chat into restaurant, restaurantId: ${restaurantId}`,

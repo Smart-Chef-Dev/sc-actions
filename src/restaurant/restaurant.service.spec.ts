@@ -10,12 +10,15 @@ import { ActionSchema, Action } from './schemas/action.schema';
 import { RestaurantDto } from './dto/restaurant.dto';
 import { ActionDto } from './dto/action.dto';
 import { TableDto } from './dto/table.dto';
+import { Users, UsersSchema } from '../users/schemas/users.schema';
+import { Model, Types } from 'mongoose';
 
 let mongod: MongoMemoryServer;
 
 describe('RestaurantService', () => {
   let module: TestingModule;
   let service: RestaurantService;
+  let userModel: Model<Users>;
 
   afterEach(async () => {
     await module.close();
@@ -38,12 +41,14 @@ describe('RestaurantService', () => {
           { name: Restaurant.name, schema: RestaurantSchema },
           { name: Action.name, schema: ActionSchema },
           { name: Table.name, schema: TableSchema },
+          { name: Users.name, schema: UsersSchema },
         ]),
       ],
       providers: [RestaurantService],
     }).compile();
 
     service = module.get<RestaurantService>(RestaurantService);
+    userModel = module.get<Model<Users>>('UsersModel');
   });
 
   const preCreateRestaurant = async () => {
@@ -52,7 +57,11 @@ describe('RestaurantService', () => {
       actions: [
         new ActionDto({ name: 'Action_1', message: 'Action_1_message' }),
       ],
-      tables: [new TableDto({ name: 'Table №1', userIds: [] })],
+      tables: [
+        new TableDto({ name: 'Table №1', userIds: [] }),
+        new TableDto({ name: 'Table №2', userIds: [] }),
+      ],
+      currencyCode: 'USD',
     });
 
     return service.create(dto);
@@ -211,5 +220,29 @@ describe('RestaurantService', () => {
         restaurant._id,
       ),
     ).toBe(false);
+  });
+
+  it('must add a new waiter to the table', async () => {
+    const restaurant = await preCreateRestaurant();
+
+    const userId = Types.ObjectId('569ed8269353e9f4c51617aa');
+    const user = new userModel({
+      _id: userId,
+      telegramId: '18547896586',
+      restaurantId: restaurant._id,
+      role: 'WAITER',
+    });
+    const updatedRestaurant1 = await service.assignUserToTable(
+      restaurant,
+      restaurant.tables[0],
+      user,
+    );
+
+    expect(updatedRestaurant1).toBeDefined();
+    expect(updatedRestaurant1._id).toStrictEqual(restaurant._id);
+    expect(updatedRestaurant1.tables[0].userIds.length).toBe(1);
+    expect(
+      Types.ObjectId(updatedRestaurant1.tables[0].userIds[0]),
+    ).toStrictEqual(userId);
   });
 });
