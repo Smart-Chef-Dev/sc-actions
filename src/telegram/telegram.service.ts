@@ -2,6 +2,7 @@ import { Injectable, Logger, OnModuleInit } from '@nestjs/common';
 import * as TelegramBot from 'telebot';
 import { ConfigService } from '@nestjs/config';
 import autobind from 'autobind-decorator';
+import { UsersService } from '../users/users.service';
 
 @Injectable()
 export class TelegramService implements OnModuleInit {
@@ -9,6 +10,7 @@ export class TelegramService implements OnModuleInit {
 
   constructor(
     private readonly configService: ConfigService,
+    private readonly usersService: UsersService,
     private readonly logger: Logger,
   ) {}
 
@@ -53,12 +55,18 @@ export class TelegramService implements OnModuleInit {
 
   @autobind
   async sendMessageToAssignedWaiters(
-    chatsIds: Array<string>,
+    userIds: Array<string>,
     text: string,
     options: any = {},
   ) {
-    for (const chatId of chatsIds) {
-      await this.sendMessage(chatId, text, options);
+    for (const userId of userIds) {
+      const user = await this.usersService.findById(userId);
+
+      if (!user) {
+        continue;
+      }
+
+      await this.sendMessage(user.telegramId, text, options);
     }
   }
 

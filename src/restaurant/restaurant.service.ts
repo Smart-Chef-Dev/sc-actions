@@ -8,6 +8,7 @@ import { Table } from './schemas/table.schema';
 import { RestaurantDto } from './dto/restaurant.dto';
 import { ActionDto } from './dto/action.dto';
 import { TableDto } from './dto/table.dto';
+import { Users } from '../users/schemas/users.schema';
 
 @Injectable()
 export class RestaurantService {
@@ -18,6 +19,7 @@ export class RestaurantService {
     private readonly actionModel: Model<Action>,
     @InjectModel(Table.name)
     private readonly tableModel: Model<Table>,
+    @InjectModel(Users.name) private usersModel: Model<Users>,
   ) {}
 
   public async findAll(): Promise<Restaurant[]> {
@@ -123,21 +125,20 @@ export class RestaurantService {
   }
 
   async assignUserToTable(
-    restaurantId: string,
-    tableId: string,
-    userId: string,
+    restaurant: Restaurant,
+    table: Table,
+    user: Users,
   ): Promise<Restaurant> {
-    const restaurant = await this.findById(restaurantId);
-    const changedRestaurant = restaurant.tables.map((table) =>
-      table._id.equals(tableId)
-        ? {
-            ...table,
-            userIds: [...table.userIds, userId],
-          }
-        : table,
-    );
+    const changedRestaurant = restaurant.tables.map((currentTable) => {
+      if (currentTable._id.equals(table._id)) {
+        currentTable.userIds = [...currentTable.userIds, String(user._id)];
+        return currentTable;
+      } else {
+        return currentTable;
+      }
+    });
 
-    return this.updateById(restaurantId, {
+    return this.updateById(restaurant._id, {
       $set: { tables: changedRestaurant },
     });
   }

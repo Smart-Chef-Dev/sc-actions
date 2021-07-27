@@ -9,6 +9,7 @@ import {
   NotFoundException,
   UseInterceptors,
   UploadedFile,
+  ForbiddenException,
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { ConfigService } from '@nestjs/config';
@@ -29,6 +30,7 @@ import { MenuService } from 'src/menu/menu.service';
 import { AnalyticType } from '../analytics/enums/analytic-type.enum';
 import { checkIsObjectIdValid } from '../utils/checkIsObjectIdValid';
 import { UsersService } from '../users/users.service';
+import { Table } from './schemas/table.schema';
 
 @Controller('restaurant')
 export class RestaurantController {
@@ -123,36 +125,45 @@ export class RestaurantController {
     return this.categoryService.findAll(id);
   }
 
-  @Get(':restaurantId/table/:tableId/user/:userId')
+  @Post(':restaurantId/table/:tableId/user/:name')
   async assignUserToTable(
     @Param('restaurantId') restaurantId: string,
     @Param('tableId') tableId: string,
-    @Param('userId') userId: string,
+    @Param('name') name: string,
   ) {
     await checkIsObjectIdValid(restaurantId);
     await checkIsObjectIdValid(tableId);
-    await checkIsObjectIdValid(userId);
 
     const restaurant = await this.restaurantService.findById(restaurantId);
     if (!restaurant) {
       throw new NotFoundException('Restaurant with this id does not exist');
     }
 
-    const table = restaurant.tables.find((table) => table._id.equals(tableId));
+    const table: Table = restaurant.tables.find((table) =>
+      table._id.equals(tableId),
+    );
     if (!table) {
       throw new NotFoundException('Table with such id does not exist');
     }
 
-    const user = await this.usersService.findById(userId);
+    const user = await this.usersService.findUserByUsernameInRestaurant(
+      name,
+      restaurantId,
+    );
     if (!user) {
-      throw new NotFoundException('User with this id does not exist');
+      throw new NotFoundException(
+        'User with this name does not exist in restaurant',
+      );
     }
 
-    return this.restaurantService.assignUserToTable(
-      restaurantId,
-      tableId,
-      userId,
+    const isUserAlreadyAssignedToTable = table.userIds.find((userId) =>
+      user._id.equals(userId),
     );
+    if (isUserAlreadyAssignedToTable) {
+      throw new ForbiddenException('The waiter is already at this table');
+    }
+
+    return this.restaurantService.assignUserToTable(restaurant, table, user);
   }
 
   @Post(':id/category')
