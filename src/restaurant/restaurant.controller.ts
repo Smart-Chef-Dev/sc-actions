@@ -125,15 +125,14 @@ export class RestaurantController {
     return this.categoryService.findAll(id);
   }
 
-  @Post(':restaurantId/table/:tableId/user/:userId')
+  @Post(':restaurantId/table/:tableId/user/:name')
   async assignUserToTable(
     @Param('restaurantId') restaurantId: string,
     @Param('tableId') tableId: string,
-    @Param('userId') userId: string,
+    @Param('name') name: string,
   ) {
     await checkIsObjectIdValid(restaurantId);
     await checkIsObjectIdValid(tableId);
-    await checkIsObjectIdValid(userId);
 
     const restaurant = await this.restaurantService.findById(restaurantId);
     if (!restaurant) {
@@ -147,9 +146,14 @@ export class RestaurantController {
       throw new NotFoundException('Table with such id does not exist');
     }
 
-    const user = await this.usersService.findById(userId);
+    const user = await this.usersService.findUserByUsernameInRestaurant(
+      name,
+      restaurantId,
+    );
     if (!user) {
-      throw new NotFoundException('User with this id does not exist');
+      throw new NotFoundException(
+        'User with this name does not exist in restaurant',
+      );
     }
 
     const isUserAlreadyAssignedToTable = table.userIds.find((userId) =>
