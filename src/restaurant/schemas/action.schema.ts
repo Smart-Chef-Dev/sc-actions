@@ -10,7 +10,7 @@ export class Action extends Document {
   message: string;
 
   @Prop()
-  link: string;
+  type: string;
 }
 
 export const ActionSchema = SchemaFactory.createForClass(Action);

@@ -58,7 +58,7 @@ export class RestaurantService {
         (a) =>
           new this.actionModel({
             name: a.name,
-            link: a.link,
+            type: a.type,
             message: a.message,
           }),
       ) ?? [],
@@ -89,7 +89,7 @@ export class RestaurantService {
   ): Promise<Restaurant> {
     const action = await new this.actionModel({
       name: dto.name,
-      link: dto.link,
+      type: dto.type,
       message: dto.message,
     });
 
