@@ -34,6 +34,16 @@ export class UsersController {
       throw new ForbiddenException('This email is already taken');
     }
 
+    const isRestaurantIsTiedToRestaurantAdmin =
+      await this.usersService.checkIfRestaurantIsTiedToRestaurantAdmin(
+        dto?.restaurantId,
+      );
+    if (isRestaurantIsTiedToRestaurantAdmin) {
+      throw new ForbiddenException(
+        'The restaurant is already linked to the user',
+      );
+    }
+
     return this.usersService.creatAccount(dto, Role.RESTAURANT_ADMIN);
   }
 

@@ -3,6 +3,8 @@ export class CreateUserDto {
 
   password: string;
 
+  restaurantId?: string;
+
   constructor(init?: Partial<CreateUserDto>) {
     Object.assign(this, init);
   }
