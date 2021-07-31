@@ -16,8 +16,6 @@ import { UsersModule } from './users/users.module';
 import { ProductsStripeModule } from './products-stripe/products-stripe.module';
 import { WebhookStripeModule } from './webhook-stripe/webhook-stripe.module';
 import { StripeModule } from 'nestjs-stripe';
-import { JwtModule, JwtService } from '@nestjs/jwt';
-import { Users, UsersSchema } from './users/schemas/users.schema';
 
 @Module({
   imports: [

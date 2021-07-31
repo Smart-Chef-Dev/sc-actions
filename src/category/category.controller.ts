@@ -7,17 +7,21 @@ import {
   Post,
   Query,
 } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 
 import { MenuService } from 'src/menu/menu.service';
 import { MenuItemsDto } from 'src/menu/dto/menuItems';
 import { checkIsObjectIdValid } from 'src/utils/checkIsObjectIdValid';
 import { CategoryService } from './category.service';
+import { ImagesService } from 'src/images/images.service';
 
 @Controller('category')
 export class CategoryController {
   constructor(
     private readonly menuService: MenuService,
     private readonly categoryService: CategoryService,
+    private readonly configService: ConfigService,
+    private readonly imagesService: ImagesService,
   ) {}
 
   @Get(':id/menu-item')
@@ -47,6 +51,13 @@ export class CategoryController {
       throw new NotFoundException();
     }
 
-    return this.menuService.create(dto, category);
+    const isPictureExists = await this.imagesService.checkFileForExistence(
+      dto.pictureUrl,
+    );
+    if (!isPictureExists) {
+      throw new NotFoundException('Image not found');
+    }
+
+    return this.menuService.create(dto, category, dto.pictureUrl);
   }
 }

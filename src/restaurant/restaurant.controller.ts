@@ -216,6 +216,6 @@ export class RestaurantController {
     );
     await this.imagesService.saveFile(pathFile, file.buffer);
 
-    return `${this.configService.get<string>('BACKEND_URL')}/${pathFile}`;
+    return pathFile;
   }
 }

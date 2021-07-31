@@ -10,4 +10,13 @@ export class ImagesService {
   createDirectory(path: string) {
     return fs.mkdir(path, { recursive: true });
   }
+
+  async checkFileForExistence(path: string) {
+    try {
+      await fs.access(path);
+      return true;
+    } catch {
+      return false;
+    }
+  }
 }
