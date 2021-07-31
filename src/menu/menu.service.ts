@@ -20,9 +20,9 @@ export class MenuService {
   async create(
     dto: MenuItemsDto,
     category: Category,
-    ImgPath: string,
+    imgPath: string,
   ): Promise<MenuItems> {
-    const pictureLqipPreview = await lqip.base64(ImgPath);
+    const pictureLqipPreview = await lqip.base64(imgPath);
 
     const addons = await Promise.all(
       dto.addons?.map(

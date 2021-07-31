@@ -51,19 +51,13 @@ export class CategoryController {
       throw new NotFoundException();
     }
 
-    const ImgPath = dto.pictureUrl.replace(
-      `${this.configService.get<string>('BACKEND_URL')}/`,
-      '',
-    );
     const isPictureExists = await this.imagesService.checkFileForExistence(
-      ImgPath,
+      dto.pictureUrl,
     );
     if (!isPictureExists) {
-      throw new NotFoundException(
-        'The picture under this address does not exist on the server',
-      );
+      throw new NotFoundException('Image not found');
     }
 
-    return this.menuService.create(dto, category, ImgPath);
+    return this.menuService.create(dto, category, dto.pictureUrl);
   }
 }
