@@ -12,6 +12,7 @@ import {
 import { MenuService } from '../menu/menu.service';
 import { MenuItems, MenuItemsSchema } from '../menu/schemas/menuItems.shema';
 import { Addons, AddonsSchema } from '../menu/schemas/addons.shema';
+import { ImagesService } from '../images/images.service';
 
 @Module({
   imports: [
@@ -22,7 +23,7 @@ import { Addons, AddonsSchema } from '../menu/schemas/addons.shema';
       { name: Addons.name, schema: AddonsSchema },
     ]),
   ],
-  providers: [CategoryService, MenuService],
+  providers: [CategoryService, MenuService, ImagesService],
   exports: [CategoryService],
   controllers: [CategoryController],
 })

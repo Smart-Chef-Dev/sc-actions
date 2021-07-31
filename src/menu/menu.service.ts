@@ -17,8 +17,12 @@ export class MenuService {
     @InjectModel(Addons.name) private addonsModel: Model<Addons>,
   ) {}
 
-  async create(dto: MenuItemsDto, category: Category): Promise<MenuItems> {
-    const pictureLqipPreview = await lqip.base64(dto.pictureUrl);
+  async create(
+    dto: MenuItemsDto,
+    category: Category,
+    ImgPath: string,
+  ): Promise<MenuItems> {
+    const pictureLqipPreview = await lqip.base64(ImgPath);
 
     const addons = await Promise.all(
       dto.addons?.map(
