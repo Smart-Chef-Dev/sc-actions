@@ -11,6 +11,9 @@ export class Action extends Document {
 
   @Prop()
   type: string;
+
+  @Prop()
+  link: string;
 }
 
 export const ActionSchema = SchemaFactory.createForClass(Action);

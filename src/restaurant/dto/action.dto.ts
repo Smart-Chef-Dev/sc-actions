@@ -13,6 +13,9 @@ export class ActionDto {
 
   @IsString()
   @MaxLength(300)
+  readonly link: string;
+
+  @IsString()
   readonly type: string;
 
   public constructor(init?: Partial<ActionDto>) {
