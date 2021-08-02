@@ -16,7 +16,6 @@ export class MenuService {
     @InjectModel(Category.name) private categoryModel: Model<Category>,
     @InjectModel(MenuItems.name) private menuItemsModel: Model<MenuItems>,
     @InjectModel(Addons.name) private addonsModel: Model<Addons>,
-    private readonly configService: ConfigService,
   ) {}
 
   async create(dto: MenuItemsDto, category: Category): Promise<MenuItems> {
@@ -37,9 +36,7 @@ export class MenuService {
       category: category,
       pictureLqipPreview: pictureLqipPreview,
       addons: addons,
-      pictureUrl: `${this.configService.get<string>('BACKEND_URL')}/${
-        dto.pictureUrl
-      }`,
+      pictureUrl: `/${dto.pictureUrl}`,
     });
 
     await newMenuItem.save();
