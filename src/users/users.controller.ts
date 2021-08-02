@@ -34,11 +34,11 @@ export class UsersController {
       throw new ForbiddenException('This email is already taken');
     }
 
-    const isRestaurantIsTiedToRestaurantAdmin =
+    const isAlreadyLinkedToUser =
       await this.usersService.checkIfRestaurantIsTiedToRestaurantAdmin(
         dto?.restaurantId,
       );
-    if (isRestaurantIsTiedToRestaurantAdmin) {
+    if (isAlreadyLinkedToUser) {
       throw new ForbiddenException(
         'The restaurant is already linked to the user',
       );

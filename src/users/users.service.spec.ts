@@ -16,6 +16,7 @@ import {
 import { RestaurantService } from '../restaurant/restaurant.service';
 import { ConfigService } from '@nestjs/config';
 import { Role } from './enums/role.enum';
+import { CreateUserDto } from './dto/create-user.dto';
 
 let mongod: MongoMemoryServer;
 
@@ -71,7 +72,7 @@ describe('UsersService', () => {
   const restaurantId = '60fc8883908d543aa77f5df7';
   const telegramId = '185249578';
 
-  const preCreateUsers = async (dto: { email; password; restaurantId? }) => {
+  const preCreateUsers = async (dto: CreateUserDto) => {
     return service.creatAccount(
       {
         email: dto.email,
