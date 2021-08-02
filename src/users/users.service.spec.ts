@@ -84,9 +84,9 @@ describe('UsersService', () => {
   };
 
   const preCreateUsersWithRoleOfWaiter = async (
-    name,
-    restaurantId,
-    telegramId,
+    name: string,
+    restaurantId: string,
+    telegramId: string,
   ) => {
     return service.creatAccount(
       {
