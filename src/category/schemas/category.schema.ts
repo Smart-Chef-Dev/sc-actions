@@ -5,10 +5,10 @@ import { Restaurant } from '../../restaurant/schemas/restaurant.schema';
 
 @Schema()
 export class Category extends Document {
-  @Prop()
+  @Prop({ required: true })
   name: string;
 
-  @Prop()
+  @Prop({ required: true })
   restaurant: Restaurant;
 }
 

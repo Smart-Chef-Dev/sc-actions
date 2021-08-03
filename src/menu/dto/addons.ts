@@ -3,8 +3,8 @@ import { IsNotEmpty, IsString, IsNumber } from 'class-validator';
 export class AddonsDto {
   @IsString()
   @IsNotEmpty()
-  readonly name: number;
+  readonly name: string;
 
   @IsNumber()
-  readonly price: string;
+  readonly price: number;
 }

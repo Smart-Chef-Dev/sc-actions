@@ -2,6 +2,7 @@ import { Injectable, Logger, OnModuleInit } from '@nestjs/common';
 import * as TelegramBot from 'telebot';
 import { ConfigService } from '@nestjs/config';
 import autobind from 'autobind-decorator';
+
 import { UsersService } from '../users/users.service';
 
 @Injectable()

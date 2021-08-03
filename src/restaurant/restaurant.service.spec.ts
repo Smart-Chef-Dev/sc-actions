@@ -1,17 +1,18 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { MongoMemoryServer } from 'mongodb-memory-server';
 import { MongooseModule } from '@nestjs/mongoose';
+import { Model, Types } from 'mongoose';
 import * as mongoose from 'mongoose';
 
-import { RestaurantService } from './restaurant.service';
 import { RestaurantSchema, Restaurant } from './schemas/restaurant.schema';
 import { TableSchema, Table } from './schemas/table.schema';
 import { ActionSchema, Action } from './schemas/action.schema';
+import { RestaurantService } from './restaurant.service';
+import { Users, UsersSchema } from '../users/schemas/users.schema';
+
 import { RestaurantDto } from './dto/restaurant.dto';
 import { ActionDto } from './dto/action.dto';
 import { TableDto } from './dto/table.dto';
-import { Users, UsersSchema } from '../users/schemas/users.schema';
-import { Model, Types } from 'mongoose';
 
 let mongod: MongoMemoryServer;
 
@@ -140,7 +141,7 @@ describe('RestaurantService', () => {
     const restaurant = await preCreateRestaurant();
 
     expect(restaurant).toBeDefined();
-    expect(restaurant.tables.length).toBe(1);
+    expect(restaurant.tables.length).toBe(2);
 
     const dto = new TableDto({ name: 'New table name' });
     const updatedRestaurant = await service.addTableIntoRestaurant(
@@ -148,9 +149,11 @@ describe('RestaurantService', () => {
       dto,
     );
 
+    console.log(updatedRestaurant);
+
     expect(restaurant.tables.length).not.toBe(updatedRestaurant.tables.length);
-    expect(updatedRestaurant.tables.length).toBe(2);
-    expect(updatedRestaurant.tables[1].name).toBe(dto.name);
+    expect(updatedRestaurant.tables.length).toBe(3);
+    expect(updatedRestaurant.tables[2].name).toBe(dto.name);
   });
 
   it('should find restaurant by id', async () => {

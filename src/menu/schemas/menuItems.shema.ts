@@ -6,7 +6,7 @@ import { Addons } from './addons.shema';
 
 @Schema()
 export class MenuItems extends Document {
-  @Prop()
+  @Prop({ required: true })
   name: string;
 
   @Prop()
@@ -16,13 +16,13 @@ export class MenuItems extends Document {
   pictureLqipPreview: string;
 
   @Prop()
-  price: string;
+  price: number;
 
   @Prop()
-  weight: string;
+  weight: number;
 
   @Prop()
-  time: string;
+  time: number;
 
   @Prop()
   description: string;
@@ -30,7 +30,7 @@ export class MenuItems extends Document {
   @Prop()
   addons: Addons[];
 
-  @Prop()
+  @Prop({ required: true })
   category: Category;
 }
 

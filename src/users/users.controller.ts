@@ -9,9 +9,7 @@ import {
   Req,
 } from '@nestjs/common';
 import * as bcrypt from 'bcrypt';
-import { Model } from 'mongoose';
 import { UseGuards } from '@nestjs/common';
-import { InjectModel } from '@nestjs/mongoose';
 
 import { UsersService } from './users.service';
 import { CreateUserDto } from './dto/create-user.dto';
@@ -21,10 +19,7 @@ import { Role } from './enums/role.enum';
 
 @Controller('users')
 export class UsersController {
-  constructor(
-    private readonly usersService: UsersService,
-    @InjectModel(Users.name) private usersModel: Model<Users>,
-  ) {}
+  constructor(private readonly usersService: UsersService) {}
 
   @Post('sign-up')
   async signUp(@Body() dto: CreateUserDto) {

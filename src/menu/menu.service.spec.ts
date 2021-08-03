@@ -4,7 +4,6 @@ import { MongoMemoryServer } from 'mongodb-memory-server';
 import { Mongoose, Types, Model } from 'mongoose';
 
 import { MenuService } from './menu.service';
-
 import { Category, CategorySchema } from '../category/schemas/category.schema';
 import { MenuItems, MenuItemsSchema } from './schemas/menuItems.shema';
 import { Addons, AddonsSchema } from './schemas/addons.shema';
@@ -49,13 +48,13 @@ describe('MenuService', () => {
   const categoryId = Types.ObjectId('60c51b3d9345459e3ac60d5d');
   const restaurantId = Types.ObjectId('60c5165a27ab938e4f96e49f');
 
-  const name = 'green tea';
+  const name = 'Pork shashlik';
   const pictureUrl =
-    'https://images.wallpaperscraft.ru/image/chay_listya_chashka_71596_2560x1600.jpg';
-  const price = '0.1';
-  const weight = '200';
-  const time = '3';
-  const description = 'Regular green tea';
+    'https://images.wallpaperscraft.ru/image/shashlyk_myaso_ovoschi_shampura_71493_1920x1200.jpg';
+  const price = 10;
+  const weight = 200;
+  const time = 20;
+  const description = 'Regular pork shashlik';
   const createMenuItems = async () => {
     const restaurant = new restaurantModel({
       _id: restaurantId,
@@ -66,7 +65,7 @@ describe('MenuService', () => {
     });
     const category = new categoryModel({
       _id: categoryId,
-      name: 'tea',
+      name: 'shashliks',
       restaurant: restaurant,
     });
 
@@ -78,7 +77,16 @@ describe('MenuService', () => {
         weight: weight,
         time: time,
         description: description,
-        addons: [],
+        addons: [
+          {
+            name: 'Cоус1',
+            price: 3,
+          },
+          {
+            name: 'Cоус2',
+            price: 5,
+          },
+        ],
       },
       category,
     );
@@ -94,7 +102,6 @@ describe('MenuService', () => {
     expect(menuItems).toBeDefined();
     expect(menuItems._id).toBeDefined();
     expect(menuItems.name).toBe(name);
-    expect(menuItems.pictureUrl).toBe(pictureUrl);
     expect(menuItems.price).toBe(price);
     expect(menuItems.weight).toBe(weight);
     expect(menuItems.time).toBe(time);
@@ -111,14 +118,12 @@ describe('MenuService', () => {
     expect(allMenuItems).toBeDefined();
     expect(allMenuItems.length).toBe(2);
     expect(allMenuItems[0].name).toStrictEqual(menuItems1.name);
-    expect(allMenuItems[0].pictureUrl).toBe(pictureUrl);
     expect(allMenuItems[0].price).toStrictEqual(menuItems1.price);
     expect(allMenuItems[0].weight).toStrictEqual(menuItems1.weight);
     expect(allMenuItems[0].time).toStrictEqual(menuItems1.time);
     expect(allMenuItems[0].description).toStrictEqual(menuItems1.description);
     expect(allMenuItems[0].category.restaurant._id).toStrictEqual(restaurantId);
     expect(allMenuItems[1].name).toStrictEqual(menuItems2.name);
-    expect(allMenuItems[1].pictureUrl).toBe(pictureUrl);
     expect(allMenuItems[1].price).toStrictEqual(menuItems2.price);
     expect(allMenuItems[1].weight).toStrictEqual(menuItems2.weight);
     expect(allMenuItems[1].time).toStrictEqual(menuItems2.time);
@@ -134,7 +139,6 @@ describe('MenuService', () => {
 
     expect(findMenuItems).toBeDefined();
     expect(findMenuItems.name).toStrictEqual(creatMenuItems.name);
-    expect(findMenuItems.pictureUrl).toBe(pictureUrl);
     expect(findMenuItems.price).toStrictEqual(creatMenuItems.price);
     expect(findMenuItems.weight).toStrictEqual(creatMenuItems.weight);
     expect(findMenuItems.time).toStrictEqual(creatMenuItems.time);
@@ -151,14 +155,12 @@ describe('MenuService', () => {
     expect(allMenuItems).toBeDefined();
     expect(allMenuItems.length).toBe(2);
     expect(allMenuItems[0].name).toStrictEqual(menuItems1.name);
-    expect(allMenuItems[0].pictureUrl).toBe(pictureUrl);
     expect(allMenuItems[0].price).toStrictEqual(menuItems1.price);
     expect(allMenuItems[0].weight).toStrictEqual(menuItems1.weight);
     expect(allMenuItems[0].time).toStrictEqual(menuItems1.time);
     expect(allMenuItems[0].description).toStrictEqual(menuItems1.description);
     expect(allMenuItems[0].category.restaurant._id).toStrictEqual(restaurantId);
     expect(allMenuItems[1].name).toStrictEqual(menuItems2.name);
-    expect(allMenuItems[1].pictureUrl).toBe(pictureUrl);
     expect(allMenuItems[1].price).toStrictEqual(menuItems2.price);
     expect(allMenuItems[1].weight).toStrictEqual(menuItems2.weight);
     expect(allMenuItems[1].time).toStrictEqual(menuItems2.time);
@@ -182,7 +184,6 @@ describe('MenuService', () => {
     expect(menuItems).toBeDefined();
     expect(menuItems.items.length).toBe(2);
     expect(menuItems.totalPages).toStrictEqual(3);
-    expect(menuItems.items[0].pictureUrl).toBe(pictureUrl);
     expect(menuItems.items[0].price).toStrictEqual(menuItems2.price);
     expect(menuItems.items[0].weight).toStrictEqual(menuItems2.weight);
     expect(menuItems.items[0].time).toStrictEqual(menuItems2.time);
@@ -193,7 +194,6 @@ describe('MenuService', () => {
       restaurantId,
     );
     expect(menuItems.items[1].name).toStrictEqual(menuItems3.name);
-    expect(menuItems.items[1].pictureUrl).toBe(pictureUrl);
     expect(menuItems.items[1].price).toStrictEqual(menuItems3.price);
     expect(menuItems.items[1].weight).toStrictEqual(menuItems3.weight);
     expect(menuItems.items[1].time).toStrictEqual(menuItems3.time);
@@ -204,5 +204,5 @@ describe('MenuService', () => {
       restaurantId,
     );
     expect(menuItems.items[0]._id).not.toBe(menuItems.items[1]._id);
-  });
+  }, 7000);
 });
