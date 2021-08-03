@@ -149,8 +149,6 @@ describe('RestaurantService', () => {
       dto,
     );
 
-    console.log(updatedRestaurant);
-
     expect(restaurant.tables.length).not.toBe(updatedRestaurant.tables.length);
     expect(updatedRestaurant.tables.length).toBe(3);
     expect(updatedRestaurant.tables[2].name).toBe(dto.name);
