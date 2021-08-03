@@ -1,7 +1,6 @@
 import { Module } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
-import { ConfigModule, ConfigService } from '@nestjs/config';
-import { JwtModule } from '@nestjs/jwt';
+import { ConfigService } from '@nestjs/config';
 
 import { RestaurantSchema, Restaurant } from './schemas/restaurant.schema';
 import { ActionSchema, Action } from './schemas/action.schema';
