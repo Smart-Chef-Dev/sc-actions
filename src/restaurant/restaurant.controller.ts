@@ -178,6 +178,15 @@ export class RestaurantController {
       throw new NotFoundException();
     }
 
+    const categoryNameIsAlreadyTakenInRestaurant =
+      await this.categoryService.findCategoriesByNameInRestaurant(
+        dto.name,
+        restaurant._id,
+      );
+    if (categoryNameIsAlreadyTakenInRestaurant) {
+      throw new ForbiddenException('Name is already taken');
+    }
+
     return this.categoryService.create(dto.name, restaurant);
   }
 

@@ -7,5 +7,6 @@ export class MenuItemsDto {
   weight: string;
   time: string;
   description: string;
+  categoryId: string;
   addons: AddonsDto[];
 }

@@ -28,6 +28,9 @@ export class MenuItems extends Document {
   description: string;
 
   @Prop()
+  n: number;
+
+  @Prop()
   addons: Addons[];
 
   @Prop()

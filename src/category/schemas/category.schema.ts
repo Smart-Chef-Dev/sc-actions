@@ -9,6 +9,9 @@ export class Category extends Document {
   name: string;
 
   @Prop()
+  n: number;
+
+  @Prop()
   restaurant: Restaurant;
 }
 
