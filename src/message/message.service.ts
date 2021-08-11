@@ -73,7 +73,11 @@ export class MessageService implements OnModuleInit {
     if (isUserAlreadyAssignedToTable) {
       return;
     }
-    await this.restaurantService.assignUserToTable(restaurant, table, newUser);
+    await this.restaurantService.assignWaitersToTable(
+      restaurant,
+      table,
+      newUser,
+    );
 
     this.logger.log(
       `Add new chat into restaurant, restaurantId: ${restaurantId}`,

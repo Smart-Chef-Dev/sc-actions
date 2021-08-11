@@ -13,6 +13,7 @@ import { MenuService } from '../menu/menu.service';
 import { MenuItems, MenuItemsSchema } from '../menu/schemas/menuItems.shema';
 import { Addon, AddonSchema } from '../restaurant/schemas/addon.shema';
 import { ImagesService } from '../images/images.service';
+import { UsersModule } from '../users/users.module';
 
 @Module({
   imports: [
@@ -22,6 +23,7 @@ import { ImagesService } from '../images/images.service';
       { name: Restaurant.name, schema: RestaurantSchema },
       { name: Addon.name, schema: AddonSchema },
     ]),
+    UsersModule,
   ],
   providers: [CategoryService, MenuService, ImagesService],
   exports: [CategoryService],

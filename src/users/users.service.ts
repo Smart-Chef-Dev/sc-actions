@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { JwtService } from '@nestjs/jwt';
-import { Model, UpdateQuery } from 'mongoose';
+import { Model } from 'mongoose';
 import * as bcrypt from 'bcrypt';
 import Stripe from 'stripe';
 
@@ -10,7 +10,6 @@ import { Users } from './schemas/users.schema';
 import { ConfigService } from '@nestjs/config';
 import { InjectStripe } from 'nestjs-stripe';
 import { Role } from './enums/role.enum';
-import { Restaurant } from '../restaurant/schemas/restaurant.schema';
 
 @Injectable()
 export class UsersService {
@@ -63,7 +62,9 @@ export class UsersService {
   async singIn(dto: CreateUserDto): Promise<string> {
     const user = await this.findByEmail(dto.email);
 
-    return this.jwtService.sign({ email: user.email });
+    return this.jwtService.sign({
+      email: user.email,
+    });
   }
 
   async findByEmail(email): Promise<Users> {

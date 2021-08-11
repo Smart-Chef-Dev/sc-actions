@@ -7,6 +7,8 @@ import {
   NotFoundException,
   Param,
   Post,
+  Req,
+  UseGuards,
 } from '@nestjs/common';
 
 import { MenuService } from './menu.service';
@@ -16,6 +18,9 @@ import { MenuItemsDto } from './dto/menuItems';
 import { ImagesService } from '../images/images.service';
 import { CategoryService } from '../category/category.service';
 import { RestaurantService } from '../restaurant/restaurant.service';
+import { checkIfUserHasPermissionToChangeRestaurant } from '../utils/checkIfUserHasPermissionToChangeRestaurant';
+import { Users } from '../users/schemas/users.schema';
+import { JwtGuard } from '../guard/jwt.guard';
 
 @Controller('menu')
 export class MenuController {
@@ -36,7 +41,9 @@ export class MenuController {
     @Body() dto: CreateCategoryDto,
     @Param('menuItemId1') menuItemId1: string,
     @Param('menuItemId2') menuItemId2: string,
+    @Req() req,
   ) {
+    const user: Users = req.user;
     await checkIsObjectIdValid(menuItemId1);
     await checkIsObjectIdValid(menuItemId2);
 
@@ -46,6 +53,11 @@ export class MenuController {
         `MenuItem with id(${menuItemId1}) does not exist`,
       );
     }
+
+    await checkIfUserHasPermissionToChangeRestaurant(
+      user,
+      menuItem1.category.restaurant._id,
+    );
 
     const menuItem2 = await this.menuService.findById(menuItemId2);
     if (!menuItem2) {
@@ -57,8 +69,10 @@ export class MenuController {
     return this.menuService.swapMenuItems(menuItem1, menuItem2);
   }
 
+  @UseGuards(JwtGuard)
   @Delete(':id')
-  async removeMenuItem(@Param('id') menuItemId: string) {
+  async removeMenuItem(@Param('id') menuItemId: string, @Req() req) {
+    const user: Users = req.user;
     await checkIsObjectIdValid(menuItemId);
 
     const menuItem = await this.menuService.findById(menuItemId);
@@ -68,15 +82,24 @@ export class MenuController {
       );
     }
 
+    await checkIfUserHasPermissionToChangeRestaurant(
+      user,
+      menuItem.category.restaurant._id,
+    );
+
     return this.menuService.removeMenuItem(menuItemId);
   }
 
+  @UseGuards(JwtGuard)
   @Post(':id/update')
-  async updateById(@Body() dto: MenuItemsDto, @Param('id') id: string) {
+  async updateById(
+    @Body() dto: MenuItemsDto,
+    @Param('id') id: string,
+    @Req() req,
+  ) {
+    const user: Users = req.user;
     await checkIsObjectIdValid(id);
     await checkIsObjectIdValid(dto.categoryId);
-
-    console.log(dto);
 
     if (!dto.categoryId) {
       throw new BadRequestException('The request body must have categoryId');
@@ -86,6 +109,11 @@ export class MenuController {
     if (!menuItem) {
       throw new NotFoundException();
     }
+
+    await checkIfUserHasPermissionToChangeRestaurant(
+      user,
+      menuItem.category.restaurant._id,
+    );
 
     const isPictureExists = await this.imagesService.checkFileForExistence(
       dto.pictureUrl,
@@ -102,11 +130,14 @@ export class MenuController {
     return this.menuService.updateById(id, { ...dto, category });
   }
 
+  @UseGuards(JwtGuard)
   @Post(':menuItemId/addon/:addonId')
   async addAddon(
     @Param('menuItemId') menuItemId: string,
     @Param('addonId') addonId: string,
+    @Req() req,
   ) {
+    const user: Users = req.user;
     await checkIsObjectIdValid(menuItemId);
     await checkIsObjectIdValid(addonId);
 
@@ -119,6 +150,11 @@ export class MenuController {
     if (!menuItem) {
       throw new NotFoundException('MenuItem not found');
     }
+
+    await checkIfUserHasPermissionToChangeRestaurant(
+      user,
+      menuItem.category.restaurant._id,
+    );
 
     const addonExistInMenuItem = await menuItem.addons.find((a) =>
       a._id.equals(addonId),

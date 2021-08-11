@@ -179,7 +179,7 @@ export class RestaurantService {
     return !!tables?.find((t) => t._id.equals(tableId)) ?? false;
   }
 
-  async assignUserToTable(
+  async assignWaitersToTable(
     restaurant: Restaurant,
     table: Table,
     user: Users,
