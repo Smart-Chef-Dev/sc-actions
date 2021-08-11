@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { Model, UpdateQuery } from 'mongoose';
+import { Model, Types, UpdateQuery } from 'mongoose';
 
 import { Restaurant } from './schemas/restaurant.schema';
 import { Action } from './schemas/action.schema';
@@ -9,6 +9,8 @@ import { RestaurantDto } from './dto/restaurant.dto';
 import { ActionDto } from './dto/action.dto';
 import { TableDto } from './dto/table.dto';
 import { Users } from '../users/schemas/users.schema';
+import { Addon } from './schemas/addon.shema';
+import { AddonDto } from './dto/addon.dto';
 
 @Injectable()
 export class RestaurantService {
@@ -20,6 +22,7 @@ export class RestaurantService {
     @InjectModel(Table.name)
     private readonly tableModel: Model<Table>,
     @InjectModel(Users.name) private usersModel: Model<Users>,
+    @InjectModel(Addon.name) private addonModel: Model<Addon>,
   ) {}
 
   public async findAll(): Promise<Restaurant[]> {
@@ -42,7 +45,24 @@ export class RestaurantService {
     return restaurant?.tables;
   }
 
+  public async findAllAddons(id: string): Promise<Addon[]> {
+    const restaurant = await this.findById(id);
+
+    return restaurant?.addons;
+  }
+
   public async create(dto: RestaurantDto): Promise<Restaurant> {
+    const addons = await Promise.all(
+      dto.addons?.map(
+        (m) =>
+          new this.addonModel({
+            name: m.name,
+            price: m.price,
+            weight: m.weight,
+          }),
+      ) ?? [],
+    );
+
     const tables = await Promise.all(
       dto.tables?.map(
         (t) =>
@@ -69,6 +89,7 @@ export class RestaurantService {
       currencyCode: dto.currencyCode,
       tables: tables,
       actions: actions,
+      addons: addons,
     });
 
     return restaurant.save();
@@ -113,6 +134,40 @@ export class RestaurantService {
         tables: table,
       },
     });
+  }
+
+  public async addAddonIntoRestaurant(
+    restaurantId: string,
+    dto: AddonDto,
+  ): Promise<Addon> {
+    const addon = await new this.addonModel({
+      ...dto,
+    });
+
+    await this.updateById(restaurantId, {
+      $push: {
+        addons: addon,
+      },
+    });
+
+    return addon;
+  }
+
+  public async findAddonById(addonId: string): Promise<Addon> {
+    const restaurant = await this.restaurantModel.findOne({
+      'addons._id': Types.ObjectId(addonId),
+    });
+
+    return restaurant?.addons.find((a) => a._id.equals(addonId));
+  }
+
+  public async checkAddonExistingInRestaurantByName(
+    restaurantId: string,
+    name: string,
+  ): Promise<boolean> {
+    const addons = await this.findAllAddons(restaurantId);
+
+    return !!addons?.find((a) => a.name === name) ?? false;
   }
 
   public async checkTableExistingInRestaurant(

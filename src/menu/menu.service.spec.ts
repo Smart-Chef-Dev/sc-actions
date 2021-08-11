@@ -7,7 +7,7 @@ import { MenuService } from './menu.service';
 
 import { Category, CategorySchema } from '../category/schemas/category.schema';
 import { MenuItems, MenuItemsSchema } from './schemas/menuItems.shema';
-import { Addons, AddonsSchema } from './schemas/addons.shema';
+import { Addon, AddonSchema } from '../restaurant/schemas/addon.shema';
 import {
   Restaurant,
   RestaurantSchema,
@@ -34,7 +34,7 @@ describe('MenuService', () => {
         MongooseModule.forFeature([
           { name: Category.name, schema: CategorySchema },
           { name: MenuItems.name, schema: MenuItemsSchema },
-          { name: Addons.name, schema: AddonsSchema },
+          { name: Addon.name, schema: AddonSchema },
           { name: Restaurant.name, schema: RestaurantSchema },
         ]),
       ],

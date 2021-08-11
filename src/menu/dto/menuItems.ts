@@ -1,4 +1,5 @@
-import { AddonsDto } from './addons';
+import { ActionDto } from '../../restaurant/dto/action.dto';
+import { Addon } from '../../restaurant/schemas/addon.shema';
 
 export class MenuItemsDto {
   name: string;
@@ -8,5 +9,5 @@ export class MenuItemsDto {
   time: string;
   description: string;
   categoryId: string;
-  addons: AddonsDto[];
+  addons: Addon[];
 }

@@ -1,7 +1,6 @@
 import { Module } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
-import { ConfigModule, ConfigService } from '@nestjs/config';
-import { JwtModule } from '@nestjs/jwt';
+import { ConfigService } from '@nestjs/config';
 
 import { RestaurantSchema, Restaurant } from './schemas/restaurant.schema';
 import { ActionSchema, Action } from './schemas/action.schema';
@@ -17,7 +16,7 @@ import { UsersService } from '../users/users.service';
 import { Analytic, AnalyticSchema } from '../analytics/schemas/analytic.schema';
 import { Category, CategorySchema } from '../category/schemas/category.schema';
 import { MenuItems, MenuItemsSchema } from '../menu/schemas/menuItems.shema';
-import { Addons, AddonsSchema } from '../menu/schemas/addons.shema';
+import { Addon, AddonSchema } from './schemas/addon.shema';
 import { Users, UsersSchema } from '../users/schemas/users.schema';
 import { UsersModule } from '../users/users.module';
 
@@ -30,7 +29,7 @@ import { UsersModule } from '../users/users.module';
       { name: Analytic.name, schema: AnalyticSchema },
       { name: Category.name, schema: CategorySchema },
       { name: MenuItems.name, schema: MenuItemsSchema },
-      { name: Addons.name, schema: AddonsSchema },
+      { name: Addon.name, schema: AddonSchema },
       { name: Users.name, schema: UsersSchema },
     ]),
     UsersModule,

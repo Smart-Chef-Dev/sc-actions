@@ -15,6 +15,7 @@ import { checkIsObjectIdValid } from '../utils/checkIsObjectIdValid';
 import { MenuItemsDto } from './dto/menuItems';
 import { ImagesService } from '../images/images.service';
 import { CategoryService } from '../category/category.service';
+import { RestaurantService } from '../restaurant/restaurant.service';
 
 @Controller('menu')
 export class MenuController {
@@ -22,6 +23,7 @@ export class MenuController {
     private readonly menuService: MenuService,
     private readonly imagesService: ImagesService,
     private readonly categoryService: CategoryService,
+    private restaurantService: RestaurantService,
   ) {}
 
   @Get(':id')
@@ -74,6 +76,8 @@ export class MenuController {
     await checkIsObjectIdValid(id);
     await checkIsObjectIdValid(dto.categoryId);
 
+    console.log(dto);
+
     if (!dto.categoryId) {
       throw new BadRequestException('The request body must have categoryId');
     }
@@ -96,5 +100,37 @@ export class MenuController {
     }
 
     return this.menuService.updateById(id, { ...dto, category });
+  }
+
+  @Post(':menuItemId/addon/:addonId')
+  async addAddon(
+    @Param('menuItemId') menuItemId: string,
+    @Param('addonId') addonId: string,
+  ) {
+    await checkIsObjectIdValid(menuItemId);
+    await checkIsObjectIdValid(addonId);
+
+    const addon = await this.restaurantService.findAddonById(addonId);
+    if (!addon) {
+      throw new NotFoundException('Addon not found');
+    }
+
+    const menuItem = await this.menuService.findById(menuItemId);
+    if (!menuItem) {
+      throw new NotFoundException('MenuItem not found');
+    }
+
+    const addonExistInMenuItem = await menuItem.addons.find((a) =>
+      a._id.equals(addonId),
+    );
+    if (addonExistInMenuItem) {
+      throw new NotFoundException('Addon has already been added to menu Item');
+    }
+
+    return this.menuService.updateById(menuItemId, {
+      $push: {
+        addons: addon,
+      },
+    });
   }
 }

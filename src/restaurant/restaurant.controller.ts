@@ -31,6 +31,7 @@ import { AnalyticType } from '../analytics/enums/analytic-type.enum';
 import { checkIsObjectIdValid } from '../utils/checkIsObjectIdValid';
 import { UsersService } from '../users/users.service';
 import { Table } from './schemas/table.schema';
+import { AddonDto } from './dto/addon.dto';
 
 @Controller('restaurant')
 export class RestaurantController {
@@ -111,6 +112,44 @@ export class RestaurantController {
     );
 
     return res.status(HttpStatus.OK).json(restaurant);
+  }
+
+  @Get(':id/addon')
+  public async getRestaurantAddons(@Param('id') id: string) {
+    await checkIsObjectIdValid(id);
+
+    const isRestaurantExist = await this.restaurantService.findById(id);
+    if (!isRestaurantExist) {
+      throw new NotFoundException('Restaurant not found');
+    }
+
+    return this.restaurantService.findAllAddons(id);
+  }
+
+  @Post(':id/addon')
+  public async addAddonIntoRestaurant(
+    @Param('id') id: string,
+    @Body() body: AddonDto,
+  ) {
+    await checkIsObjectIdValid(id);
+
+    const isRestaurantExist = await this.restaurantService.findById(id);
+    if (!isRestaurantExist) {
+      throw new NotFoundException('Restaurant not found');
+    }
+
+    const isAddonExist =
+      await this.restaurantService.checkAddonExistingInRestaurantByName(
+        id,
+        body.name,
+      );
+    if (isAddonExist) {
+      throw new ForbiddenException(
+        'An addon with the same name already exists',
+      );
+    }
+
+    return this.restaurantService.addAddonIntoRestaurant(id, body);
   }
 
   @Get(':id/category')
