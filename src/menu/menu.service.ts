@@ -24,7 +24,7 @@ export class MenuService {
       .find({ 'category.restaurant._id': category.restaurant._id })
       .countDocuments();
 
-    const pictureLqipPreview = await lqip.base64(imgPath);
+    const pictureLqipPreview = await lqip.base64(imgPath.substring(1));
 
     const newMenuItem = new this.menuItemsModel({
       ...dto,

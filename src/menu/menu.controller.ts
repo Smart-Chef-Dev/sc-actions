@@ -36,6 +36,7 @@ export class MenuController {
     return this.menuService.findById(id);
   }
 
+  @UseGuards(JwtGuard)
   @Post(':menuItemId1/swap/:menuItemId2')
   async changeItemNumber(
     @Body() dto: CreateCategoryDto,
