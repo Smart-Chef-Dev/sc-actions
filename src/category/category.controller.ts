@@ -2,6 +2,7 @@ import {
   Body,
   Controller,
   Delete,
+  ForbiddenException,
   Get,
   NotFoundException,
   Param,
@@ -117,6 +118,15 @@ export class CategoryController {
       user,
       category.restaurant._id,
     );
+
+    const categoryNameIsAlreadyTakenInRestaurant =
+      await this.categoryService.findCategoriesByNameInRestaurant(
+        dto.name,
+        category.restaurant._id,
+      );
+    if (categoryNameIsAlreadyTakenInRestaurant) {
+      throw new ForbiddenException('Name is already taken');
+    }
 
     return this.categoryService.updateById(id, dto);
   }
