@@ -102,6 +102,16 @@ export class MenuService {
     return this.menuItemsModel.deleteOne({ _id: menuItemId });
   }
 
+  async findMenuItemByNameInRestaurant(
+    restaurantId: string,
+    name: string,
+  ): Promise<MenuItems> {
+    return this.menuItemsModel.findOne({
+      'category.restaurant._id': Types.ObjectId(restaurantId),
+      name: name,
+    });
+  }
+
   async updateById(id: string, changes): Promise<MenuItems> {
     return this.menuItemsModel.findOneAndUpdate({ _id: id }, changes, {
       new: true,

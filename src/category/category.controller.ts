@@ -70,6 +70,16 @@ export class CategoryController {
       category.restaurant._id,
     );
 
+    const menuItem = await this.menuService.findMenuItemByNameInRestaurant(
+      category.restaurant._id,
+      dto.name,
+    );
+    if (menuItem) {
+      throw new ForbiddenException(
+        'Menu Item with the same name already exists',
+      );
+    }
+
     const isPictureExists = await this.imagesService.checkPhotoForExistence(
       dto.pictureUrl,
     );
