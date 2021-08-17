@@ -92,4 +92,61 @@ describe('CategoryService', () => {
     expect(categoryById._id).toStrictEqual(category._id);
     expect(categoryById.name).toBe(category.name);
   });
+
+  it('should find a category by restaurant name', async () => {
+    const category = await createCategory();
+
+    const foundCategory1 = await service.findCategoriesByNameInRestaurant(
+      name,
+      String(restaurantId),
+    );
+
+    expect(foundCategory1).toBeDefined();
+    expect(foundCategory1.restaurant._id).toStrictEqual(restaurantId);
+    expect(foundCategory1.name).toBe(category.name);
+
+    const foundCategory2 = await service.findCategoriesByNameInRestaurant(
+      'Bob',
+      String(restaurantId),
+    );
+
+    expect(foundCategory2).toBe(null);
+  });
+
+  it('should remove the category', async () => {
+    const category = await createCategory();
+
+    await service.removeCategory(category._id);
+    const foundCategory = await service.findById(category._id);
+
+    expect(foundCategory).toBe(null);
+  });
+
+  it('should update categories', async () => {
+    const category = await createCategory();
+
+    const newCategoryName = 'coffees';
+    const updatedCategory = await service.updateById(category._id, {
+      name: newCategoryName,
+    });
+
+    expect(updatedCategory).toBeDefined();
+    expect(updatedCategory.name).toBe(newCategoryName);
+    expect(updatedCategory._id).toStrictEqual(category._id);
+  });
+
+  it('should swap categories', async () => {
+    const category1 = await createCategory();
+    const category2 = await createCategory();
+
+    expect(category1.n).toBe(0);
+    expect(category2.n).toBe(1);
+
+    await service.swapCategories(category1, category2);
+    const foundCategory1 = await service.findById(category1._id);
+    const foundCategory2 = await service.findById(category2._id);
+
+    expect(foundCategory1.n).toBe(1);
+    expect(foundCategory2.n).toBe(0);
+  });
 });
