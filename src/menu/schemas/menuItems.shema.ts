@@ -16,13 +16,13 @@ export class MenuItems extends Document {
   pictureLqipPreview: string;
 
   @Prop()
-  price: string;
+  price: number;
 
   @Prop()
-  weight: string;
+  weight: number;
 
   @Prop()
-  time: string;
+  time: number;
 
   @Prop()
   description: string;

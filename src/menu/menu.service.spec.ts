@@ -51,12 +51,12 @@ describe('MenuService', () => {
 
   const name = 'green tea';
   const pictureUrl =
-    'https://images.wallpaperscraft.ru/image/chay_listya_chashka_71596_2560x1600.jpg';
-  const price = '0.1';
-  const weight = '200';
-  const time = '3';
+    '/https://images.wallpaperscraft.ru/image/chay_listya_chashka_71596_2560x1600.jpg';
+  const price = 0.1;
+  const weight = 200;
+  const time = 3;
   const description = 'Regular green tea';
-  const createMenuItems = async () => {
+  const createMenuItem = async () => {
     const restaurant = new restaurantModel({
       _id: restaurantId,
       actions: [],
@@ -89,7 +89,7 @@ describe('MenuService', () => {
   });
 
   it('should create new menu items', async () => {
-    const menuItems = await createMenuItems();
+    const menuItems = await createMenuItem();
 
     expect(menuItems).toBeDefined();
     expect(menuItems._id).toBeDefined();
@@ -103,8 +103,8 @@ describe('MenuService', () => {
   });
 
   it('should get all menu items', async () => {
-    const menuItems1 = await createMenuItems();
-    const menuItems2 = await createMenuItems();
+    const menuItems1 = await createMenuItem();
+    const menuItems2 = await createMenuItem();
 
     const allMenuItems = await service.findAll(String(restaurantId));
 
@@ -128,7 +128,7 @@ describe('MenuService', () => {
   });
 
   it('should return menuItems by id', async () => {
-    const creatMenuItems = await createMenuItems();
+    const creatMenuItems = await createMenuItem();
 
     const findMenuItems = await service.findById(creatMenuItems._id);
 
@@ -143,8 +143,8 @@ describe('MenuService', () => {
   });
 
   it('should return all menu Items by category id', async () => {
-    const menuItems1 = await createMenuItems();
-    const menuItems2 = await createMenuItems();
+    const menuItems1 = await createMenuItem();
+    const menuItems2 = await createMenuItem();
 
     const allMenuItems = await service.findByCategoryId(String(categoryId));
 
@@ -168,9 +168,9 @@ describe('MenuService', () => {
   });
 
   it('should return a certain amount of menu item', async () => {
-    await createMenuItems();
-    const menuItems2 = await createMenuItems();
-    const menuItems3 = await createMenuItems();
+    await createMenuItem();
+    const menuItems2 = await createMenuItem();
+    const menuItems3 = await createMenuItem();
 
     const page = 1;
     const menuItems = await service.findByCategoryIdInLimit(
@@ -204,5 +204,51 @@ describe('MenuService', () => {
       restaurantId,
     );
     expect(menuItems.items[0]._id).not.toBe(menuItems.items[1]._id);
+  }, 7000);
+
+  it('should swap menuItem', async () => {
+    const menuItem1 = await createMenuItem();
+    const menuItem2 = await createMenuItem();
+
+    expect(menuItem1.n).toBe(0);
+    expect(menuItem2.n).toBe(1);
+
+    await service.swapMenuItems(menuItem1, menuItem2);
+    const foundMenuItem1 = await service.findById(menuItem1._id);
+    const foundMenuItem2 = await service.findById(menuItem2._id);
+
+    expect(foundMenuItem1.n).toBe(1);
+    expect(foundMenuItem2.n).toBe(0);
+  });
+
+  it('should remove the menuItem', async () => {
+    const menuItem = await createMenuItem();
+
+    await service.removeMenuItem(menuItem._id);
+    const foundMenuItem = await service.findById(menuItem._id);
+
+    expect(foundMenuItem).toBe(null);
+  });
+
+  it('should update menuItem', async () => {
+    const menuItem = await createMenuItem();
+
+    const newName = 'chamomile tea';
+    const newPrice = 15;
+    const newTime = 2;
+    const newDescription = 'Delicious chamomile tea';
+    const updatedMenuItem = await service.updateById(menuItem._id, {
+      name: newName,
+      price: newPrice,
+      time: newTime,
+      description: newDescription,
+    });
+
+    expect(updatedMenuItem).toBeDefined();
+    expect(updatedMenuItem._id).toStrictEqual(menuItem._id);
+    expect(updatedMenuItem.name).toBe(newName);
+    expect(updatedMenuItem.price).toBe(newPrice);
+    expect(updatedMenuItem.time).toBe(newTime);
+    expect(updatedMenuItem.description).toBe(newDescription);
   });
 });

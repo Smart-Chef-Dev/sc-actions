@@ -15,16 +15,12 @@ export class MenuService {
     @InjectModel(MenuItems.name) private menuItemsModel: Model<MenuItems>,
   ) {}
 
-  async create(
-    dto: MenuItemsDto,
-    category: Category,
-    imgPath: string,
-  ): Promise<MenuItems> {
+  async create(dto: MenuItemsDto, category: Category): Promise<MenuItems> {
     const n = await this.menuItemsModel
       .find({ 'category.restaurant._id': category.restaurant._id })
       .countDocuments();
 
-    const pictureLqipPreview = await lqip.base64(imgPath.substring(1));
+    const pictureLqipPreview = await lqip.base64(dto.pictureUrl.substring(1));
 
     const newMenuItem = new this.menuItemsModel({
       ...dto,

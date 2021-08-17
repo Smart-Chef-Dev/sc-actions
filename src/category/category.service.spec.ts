@@ -122,17 +122,17 @@ describe('CategoryService', () => {
     expect(foundCategory).toBe(null);
   });
 
-  it('should update categories', async () => {
+  it('should update category', async () => {
     const category = await createCategory();
 
-    const newCategoryName = 'coffees';
+    const newName = 'coffees';
     const updatedCategory = await service.updateById(category._id, {
-      name: newCategoryName,
+      name: newName,
     });
 
     expect(updatedCategory).toBeDefined();
-    expect(updatedCategory.name).toBe(newCategoryName);
     expect(updatedCategory._id).toStrictEqual(category._id);
+    expect(updatedCategory.name).toBe(newName);
   });
 
   it('should swap categories', async () => {
