@@ -78,6 +78,7 @@ describe('MenuService', () => {
         weight: weight,
         time: time,
         description: description,
+        categoryId: String(categoryId),
         addons: [],
       },
       category,
