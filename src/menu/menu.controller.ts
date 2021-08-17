@@ -3,7 +3,6 @@ import {
   Body,
   Controller,
   Delete,
-  ForbiddenException,
   Get,
   NotFoundException,
   Param,
@@ -110,17 +109,6 @@ export class MenuController {
     const menuItem = await this.menuService.findById(id);
     if (!menuItem) {
       throw new NotFoundException();
-    }
-
-    const menuItemWithCurrentName =
-      await this.menuService.findMenuItemByNameInRestaurant(
-        menuItem.category.restaurant._id,
-        dto.name,
-      );
-    if (menuItemWithCurrentName) {
-      throw new ForbiddenException(
-        'Menu Item with the same name already exists',
-      );
     }
 
     await checkIfUserHasPermissionToChangeRestaurant(
