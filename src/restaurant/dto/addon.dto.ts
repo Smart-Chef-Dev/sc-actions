@@ -10,4 +10,8 @@ export class AddonDto {
 
   @IsNumber()
   readonly weight: number;
+
+  public constructor(init?: Partial<AddonDto>) {
+    Object.assign(this, init);
+  }
 }
