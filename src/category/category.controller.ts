@@ -96,6 +96,13 @@ export class CategoryController {
       category.restaurant._id,
     );
 
+    const allCategoryMenuItems = await this.menuService.findByCategoryId(
+      category._id,
+    );
+    for (const menuItem of allCategoryMenuItems) {
+      await this.menuService.removeMenuItem(menuItem._id);
+    }
+
     return this.categoryService.removeCategory(id);
   }
 
