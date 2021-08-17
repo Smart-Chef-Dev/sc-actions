@@ -157,11 +157,12 @@ export class MenuController {
       menuItem.category.restaurant._id,
     );
 
-    const addonExistInMenuItem = await menuItem.addons.find((a) =>
-      a._id.equals(addonId),
+    console.log(menuItem.addons);
+    const addonExistInMenuItem = await menuItem.addons.find(
+      (a) => a._id === addonId,
     );
     if (addonExistInMenuItem) {
-      throw new NotFoundException('Addon has already been added to menu Item');
+      return;
     }
 
     return this.menuService.updateById(menuItemId, {

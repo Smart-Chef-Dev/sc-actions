@@ -65,7 +65,8 @@ export class MenuService {
         'category._id': Types.ObjectId(categoryId),
       })
       .skip(+page)
-      .limit(+limit);
+      .limit(+limit)
+      .sort({ n: 0 });
 
     const totalPages = await this.menuItemsModel
       .find({

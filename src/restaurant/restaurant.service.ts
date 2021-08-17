@@ -54,11 +54,11 @@ export class RestaurantService {
   public async create(dto: RestaurantDto): Promise<Restaurant> {
     const addons = await Promise.all(
       dto.addons?.map(
-        (m) =>
+        (a) =>
           new this.addonModel({
-            name: m.name,
-            price: m.price,
-            weight: m.weight,
+            name: a.name,
+            price: a.price,
+            weight: a.weight,
           }),
       ) ?? [],
     );
