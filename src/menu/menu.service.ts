@@ -84,17 +84,6 @@ export class MenuService {
     };
   }
 
-  async swapMenuItems(menuItem1, menuItem2) {
-    await this.menuItemsModel.updateOne(
-      { _id: menuItem1._id },
-      { n: menuItem2.n },
-    );
-    await this.menuItemsModel.updateOne(
-      { _id: menuItem2._id },
-      { n: menuItem1.n },
-    );
-  }
-
   async removeMenuItem(menuItemId: string) {
     return this.menuItemsModel.deleteOne({ _id: menuItemId });
   }

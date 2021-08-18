@@ -141,7 +141,6 @@ export class CategoryController {
   @UseGuards(JwtGuard)
   @Post(':categoryId1/swap/:categoryId2')
   async changeItemNumber(
-    @Body() dto: CreateCategoryDto,
     @Param('categoryId1') categoryId1: string,
     @Param('categoryId2') categoryId2: string,
     @Req() req,
@@ -169,6 +168,7 @@ export class CategoryController {
       );
     }
 
-    return this.categoryService.swapCategories(category1, category2);
+    await this.categoryService.updateById(category1._id, { n: category2.n });
+    await this.categoryService.updateById(category2._id, { n: category1.n });
   }
 }

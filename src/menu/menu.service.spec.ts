@@ -126,7 +126,7 @@ describe('MenuService', () => {
     expect(allMenuItems[1].description).toStrictEqual(menuItems2.description);
     expect(allMenuItems[1].category.restaurant._id).toStrictEqual(restaurantId);
     expect(allMenuItems[0]._id).not.toBe(allMenuItems[1]._id);
-  });
+  }, 7000);
 
   it('should return menuItems by id', async () => {
     const creatMenuItems = await createMenuItem();
@@ -206,21 +206,6 @@ describe('MenuService', () => {
     );
     expect(menuItems.items[0]._id).not.toBe(menuItems.items[1]._id);
   }, 7000);
-
-  it('should swap menuItem', async () => {
-    const menuItem1 = await createMenuItem();
-    const menuItem2 = await createMenuItem();
-
-    expect(menuItem1.n).toBe(0);
-    expect(menuItem2.n).toBe(1);
-
-    await service.swapMenuItems(menuItem1, menuItem2);
-    const foundMenuItem1 = await service.findById(menuItem1._id);
-    const foundMenuItem2 = await service.findById(menuItem2._id);
-
-    expect(foundMenuItem1.n).toBe(1);
-    expect(foundMenuItem2.n).toBe(0);
-  });
 
   it('should remove the menuItem', async () => {
     const menuItem = await createMenuItem();

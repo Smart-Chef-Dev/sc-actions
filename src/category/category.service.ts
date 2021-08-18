@@ -59,15 +59,4 @@ export class CategoryService {
       new: true,
     });
   }
-
-  async swapCategories(category1, category2) {
-    await this.categoryModel.updateOne(
-      { _id: category1._id },
-      { n: category2.n },
-    );
-    await this.categoryModel.updateOne(
-      { _id: category2._id },
-      { n: category1.n },
-    );
-  }
 }

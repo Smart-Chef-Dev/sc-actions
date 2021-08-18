@@ -67,7 +67,8 @@ export class MenuController {
       );
     }
 
-    return this.menuService.swapMenuItems(menuItem1, menuItem2);
+    await this.menuService.updateById(menuItem1._id, { n: menuItem2.n });
+    await this.menuService.updateById(menuItem2._id, { n: menuItem1.n });
   }
 
   @UseGuards(JwtGuard)
@@ -157,7 +158,6 @@ export class MenuController {
       menuItem.category.restaurant._id,
     );
 
-    console.log(menuItem.addons);
     const addonExistInMenuItem = await menuItem.addons.find(
       (a) => a._id === addonId,
     );
