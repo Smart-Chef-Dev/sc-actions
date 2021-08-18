@@ -38,7 +38,7 @@ export class MenuController {
 
   @UseGuards(JwtGuard)
   @Post(':menuItemId1/swap/:menuItemId2')
-  async changeItemNumber(
+  async swapItem(
     @Body() dto: CreateCategoryDto,
     @Param('menuItemId1') menuItemId1: string,
     @Param('menuItemId2') menuItemId2: string,

@@ -1,6 +1,5 @@
 import { Controller, Get, Param, Post, Req, UseGuards } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { JwtService } from '@nestjs/jwt';
 import { Model } from 'mongoose';
 
 import { ProductsStripeService } from './products-stripe.service';

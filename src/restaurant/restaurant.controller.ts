@@ -277,7 +277,7 @@ export class RestaurantController {
 
   @UseGuards(JwtGuard)
   @Get(':id/user/verification-of-rights')
-  async CheckingUserAccessToTheRestaurant(@Param('id') id: string, @Req() req) {
+  async checkingUserAccessToTheRestaurant(@Param('id') id: string, @Req() req) {
     const user: Users = req.user;
     await checkIfUserHasPermissionToChangeRestaurant(user, id);
 
