@@ -9,6 +9,9 @@ export class Restaurant extends Document {
   @Prop({ required: true })
   name: string;
 
+  @Prop()
+  language: string;
+
   @Prop([String])
   usernames: string[];
 
