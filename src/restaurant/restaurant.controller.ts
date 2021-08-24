@@ -312,6 +312,6 @@ export class RestaurantController {
     );
     await this.imagesService.saveFile(pathFile, file.buffer);
 
-    return `/${pathFile}`;
+    return pathFile;
   }
 }

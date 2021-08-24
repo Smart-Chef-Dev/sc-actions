@@ -13,7 +13,7 @@ export class ImagesService {
 
   async checkPhotoForExistence(path: string) {
     try {
-      await fs.access(path.substring(1));
+      await fs.access(path);
       return true;
     } catch {
       return false;

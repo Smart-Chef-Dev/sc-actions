@@ -20,12 +20,13 @@ export class MenuService {
       .find({ 'category.restaurant._id': category.restaurant._id })
       .countDocuments();
 
-    const pictureLqipPreview = await lqip.base64(dto.pictureUrl.substring(1));
+    const pictureLqipPreview = await lqip.base64(dto.pictureUrl);
 
     const newMenuItem = new this.menuItemsModel({
       ...dto,
       category: category,
       pictureLqipPreview: pictureLqipPreview,
+      pictureUrl: `/${dto.pictureUrl}`,
       n: n,
     });
 
