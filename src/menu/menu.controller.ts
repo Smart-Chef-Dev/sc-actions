@@ -118,7 +118,7 @@ export class MenuController {
     );
 
     const isPictureExists = await this.imagesService.checkPhotoForExistence(
-      dto.pictureUrl,
+      dto.pictureUrl.substring(1),
     );
     if (!isPictureExists && dto.pictureUrl) {
       throw new NotFoundException('Image not found');
