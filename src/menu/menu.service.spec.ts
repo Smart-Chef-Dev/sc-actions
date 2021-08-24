@@ -51,7 +51,7 @@ describe('MenuService', () => {
 
   const name = 'green tea';
   const pictureUrl =
-    '/https://images.wallpaperscraft.ru/image/chay_listya_chashka_71596_2560x1600.jpg';
+    'https://images.wallpaperscraft.ru/image/chay_listya_chashka_71596_2560x1600.jpg';
   const price = 0.1;
   const weight = 200;
   const time = 3;
@@ -95,7 +95,6 @@ describe('MenuService', () => {
     expect(menuItems).toBeDefined();
     expect(menuItems._id).toBeDefined();
     expect(menuItems.name).toBe(name);
-    expect(menuItems.pictureUrl).toBe(pictureUrl);
     expect(menuItems.price).toBe(price);
     expect(menuItems.weight).toBe(weight);
     expect(menuItems.time).toBe(time);
@@ -112,14 +111,12 @@ describe('MenuService', () => {
     expect(allMenuItems).toBeDefined();
     expect(allMenuItems.length).toBe(2);
     expect(allMenuItems[0].name).toStrictEqual(menuItems1.name);
-    expect(allMenuItems[0].pictureUrl).toBe(pictureUrl);
     expect(allMenuItems[0].price).toStrictEqual(menuItems1.price);
     expect(allMenuItems[0].weight).toStrictEqual(menuItems1.weight);
     expect(allMenuItems[0].time).toStrictEqual(menuItems1.time);
     expect(allMenuItems[0].description).toStrictEqual(menuItems1.description);
     expect(allMenuItems[0].category.restaurant._id).toStrictEqual(restaurantId);
     expect(allMenuItems[1].name).toStrictEqual(menuItems2.name);
-    expect(allMenuItems[1].pictureUrl).toBe(pictureUrl);
     expect(allMenuItems[1].price).toStrictEqual(menuItems2.price);
     expect(allMenuItems[1].weight).toStrictEqual(menuItems2.weight);
     expect(allMenuItems[1].time).toStrictEqual(menuItems2.time);
@@ -135,7 +132,6 @@ describe('MenuService', () => {
 
     expect(findMenuItems).toBeDefined();
     expect(findMenuItems.name).toStrictEqual(creatMenuItems.name);
-    expect(findMenuItems.pictureUrl).toBe(pictureUrl);
     expect(findMenuItems.price).toStrictEqual(creatMenuItems.price);
     expect(findMenuItems.weight).toStrictEqual(creatMenuItems.weight);
     expect(findMenuItems.time).toStrictEqual(creatMenuItems.time);
@@ -152,14 +148,12 @@ describe('MenuService', () => {
     expect(allMenuItems).toBeDefined();
     expect(allMenuItems.length).toBe(2);
     expect(allMenuItems[0].name).toStrictEqual(menuItems1.name);
-    expect(allMenuItems[0].pictureUrl).toBe(pictureUrl);
     expect(allMenuItems[0].price).toStrictEqual(menuItems1.price);
     expect(allMenuItems[0].weight).toStrictEqual(menuItems1.weight);
     expect(allMenuItems[0].time).toStrictEqual(menuItems1.time);
     expect(allMenuItems[0].description).toStrictEqual(menuItems1.description);
     expect(allMenuItems[0].category.restaurant._id).toStrictEqual(restaurantId);
     expect(allMenuItems[1].name).toStrictEqual(menuItems2.name);
-    expect(allMenuItems[1].pictureUrl).toBe(pictureUrl);
     expect(allMenuItems[1].price).toStrictEqual(menuItems2.price);
     expect(allMenuItems[1].weight).toStrictEqual(menuItems2.weight);
     expect(allMenuItems[1].time).toStrictEqual(menuItems2.time);
@@ -183,7 +177,6 @@ describe('MenuService', () => {
     expect(menuItems).toBeDefined();
     expect(menuItems.items.length).toBe(2);
     expect(menuItems.totalPages).toStrictEqual(3);
-    expect(menuItems.items[0].pictureUrl).toBe(pictureUrl);
     expect(menuItems.items[0].price).toStrictEqual(menuItems2.price);
     expect(menuItems.items[0].weight).toStrictEqual(menuItems2.weight);
     expect(menuItems.items[0].time).toStrictEqual(menuItems2.time);
@@ -194,7 +187,6 @@ describe('MenuService', () => {
       restaurantId,
     );
     expect(menuItems.items[1].name).toStrictEqual(menuItems3.name);
-    expect(menuItems.items[1].pictureUrl).toBe(pictureUrl);
     expect(menuItems.items[1].price).toStrictEqual(menuItems3.price);
     expect(menuItems.items[1].weight).toStrictEqual(menuItems3.weight);
     expect(menuItems.items[1].time).toStrictEqual(menuItems3.time);
