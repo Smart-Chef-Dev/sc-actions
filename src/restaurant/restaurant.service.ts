@@ -8,6 +8,7 @@ import { Table } from './schemas/table.schema';
 import { RestaurantDto } from './dto/restaurant.dto';
 import { ActionDto } from './dto/action.dto';
 import { TableDto } from './dto/table.dto';
+import { LanguageEnum } from './enums/language.enum';
 import { Users } from '../users/schemas/users.schema';
 
 @Injectable()
@@ -65,8 +66,8 @@ export class RestaurantService {
     );
 
     const restaurant = await new this.restaurantModel({
-      name: dto.name,
-      currencyCode: dto.currencyCode,
+      ...dto,
+      language: LanguageEnum[dto.language],
       tables: tables,
       actions: actions,
     });
