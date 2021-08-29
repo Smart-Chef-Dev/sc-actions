@@ -8,6 +8,7 @@ import { Category } from '../category/schemas/category.schema';
 
 import { MenuItemsDto } from './dto/menuItems';
 import { Addons } from './schemas/addons.shema';
+import { ConfigService } from '@nestjs/config';
 
 @Injectable()
 export class MenuService {
@@ -17,12 +18,8 @@ export class MenuService {
     @InjectModel(Addons.name) private addonsModel: Model<Addons>,
   ) {}
 
-  async create(
-    dto: MenuItemsDto,
-    category: Category,
-    imgPath: string,
-  ): Promise<MenuItems> {
-    const pictureLqipPreview = await lqip.base64(imgPath);
+  async create(dto: MenuItemsDto, category: Category): Promise<MenuItems> {
+    const pictureLqipPreview = await lqip.base64(dto.pictureUrl);
 
     const addons = await Promise.all(
       dto.addons?.map(
@@ -39,6 +36,7 @@ export class MenuService {
       category: category,
       pictureLqipPreview: pictureLqipPreview,
       addons: addons,
+      pictureUrl: `/${dto.pictureUrl}`,
     });
 
     await newMenuItem.save();

@@ -58,6 +58,6 @@ export class CategoryController {
       throw new NotFoundException('Image not found');
     }
 
-    return this.menuService.create(dto, category, dto.pictureUrl);
+    return this.menuService.create(dto, category);
   }
 }
