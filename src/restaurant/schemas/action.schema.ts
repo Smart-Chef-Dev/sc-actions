@@ -10,6 +10,9 @@ export class Action extends Document {
   message: string;
 
   @Prop()
+  type: string;
+
+  @Prop()
   link: string;
 }
 

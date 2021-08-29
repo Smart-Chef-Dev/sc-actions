@@ -59,6 +59,7 @@ export class RestaurantService {
         (a) =>
           new this.actionModel({
             name: a.name,
+            type: a.type,
             link: a.link,
             message: a.message,
           }),
@@ -91,6 +92,7 @@ export class RestaurantService {
     const action = await new this.actionModel({
       name: dto.name,
       link: dto.link,
+      type: dto.type,
       message: dto.message,
     });
 
