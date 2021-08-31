@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { JwtService } from '@nestjs/jwt';
-import { Model } from 'mongoose';
+import { Model, UpdateQuery } from 'mongoose';
 import * as bcrypt from 'bcrypt';
 import Stripe from 'stripe';
 
@@ -10,6 +10,7 @@ import { Users } from './schemas/users.schema';
 import { ConfigService } from '@nestjs/config';
 import { InjectStripe } from 'nestjs-stripe';
 import { Role } from './enums/role.enum';
+import { Restaurant } from '../restaurant/schemas/restaurant.schema';
 
 @Injectable()
 export class UsersService {
@@ -40,6 +41,7 @@ export class UsersService {
         newUser = await new this.usersModel({
           email: dto.email,
           password: hash,
+          restaurantId: dto.restaurantId,
           role: Role.RESTAURANT_ADMIN,
         });
 
@@ -70,6 +72,15 @@ export class UsersService {
 
   async findById(id): Promise<Users> {
     return this.usersModel.findById(id);
+  }
+
+  async checkIfRestaurantIsTiedToRestaurantAdmin(
+    restaurantId: string,
+  ): Promise<boolean> {
+    return !!(await this.usersModel.findOne({
+      restaurantId: restaurantId,
+      role: Role.RESTAURANT_ADMIN,
+    }));
   }
 
   async findUserByUsernameInRestaurant(

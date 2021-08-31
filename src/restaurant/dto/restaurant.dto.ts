@@ -11,6 +11,9 @@ export class RestaurantDto {
   @IsNotEmpty()
   readonly currencyCode: string;
 
+  @IsString()
+  readonly language: string;
+
   readonly tables: TableDto[];
 
   readonly actions: ActionDto[];
