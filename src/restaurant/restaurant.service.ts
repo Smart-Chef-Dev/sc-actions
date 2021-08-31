@@ -8,6 +8,8 @@ import { Table } from './schemas/table.schema';
 import { RestaurantDto } from './dto/restaurant.dto';
 import { ActionDto } from './dto/action.dto';
 import { TableDto } from './dto/table.dto';
+import { LanguageEnum } from './enums/language.enum';
+import { Users } from '../users/schemas/users.schema';
 
 @Injectable()
 export class RestaurantService {
@@ -18,6 +20,7 @@ export class RestaurantService {
     private readonly actionModel: Model<Action>,
     @InjectModel(Table.name)
     private readonly tableModel: Model<Table>,
+    @InjectModel(Users.name) private usersModel: Model<Users>,
   ) {}
 
   public async findAll(): Promise<Restaurant[]> {
@@ -46,6 +49,7 @@ export class RestaurantService {
         (t) =>
           new this.tableModel({
             name: t.name,
+            userIds: [],
           }),
       ) ?? [],
     );
@@ -55,6 +59,7 @@ export class RestaurantService {
         (a) =>
           new this.actionModel({
             name: a.name,
+            type: a.type,
             link: a.link,
             message: a.message,
           }),
@@ -62,8 +67,8 @@ export class RestaurantService {
     );
 
     const restaurant = await new this.restaurantModel({
-      name: dto.name,
-      usernames: dto.usernames,
+      ...dto,
+      language: LanguageEnum[dto.language],
       tables: tables,
       actions: actions,
     });
@@ -87,6 +92,7 @@ export class RestaurantService {
     const action = await new this.actionModel({
       name: dto.name,
       link: dto.link,
+      type: dto.type,
       message: dto.message,
     });
 
@@ -119,5 +125,24 @@ export class RestaurantService {
     const tables = await this.findAllTables(restaurantId);
 
     return !!tables?.find((t) => t._id.equals(tableId)) ?? false;
+  }
+
+  async assignUserToTable(
+    restaurant: Restaurant,
+    table: Table,
+    user: Users,
+  ): Promise<Restaurant> {
+    const changedRestaurant = restaurant.tables.map((currentTable) => {
+      if (currentTable._id.equals(table._id)) {
+        currentTable.userIds = [...currentTable.userIds, String(user._id)];
+        return currentTable;
+      } else {
+        return currentTable;
+      }
+    });
+
+    return this.updateById(restaurant._id, {
+      $set: { tables: changedRestaurant },
+    });
   }
 }
