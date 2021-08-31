@@ -9,6 +9,8 @@ export class TableDto {
   @IsNotEmpty()
   readonly name: string;
 
+  readonly userIds: [];
+
   public constructor(init?: Partial<TableDto>) {
     Object.assign(this, init);
   }
