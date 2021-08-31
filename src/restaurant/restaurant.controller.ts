@@ -37,6 +37,7 @@ import { AddonDto } from './dto/addon.dto';
 import { checkIfUserHasPermissionToChangeRestaurant } from '../utils/checkIfUserHasPermissionToChangeRestaurant';
 import { Users } from '../users/schemas/users.schema';
 import { JwtGuard } from '../guard/jwt.guard';
+import { LanguageEnum } from './enums/language.enum';
 
 @Controller('restaurant')
 export class RestaurantController {
