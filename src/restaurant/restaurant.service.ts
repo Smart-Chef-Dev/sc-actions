@@ -8,6 +8,7 @@ import { Table } from './schemas/table.schema';
 import { RestaurantDto } from './dto/restaurant.dto';
 import { ActionDto } from './dto/action.dto';
 import { TableDto } from './dto/table.dto';
+import { LanguageEnum } from './enums/language.enum';
 import { Users } from '../users/schemas/users.schema';
 import { Addon } from './schemas/addon.shema';
 import { AddonDto } from './dto/addon.dto';
@@ -78,6 +79,7 @@ export class RestaurantService {
         (a) =>
           new this.actionModel({
             name: a.name,
+            type: a.type,
             link: a.link,
             message: a.message,
           }),
@@ -85,8 +87,8 @@ export class RestaurantService {
     );
 
     const restaurant = await new this.restaurantModel({
-      name: dto.name,
-      currencyCode: dto.currencyCode,
+      ...dto,
+      language: LanguageEnum[dto.language],
       tables: tables,
       actions: actions,
       addons: addons,
@@ -111,6 +113,7 @@ export class RestaurantService {
     const action = await new this.actionModel({
       name: dto.name,
       link: dto.link,
+      type: dto.type,
       message: dto.message,
     });
 

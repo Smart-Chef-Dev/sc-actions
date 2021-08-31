@@ -68,6 +68,18 @@ export class RestaurantController {
   public async create(@Res() res, @Body() dto: RestaurantDto) {
     const restaurant = await this.restaurantService.create(dto);
 
+    if (!LanguageEnum[dto.language]) {
+      let languages = [];
+      for (const key in LanguageEnum) {
+        languages = [...languages, key];
+      }
+      const text = `The language you specified is not supported by the application. Available languages ${languages.join(
+        ', ',
+      )}`;
+
+      throw new NotFoundException(text);
+    }
+
     return res.status(HttpStatus.OK).json(restaurant);
   }
 

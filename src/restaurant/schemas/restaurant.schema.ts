@@ -14,6 +14,9 @@ export class Restaurant extends Document {
   currencyCode: string;
 
   @Prop()
+  language: string;
+
+  @Prop()
   tables: Table[];
 
   @Prop()

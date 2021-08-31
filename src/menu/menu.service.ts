@@ -7,6 +7,8 @@ import { MenuItems } from './schemas/menuItems.shema';
 import { Category } from '../category/schemas/category.schema';
 
 import { MenuItemsDto } from './dto/menuItems';
+import { Addons } from './schemas/addons.shema';
+import { ConfigService } from '@nestjs/config';
 
 @Injectable()
 export class MenuService {
