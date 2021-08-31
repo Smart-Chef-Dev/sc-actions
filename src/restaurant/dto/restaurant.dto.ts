@@ -1,4 +1,4 @@
-import { MaxLength, IsNotEmpty, IsString, IsArray } from 'class-validator';
+import { MaxLength, IsNotEmpty, IsString } from 'class-validator';
 import { TableDto } from './table.dto';
 import { ActionDto } from './action.dto';
 
@@ -8,8 +8,11 @@ export class RestaurantDto {
   @IsNotEmpty()
   readonly name: string;
 
-  @IsArray()
-  readonly usernames: string[];
+  @IsNotEmpty()
+  readonly currencyCode: string;
+
+  @IsString()
+  readonly language: string;
 
   readonly tables: TableDto[];
 

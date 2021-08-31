@@ -1,13 +1,18 @@
-import { Injectable, OnModuleInit } from '@nestjs/common';
+import { Injectable, Logger, OnModuleInit } from '@nestjs/common';
 import * as TelegramBot from 'telebot';
 import { ConfigService } from '@nestjs/config';
 import autobind from 'autobind-decorator';
+import { UsersService } from '../users/users.service';
 
 @Injectable()
 export class TelegramService implements OnModuleInit {
   bot: TelegramBot = null;
 
-  constructor(private readonly configService: ConfigService) {}
+  constructor(
+    private readonly configService: ConfigService,
+    private readonly usersService: UsersService,
+    private readonly logger: Logger,
+  ) {}
 
   onModuleInit(): any {
     this.bot = new TelegramBot({
@@ -37,7 +42,32 @@ export class TelegramService implements OnModuleInit {
 
   @autobind
   async sendMessage(chatId: string, text: string, options: any = {}) {
-    return this.bot.sendMessage(chatId, text, options);
+    try {
+      await this.bot.sendMessage(chatId, text, options);
+    } catch (err) {
+      if (err.error_code === 403) {
+        this.logger.warn(
+          `Failed to send a message to the user(${chatId}). By reason ${err.description}`,
+        );
+      }
+    }
+  }
+
+  @autobind
+  async sendMessageToAssignedWaiters(
+    userIds: Array<string>,
+    text: string,
+    options: any = {},
+  ) {
+    for (const userId of userIds) {
+      const user = await this.usersService.findById(userId);
+
+      if (!user) {
+        continue;
+      }
+
+      await this.sendMessage(user.telegramId, text, options);
+    }
   }
 
   @autobind
