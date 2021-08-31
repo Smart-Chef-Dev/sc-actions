@@ -31,7 +31,7 @@ export class MenuItems extends Document {
   addons: Addon[];
 
   @Prop()
-  n: number;
+  order: number;
 
   @Prop()
   category: Category;

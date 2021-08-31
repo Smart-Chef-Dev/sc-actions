@@ -67,8 +67,12 @@ export class MenuController {
       );
     }
 
-    await this.menuService.updateById(menuItem1._id, { n: menuItem2.n });
-    await this.menuService.updateById(menuItem2._id, { n: menuItem1.n });
+    await this.menuService.updateById(menuItem1._id, {
+      order: menuItem2.order,
+    });
+    await this.menuService.updateById(menuItem2._id, {
+      order: menuItem1.order,
+    });
   }
 
   @UseGuards(JwtGuard)

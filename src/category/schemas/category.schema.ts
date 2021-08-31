@@ -9,7 +9,7 @@ export class Category extends Document {
   name: string;
 
   @Prop()
-  n: number;
+  order: number;
 
   @Prop()
   restaurant: Restaurant;

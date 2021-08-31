@@ -16,7 +16,7 @@ export class MenuService {
   ) {}
 
   async create(dto: MenuItemsDto, category: Category): Promise<MenuItems> {
-    const n = await this.menuItemsModel
+    const order = await this.menuItemsModel
       .find({ 'category.restaurant._id': category.restaurant._id })
       .countDocuments();
 
@@ -27,7 +27,7 @@ export class MenuService {
       category: category,
       pictureLqipPreview: pictureLqipPreview,
       pictureUrl: `/${dto.pictureUrl}`,
-      n: n,
+      order: order,
     });
 
     await newMenuItem.save();
@@ -39,7 +39,7 @@ export class MenuService {
       .find({
         'category.restaurant._id': Types.ObjectId(restaurantId),
       })
-      .sort({ n: 0 });
+      .sort({ order: 0 });
   }
 
   async findById(id: string): Promise<MenuItems> {
@@ -53,7 +53,7 @@ export class MenuService {
       .find({
         'category._id': Types.ObjectId(categoryId),
       })
-      .sort({ n: 0 });
+      .sort({ order: 0 });
   }
 
   async findByCategoryIdInLimit(
@@ -67,7 +67,7 @@ export class MenuService {
       })
       .skip(+page)
       .limit(+limit)
-      .sort({ n: 0 });
+      .sort({ order: 0 });
 
     const totalPages = await this.menuItemsModel
       .find({

@@ -168,7 +168,11 @@ export class CategoryController {
       );
     }
 
-    await this.categoryService.updateById(category1._id, { n: category2.n });
-    await this.categoryService.updateById(category2._id, { n: category1.n });
+    await this.categoryService.updateById(category1._id, {
+      order: category2.order,
+    });
+    await this.categoryService.updateById(category2._id, {
+      order: category1.order,
+    });
   }
 }

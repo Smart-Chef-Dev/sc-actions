@@ -14,14 +14,14 @@ export class CategoryService {
   ) {}
 
   async create(name: string, restaurant: Restaurant): Promise<Category> {
-    const n = await this.categoryModel
+    const order = await this.categoryModel
       .find({ 'restaurant._id': restaurant._id })
       .countDocuments();
 
     const newCategory = new this.categoryModel({
       name: name,
       restaurant: restaurant,
-      n,
+      order,
     });
 
     await newCategory.save();
@@ -33,7 +33,7 @@ export class CategoryService {
       .find({
         'restaurant._id': Types.ObjectId(restaurantId),
       })
-      .sort({ n: 0 });
+      .sort({ order: 0 });
   }
 
   async findById(id: string): Promise<Category> {
