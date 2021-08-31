@@ -36,7 +36,6 @@ export class MenuService {
       pictureLqipPreview: pictureLqipPreview,
       pictureUrl: `/${dto.pictureUrl}`,
       addons: addons,
-      pictureUrl: `/${dto.pictureUrl}`,
     });
 
     await newMenuItem.save();
