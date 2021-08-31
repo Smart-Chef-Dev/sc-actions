@@ -9,8 +9,11 @@ export class Restaurant extends Document {
   @Prop({ required: true })
   name: string;
 
-  @Prop([String])
-  usernames: string[];
+  @Prop()
+  currencyCode: string;
+
+  @Prop()
+  language: string;
 
   @Prop()
   tables: Table[];
