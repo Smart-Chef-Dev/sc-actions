@@ -11,24 +11,22 @@ import {
   Req,
   UseGuards,
 } from '@nestjs/common';
-import { ConfigService } from '@nestjs/config';
 
 import { MenuService } from 'src/menu/menu.service';
-import { MenuItemsDto } from 'src/menu/dto/menuItems';
-import { checkIsObjectIdValid } from 'src/utils/checkIsObjectIdValid';
 import { CategoryService } from './category.service';
 import { ImagesService } from 'src/images/images.service';
 import { CreateCategoryDto } from './dto/create-category.dto';
 import { JwtGuard } from '../guard/jwt.guard';
 import { Users } from '../users/schemas/users.schema';
 import { checkIfUserHasPermissionToChangeRestaurant } from '../utils/checkIfUserHasPermissionToChangeRestaurant';
+import { MenuItemsDto } from 'src/menu/dto/menuItems';
+import { checkIsObjectIdValid } from 'src/utils/checkIsObjectIdValid';
 
 @Controller('category')
 export class CategoryController {
   constructor(
     private readonly menuService: MenuService,
     private readonly categoryService: CategoryService,
-    private readonly configService: ConfigService,
     private readonly imagesService: ImagesService,
   ) {}
 
@@ -70,7 +68,7 @@ export class CategoryController {
       category.restaurant._id,
     );
 
-    const isPictureExists = await this.imagesService.checkPhotoForExistence(
+    const isPictureExists = await this.imagesService.checkFileForExistence(
       dto.pictureUrl,
     );
     if (!isPictureExists) {

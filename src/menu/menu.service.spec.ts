@@ -4,7 +4,6 @@ import { MongoMemoryServer } from 'mongodb-memory-server';
 import { Mongoose, Types, Model } from 'mongoose';
 
 import { MenuService } from './menu.service';
-
 import { Category, CategorySchema } from '../category/schemas/category.schema';
 import { MenuItems, MenuItemsSchema } from './schemas/menuItems.shema';
 import { Addon, AddonSchema } from '../restaurant/schemas/addon.shema';
@@ -49,9 +48,9 @@ describe('MenuService', () => {
   const categoryId = Types.ObjectId('60c51b3d9345459e3ac60d5d');
   const restaurantId = Types.ObjectId('60c5165a27ab938e4f96e49f');
 
-  const name = 'green tea';
+  const name = 'Pork shashlik';
   const pictureUrl =
-    'https://images.wallpaperscraft.ru/image/chay_listya_chashka_71596_2560x1600.jpg';
+    'https://images.wallpaperscraft.ru/image/single/chay_zelenyy_listochki_myata_84998_1600x900.jpg';
   const price = 0.1;
   const weight = 200;
   const time = 3;
@@ -66,7 +65,7 @@ describe('MenuService', () => {
     });
     const category = new categoryModel({
       _id: categoryId,
-      name: 'tea',
+      name: 'shashliks',
       restaurant: restaurant,
     });
 
@@ -79,7 +78,16 @@ describe('MenuService', () => {
         time: time,
         description: description,
         categoryId: String(categoryId),
-        addons: [],
+        addons: [
+          {
+            name: 'Cоус1',
+            price: 3,
+          },
+          {
+            name: 'Cоус2',
+            price: 5,
+          },
+        ],
       },
       category,
     );

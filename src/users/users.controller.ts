@@ -9,9 +9,7 @@ import {
   Req,
 } from '@nestjs/common';
 import * as bcrypt from 'bcrypt';
-import { Model } from 'mongoose';
 import { UseGuards } from '@nestjs/common';
-import { InjectModel } from '@nestjs/mongoose';
 
 import { UsersService } from './users.service';
 import { CreateUserDto } from './dto/create-user.dto';
@@ -26,7 +24,6 @@ export class UsersController {
   constructor(
     private readonly usersService: UsersService,
     private restaurantService: RestaurantService,
-    @InjectModel(Users.name) private usersModel: Model<Users>,
   ) {}
 
   @Post('sign-up')

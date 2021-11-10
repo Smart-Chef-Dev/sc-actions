@@ -3,7 +3,7 @@ import { Document } from 'mongoose';
 
 @Schema()
 export class Users extends Document {
-  @Prop({ unique: true })
+  @Prop()
   email: string;
 
   @Prop()

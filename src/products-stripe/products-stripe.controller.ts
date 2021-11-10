@@ -1,6 +1,4 @@
 import { Controller, Get, Param, Post, Req, UseGuards } from '@nestjs/common';
-import { InjectModel } from '@nestjs/mongoose';
-import { Model } from 'mongoose';
 
 import { ProductsStripeService } from './products-stripe.service';
 import { UsersService } from '../users/users.service';
@@ -10,7 +8,6 @@ import { JwtGuard } from '../guard/jwt.guard';
 @Controller('products-stripe')
 export class ProductsStripeController {
   constructor(
-    @InjectModel(Users.name) private usersModel: Model<Users>,
     private readonly productsStripeService: ProductsStripeService,
     private readonly usersService: UsersService,
   ) {}

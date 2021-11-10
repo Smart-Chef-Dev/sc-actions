@@ -6,7 +6,7 @@ import { Addon } from '../../restaurant/schemas/addon.shema';
 
 @Schema()
 export class MenuItems extends Document {
-  @Prop()
+  @Prop({ required: true })
   name: string;
 
   @Prop()
@@ -33,7 +33,7 @@ export class MenuItems extends Document {
   @Prop()
   order: number;
 
-  @Prop()
+  @Prop({ required: true })
   category: Category;
 }
 

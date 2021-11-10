@@ -9,8 +9,6 @@ import { Restaurant } from '../restaurant/schemas/restaurant.schema';
 export class CategoryService {
   constructor(
     @InjectModel(Category.name) private categoryModel: Model<Category>,
-    @InjectModel(Restaurant.name)
-    private readonly restaurantModel: Model<Restaurant>,
   ) {}
 
   async create(name: string, restaurant: Restaurant): Promise<Category> {

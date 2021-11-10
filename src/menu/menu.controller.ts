@@ -121,7 +121,7 @@ export class MenuController {
       menuItem.category.restaurant._id,
     );
 
-    const isPictureExists = await this.imagesService.checkPhotoForExistence(
+    const isPictureExists = await this.imagesService.checkFileForExistence(
       dto.pictureUrl.substring(1),
     );
     if (!isPictureExists && dto.pictureUrl) {

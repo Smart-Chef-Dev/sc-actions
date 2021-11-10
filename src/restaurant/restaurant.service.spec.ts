@@ -1,17 +1,18 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { MongoMemoryServer } from 'mongodb-memory-server';
 import { MongooseModule } from '@nestjs/mongoose';
+import { Model, Types } from 'mongoose';
 import * as mongoose from 'mongoose';
 
-import { RestaurantService } from './restaurant.service';
 import { RestaurantSchema, Restaurant } from './schemas/restaurant.schema';
 import { TableSchema, Table } from './schemas/table.schema';
 import { ActionSchema, Action } from './schemas/action.schema';
+import { RestaurantService } from './restaurant.service';
+import { Users, UsersSchema } from '../users/schemas/users.schema';
+
 import { RestaurantDto } from './dto/restaurant.dto';
 import { ActionDto } from './dto/action.dto';
 import { TableDto } from './dto/table.dto';
-import { Users, UsersSchema } from '../users/schemas/users.schema';
-import { Model, Types } from 'mongoose';
 import { Addon, AddonSchema } from './schemas/addon.shema';
 import { AddonDto } from './dto/addon.dto';
 
