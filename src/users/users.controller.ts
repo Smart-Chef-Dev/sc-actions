@@ -24,7 +24,6 @@ export class UsersController {
   constructor(
     private readonly usersService: UsersService,
     private restaurantService: RestaurantService,
-    @InjectModel(Users.name) private usersModel: Model<Users>,
   ) {}
 
   @Post('sign-up')

@@ -13,8 +13,6 @@ import { Users, UsersSchema } from '../users/schemas/users.schema';
 import { RestaurantDto } from './dto/restaurant.dto';
 import { ActionDto } from './dto/action.dto';
 import { TableDto } from './dto/table.dto';
-import { Users, UsersSchema } from '../users/schemas/users.schema';
-import { Model, Types } from 'mongoose';
 import { Addon, AddonSchema } from './schemas/addon.shema';
 import { AddonDto } from './dto/addon.dto';
 

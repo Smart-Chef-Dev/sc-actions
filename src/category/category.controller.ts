@@ -68,7 +68,7 @@ export class CategoryController {
       category.restaurant._id,
     );
 
-    const isPictureExists = await this.imagesService.checkPhotoForExistence(
+    const isPictureExists = await this.imagesService.checkFileForExistence(
       dto.pictureUrl,
     );
     if (!isPictureExists) {

@@ -50,7 +50,7 @@ describe('MenuService', () => {
 
   const name = 'Pork shashlik';
   const pictureUrl =
-    'https://images.wallpaperscraft.ru/image/chay_listya_chashka_71596_2560x1600.jpg';
+    'https://images.wallpaperscraft.ru/image/single/chay_zelenyy_listochki_myata_84998_1600x900.jpg';
   const price = 0.1;
   const weight = 200;
   const time = 3;
@@ -77,7 +77,7 @@ describe('MenuService', () => {
         weight: weight,
         time: time,
         description: description,
-        categoryId: String(categoryId)
+        categoryId: String(categoryId),
         addons: [
           {
             name: 'Cоус1',

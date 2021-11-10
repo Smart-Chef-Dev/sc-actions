@@ -20,5 +20,8 @@ export class MenuItemsDto {
   @IsString()
   description: string;
 
+  @IsString()
+  categoryId: string;
+
   addons: AddonsDto[];
 }

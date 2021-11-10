@@ -26,7 +26,6 @@ export class MenuService {
       category: category,
       pictureLqipPreview: pictureLqipPreview,
       pictureUrl: `/${dto.pictureUrl}`,
-      addons: addons,
       order: order,
     });
 
