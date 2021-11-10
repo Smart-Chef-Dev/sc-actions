@@ -92,4 +92,46 @@ describe('CategoryService', () => {
     expect(categoryById._id).toStrictEqual(category._id);
     expect(categoryById.name).toBe(category.name);
   });
+
+  it('should find a category by restaurant name', async () => {
+    const category = await createCategory();
+
+    const foundCategory1 = await service.findCategoriesByNameInRestaurant(
+      name,
+      String(restaurantId),
+    );
+
+    expect(foundCategory1).toBeDefined();
+    expect(foundCategory1.restaurant._id).toStrictEqual(restaurantId);
+    expect(foundCategory1.name).toBe(category.name);
+
+    const foundCategory2 = await service.findCategoriesByNameInRestaurant(
+      'Bob',
+      String(restaurantId),
+    );
+
+    expect(foundCategory2).toBe(null);
+  });
+
+  it('should remove the category', async () => {
+    const category = await createCategory();
+
+    await service.removeCategory(category._id);
+    const foundCategory = await service.findById(category._id);
+
+    expect(foundCategory).toBe(null);
+  });
+
+  it('should update category', async () => {
+    const category = await createCategory();
+
+    const newName = 'coffees';
+    const updatedCategory = await service.updateById(category._id, {
+      name: newName,
+    });
+
+    expect(updatedCategory).toBeDefined();
+    expect(updatedCategory._id).toStrictEqual(category._id);
+    expect(updatedCategory.name).toBe(newName);
+  });
 });

@@ -16,15 +16,27 @@ import { CreateUserDto } from './dto/create-user.dto';
 import { JwtGuard } from '../guard/jwt.guard';
 import { Users } from './schemas/users.schema';
 import { Role } from './enums/role.enum';
+import { RestaurantService } from '../restaurant/restaurant.service';
+import { checkIsObjectIdValid } from '../utils/checkIsObjectIdValid';
 
 @Controller('users')
 export class UsersController {
-  constructor(private readonly usersService: UsersService) {}
+  constructor(
+    private readonly usersService: UsersService,
+    private restaurantService: RestaurantService,
+    @InjectModel(Users.name) private usersModel: Model<Users>,
+  ) {}
 
   @Post('sign-up')
   async signUp(@Body() dto: CreateUserDto) {
-    const isEmailExists = await this.usersService.findByEmail(dto.email);
+    await checkIsObjectIdValid(dto.restaurantId);
 
+    const restaurant = await this.restaurantService.findById(dto.restaurantId);
+    if (!restaurant) {
+      throw new NotFoundException('Restaurant not found');
+    }
+
+    const isEmailExists = await this.usersService.findByEmail(dto.email);
     if (isEmailExists) {
       throw new ForbiddenException('This email is already taken');
     }

@@ -6,7 +6,7 @@ import { Mongoose, Types, Model } from 'mongoose';
 import { MenuService } from './menu.service';
 import { Category, CategorySchema } from '../category/schemas/category.schema';
 import { MenuItems, MenuItemsSchema } from './schemas/menuItems.shema';
-import { Addons, AddonsSchema } from './schemas/addons.shema';
+import { Addon, AddonSchema } from '../restaurant/schemas/addon.shema';
 import {
   Restaurant,
   RestaurantSchema,
@@ -33,7 +33,7 @@ describe('MenuService', () => {
         MongooseModule.forFeature([
           { name: Category.name, schema: CategorySchema },
           { name: MenuItems.name, schema: MenuItemsSchema },
-          { name: Addons.name, schema: AddonsSchema },
+          { name: Addon.name, schema: AddonSchema },
           { name: Restaurant.name, schema: RestaurantSchema },
         ]),
       ],
@@ -50,12 +50,12 @@ describe('MenuService', () => {
 
   const name = 'Pork shashlik';
   const pictureUrl =
-    'https://images.wallpaperscraft.ru/image/shashlyk_myaso_ovoschi_shampura_71493_1920x1200.jpg';
-  const price = 10;
+    'https://images.wallpaperscraft.ru/image/chay_listya_chashka_71596_2560x1600.jpg';
+  const price = 0.1;
   const weight = 200;
-  const time = 20;
-  const description = 'Regular pork shashlik';
-  const createMenuItems = async () => {
+  const time = 3;
+  const description = 'Regular green tea';
+  const createMenuItem = async () => {
     const restaurant = new restaurantModel({
       _id: restaurantId,
       actions: [],
@@ -77,6 +77,7 @@ describe('MenuService', () => {
         weight: weight,
         time: time,
         description: description,
+        categoryId: String(categoryId)
         addons: [
           {
             name: 'Cоус1',
@@ -97,7 +98,7 @@ describe('MenuService', () => {
   });
 
   it('should create new menu items', async () => {
-    const menuItems = await createMenuItems();
+    const menuItems = await createMenuItem();
 
     expect(menuItems).toBeDefined();
     expect(menuItems._id).toBeDefined();
@@ -110,8 +111,8 @@ describe('MenuService', () => {
   });
 
   it('should get all menu items', async () => {
-    const menuItems1 = await createMenuItems();
-    const menuItems2 = await createMenuItems();
+    const menuItems1 = await createMenuItem();
+    const menuItems2 = await createMenuItem();
 
     const allMenuItems = await service.findAll(String(restaurantId));
 
@@ -130,10 +131,10 @@ describe('MenuService', () => {
     expect(allMenuItems[1].description).toStrictEqual(menuItems2.description);
     expect(allMenuItems[1].category.restaurant._id).toStrictEqual(restaurantId);
     expect(allMenuItems[0]._id).not.toBe(allMenuItems[1]._id);
-  });
+  }, 7000);
 
   it('should return menuItems by id', async () => {
-    const creatMenuItems = await createMenuItems();
+    const creatMenuItems = await createMenuItem();
 
     const findMenuItems = await service.findById(creatMenuItems._id);
 
@@ -147,8 +148,8 @@ describe('MenuService', () => {
   });
 
   it('should return all menu Items by category id', async () => {
-    const menuItems1 = await createMenuItems();
-    const menuItems2 = await createMenuItems();
+    const menuItems1 = await createMenuItem();
+    const menuItems2 = await createMenuItem();
 
     const allMenuItems = await service.findByCategoryId(String(categoryId));
 
@@ -170,9 +171,9 @@ describe('MenuService', () => {
   });
 
   it('should return a certain amount of menu item', async () => {
-    await createMenuItems();
-    const menuItems2 = await createMenuItems();
-    const menuItems3 = await createMenuItems();
+    await createMenuItem();
+    const menuItems2 = await createMenuItem();
+    const menuItems3 = await createMenuItem();
 
     const page = 1;
     const menuItems = await service.findByCategoryIdInLimit(
@@ -205,4 +206,35 @@ describe('MenuService', () => {
     );
     expect(menuItems.items[0]._id).not.toBe(menuItems.items[1]._id);
   }, 7000);
+
+  it('should remove the menuItem', async () => {
+    const menuItem = await createMenuItem();
+
+    await service.removeMenuItem(menuItem._id);
+    const foundMenuItem = await service.findById(menuItem._id);
+
+    expect(foundMenuItem).toBe(null);
+  });
+
+  it('should update menuItem', async () => {
+    const menuItem = await createMenuItem();
+
+    const newName = 'chamomile tea';
+    const newPrice = 15;
+    const newTime = 2;
+    const newDescription = 'Delicious chamomile tea';
+    const updatedMenuItem = await service.updateById(menuItem._id, {
+      name: newName,
+      price: newPrice,
+      time: newTime,
+      description: newDescription,
+    });
+
+    expect(updatedMenuItem).toBeDefined();
+    expect(updatedMenuItem._id).toStrictEqual(menuItem._id);
+    expect(updatedMenuItem.name).toBe(newName);
+    expect(updatedMenuItem.price).toBe(newPrice);
+    expect(updatedMenuItem.time).toBe(newTime);
+    expect(updatedMenuItem.description).toBe(newDescription);
+  });
 });

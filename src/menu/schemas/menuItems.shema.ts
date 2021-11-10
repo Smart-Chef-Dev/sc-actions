@@ -2,7 +2,7 @@ import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Document } from 'mongoose';
 
 import { Category } from '../../category/schemas/category.schema';
-import { Addons } from './addons.shema';
+import { Addon } from '../../restaurant/schemas/addon.shema';
 
 @Schema()
 export class MenuItems extends Document {
@@ -28,7 +28,10 @@ export class MenuItems extends Document {
   description: string;
 
   @Prop()
-  addons: Addons[];
+  addons: Addon[];
+
+  @Prop()
+  order: number;
 
   @Prop({ required: true })
   category: Category;

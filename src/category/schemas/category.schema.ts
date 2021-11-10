@@ -8,6 +8,9 @@ export class Category extends Document {
   @Prop({ required: true })
   name: string;
 
+  @Prop()
+  order: number;
+
   @Prop({ required: true })
   restaurant: Restaurant;
 }

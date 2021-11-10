@@ -13,6 +13,10 @@ import { Users, UsersSchema } from '../users/schemas/users.schema';
 import { RestaurantDto } from './dto/restaurant.dto';
 import { ActionDto } from './dto/action.dto';
 import { TableDto } from './dto/table.dto';
+import { Users, UsersSchema } from '../users/schemas/users.schema';
+import { Model, Types } from 'mongoose';
+import { Addon, AddonSchema } from './schemas/addon.shema';
+import { AddonDto } from './dto/addon.dto';
 
 let mongod: MongoMemoryServer;
 
@@ -43,6 +47,7 @@ describe('RestaurantService', () => {
           { name: Action.name, schema: ActionSchema },
           { name: Table.name, schema: TableSchema },
           { name: Users.name, schema: UsersSchema },
+          { name: Addon.name, schema: AddonSchema },
         ]),
       ],
       providers: [RestaurantService],
@@ -61,6 +66,16 @@ describe('RestaurantService', () => {
       tables: [
         new TableDto({ name: 'Table №1', userIds: [] }),
         new TableDto({ name: 'Table №2', userIds: [] }),
+      ],
+      addons: [
+        new AddonDto({
+          name: 'Tartar sauce',
+          price: 3,
+        }),
+        new AddonDto({
+          name: 'Teriyaki sauce',
+          price: 5,
+        }),
       ],
       currencyCode: 'USD',
     });
@@ -233,7 +248,7 @@ describe('RestaurantService', () => {
       restaurantId: restaurant._id,
       role: 'WAITER',
     });
-    const updatedRestaurant1 = await service.assignUserToTable(
+    const updatedRestaurant1 = await service.assignWaitersToTable(
       restaurant,
       restaurant.tables[0],
       user,
@@ -245,5 +260,70 @@ describe('RestaurantService', () => {
     expect(
       Types.ObjectId(updatedRestaurant1.tables[0].userIds[0]),
     ).toStrictEqual(userId);
+  });
+
+  it('must find all addons', async () => {
+    const restaurant = await preCreateRestaurant();
+
+    const addons = await service.findAllAddons(restaurant._id);
+
+    expect(addons).toBeDefined();
+    expect(addons.length).toBe(2);
+    expect(addons[0].name).toBe(restaurant.addons[0].name);
+    expect(addons[0].price).toBe(restaurant.addons[0].price);
+    expect(addons[1].name).toBe(restaurant.addons[1].name);
+    expect(addons[1].price).toBe(restaurant.addons[1].price);
+  });
+
+  it('should add addon to restaurant', async () => {
+    const restaurant = await preCreateRestaurant();
+
+    const addon = await service.addAddonIntoRestaurant(
+      restaurant._id,
+      new AddonDto({ name: 'Salt', price: 1 }),
+    );
+    const addons = await service.findAllAddons(restaurant._id);
+
+    expect(addon).toBeDefined();
+    expect(addons.length).toBe(3);
+    expect(addons[2].name).toBe(addon.name);
+    expect(addons[2].price).toBe(addon.price);
+  });
+
+  it('should find addon by name', async () => {
+    const restaurant = await preCreateRestaurant();
+
+    const addon = await service.addAddonIntoRestaurant(
+      restaurant._id,
+      new AddonDto({ name: 'Salt', price: 1 }),
+    );
+    const foundAddon = await service.findAddonById(addon._id);
+
+    expect(foundAddon).toBeDefined();
+    expect(foundAddon.name).toBe(addon.name);
+    expect(foundAddon.price).toBe(addon.price);
+  });
+
+  it('should check Addon Existing In Restaurant By Name', async () => {
+    const restaurant = await preCreateRestaurant();
+
+    const addon = await service.addAddonIntoRestaurant(
+      restaurant._id,
+      new AddonDto({ name: 'Salt', price: 1 }),
+    );
+    const foundAddon1 = await service.checkAddonExistingInRestaurantByName(
+      restaurant._id,
+      addon.name,
+    );
+
+    expect(foundAddon1).toBeDefined();
+    expect(foundAddon1).toBe(true);
+
+    const foundAddon2 = await service.checkAddonExistingInRestaurantByName(
+      restaurant._id,
+      'Sugar',
+    );
+
+    expect(foundAddon2).toBe(false);
   });
 });

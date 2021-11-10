@@ -8,15 +8,19 @@ import { CategoryController } from './category.controller';
 
 import { Category, CategorySchema } from './schemas/category.schema';
 import { MenuItems, MenuItemsSchema } from '../menu/schemas/menuItems.shema';
-import { Addons, AddonsSchema } from '../menu/schemas/addons.shema';
+import { Addon, AddonSchema } from '../restaurant/schemas/addon.shema';
+import { ImagesService } from '../images/images.service';
+import { UsersModule } from '../users/users.module';
 
 @Module({
   imports: [
     MongooseModule.forFeature([
       { name: Category.name, schema: CategorySchema },
       { name: MenuItems.name, schema: MenuItemsSchema },
-      { name: Addons.name, schema: AddonsSchema },
+      { name: Restaurant.name, schema: RestaurantSchema },
+      { name: Addon.name, schema: AddonSchema },
     ]),
+    UsersModule,
   ],
   providers: [CategoryService, MenuService, ImagesService],
   exports: [CategoryService],
