@@ -1,11 +1,12 @@
-import { AddonsDto } from './addons';
+import { Addon } from '../../restaurant/schemas/addon.shema';
 
 export class MenuItemsDto {
   name: string;
   pictureUrl: string;
-  price: string;
-  weight: string;
-  time: string;
+  price: number;
+  weight: number;
+  time: number;
   description: string;
-  addons: AddonsDto[];
+  categoryId: string;
+  addons: Addon[];
 }

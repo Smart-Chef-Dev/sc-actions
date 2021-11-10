@@ -11,7 +11,7 @@ export class ImagesService {
     return fs.mkdir(path, { recursive: true });
   }
 
-  async checkFileForExistence(path: string) {
+  async checkPhotoForExistence(path: string) {
     try {
       await fs.access(path);
       return true;

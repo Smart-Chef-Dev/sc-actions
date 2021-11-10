@@ -11,8 +11,9 @@ import {
 } from '../restaurant/schemas/restaurant.schema';
 import { MenuService } from '../menu/menu.service';
 import { MenuItems, MenuItemsSchema } from '../menu/schemas/menuItems.shema';
-import { Addons, AddonsSchema } from '../menu/schemas/addons.shema';
+import { Addon, AddonSchema } from '../restaurant/schemas/addon.shema';
 import { ImagesService } from '../images/images.service';
+import { UsersModule } from '../users/users.module';
 
 @Module({
   imports: [
@@ -20,8 +21,9 @@ import { ImagesService } from '../images/images.service';
       { name: Category.name, schema: CategorySchema },
       { name: MenuItems.name, schema: MenuItemsSchema },
       { name: Restaurant.name, schema: RestaurantSchema },
-      { name: Addons.name, schema: AddonsSchema },
+      { name: Addon.name, schema: AddonSchema },
     ]),
+    UsersModule,
   ],
   providers: [CategoryService, MenuService, ImagesService],
   exports: [CategoryService],
