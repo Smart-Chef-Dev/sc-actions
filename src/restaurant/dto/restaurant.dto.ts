@@ -1,6 +1,7 @@
-import { MaxLength, IsNotEmpty, IsString, IsArray } from 'class-validator';
+import { MaxLength, IsNotEmpty, IsString } from 'class-validator';
 import { TableDto } from './table.dto';
 import { ActionDto } from './action.dto';
+import { AddonDto } from './addon.dto';
 
 export class RestaurantDto {
   @IsString()
@@ -8,15 +9,17 @@ export class RestaurantDto {
   @IsNotEmpty()
   readonly name: string;
 
+  @IsNotEmpty()
+  readonly currencyCode: string;
+
   @IsString()
   readonly language: string;
-
-  @IsArray()
-  readonly usernames: string[];
 
   readonly tables: TableDto[];
 
   readonly actions: ActionDto[];
+
+  readonly addons: AddonDto[];
 
   public constructor(init?: Partial<RestaurantDto>) {
     Object.assign(this, init);

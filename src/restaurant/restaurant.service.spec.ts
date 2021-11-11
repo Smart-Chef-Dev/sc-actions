@@ -1,21 +1,27 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { MongoMemoryServer } from 'mongodb-memory-server';
 import { MongooseModule } from '@nestjs/mongoose';
+import { Model, Types } from 'mongoose';
 import * as mongoose from 'mongoose';
 
-import { RestaurantService } from './restaurant.service';
 import { RestaurantSchema, Restaurant } from './schemas/restaurant.schema';
 import { TableSchema, Table } from './schemas/table.schema';
 import { ActionSchema, Action } from './schemas/action.schema';
+import { RestaurantService } from './restaurant.service';
+import { Users, UsersSchema } from '../users/schemas/users.schema';
+
 import { RestaurantDto } from './dto/restaurant.dto';
 import { ActionDto } from './dto/action.dto';
 import { TableDto } from './dto/table.dto';
+import { Addon, AddonSchema } from './schemas/addon.shema';
+import { AddonDto } from './dto/addon.dto';
 
 let mongod: MongoMemoryServer;
 
 describe('RestaurantService', () => {
   let module: TestingModule;
   let service: RestaurantService;
+  let userModel: Model<Users>;
 
   afterEach(async () => {
     await module.close();
@@ -38,22 +44,38 @@ describe('RestaurantService', () => {
           { name: Restaurant.name, schema: RestaurantSchema },
           { name: Action.name, schema: ActionSchema },
           { name: Table.name, schema: TableSchema },
+          { name: Users.name, schema: UsersSchema },
+          { name: Addon.name, schema: AddonSchema },
         ]),
       ],
       providers: [RestaurantService],
     }).compile();
 
     service = module.get<RestaurantService>(RestaurantService);
+    userModel = module.get<Model<Users>>('UsersModel');
   });
 
   const preCreateRestaurant = async () => {
     const dto = new RestaurantDto({
       name: 'Restaurant Name',
-      usernames: ['test'],
       actions: [
         new ActionDto({ name: 'Action_1', message: 'Action_1_message' }),
       ],
-      tables: [new TableDto({ name: 'Table №1' })],
+      tables: [
+        new TableDto({ name: 'Table №1', userIds: [] }),
+        new TableDto({ name: 'Table №2', userIds: [] }),
+      ],
+      addons: [
+        new AddonDto({
+          name: 'Tartar sauce',
+          price: 3,
+        }),
+        new AddonDto({
+          name: 'Teriyaki sauce',
+          price: 5,
+        }),
+      ],
+      currencyCode: 'USD',
     });
 
     return service.create(dto);
@@ -66,13 +88,11 @@ describe('RestaurantService', () => {
   it('should create restaurant without actions and tables', async () => {
     const dto = new RestaurantDto({
       name: 'Restaurant Name',
-      usernames: ['test'],
     });
 
     const restaurant = await service.create(dto);
 
     expect(restaurant.name).toBe(dto.name);
-    expect(restaurant.usernames[0]).toBe(dto.usernames[0]);
     expect(restaurant.actions.length).toBe(0);
     expect(restaurant.tables.length).toBe(0);
   });
@@ -80,7 +100,6 @@ describe('RestaurantService', () => {
   it('should create restaurant with actions and tables', async () => {
     const dto = new RestaurantDto({
       name: 'Restaurant Name',
-      usernames: ['test'],
       actions: [
         new ActionDto({ name: 'Action_1', message: 'Action_1_message' }),
       ],
@@ -90,7 +109,6 @@ describe('RestaurantService', () => {
     const restaurant = await service.create(dto);
 
     expect(restaurant.name).toBe(dto.name);
-    expect(restaurant.usernames[0]).toBe(dto.usernames[0]);
     expect(restaurant.actions[0].name).toBe(dto.actions[0].name);
     expect(restaurant.actions[0].message).toBe(dto.actions[0].message);
     expect(restaurant.tables[0].name).toBe(dto.tables[0].name);
@@ -99,25 +117,12 @@ describe('RestaurantService', () => {
   it('should update by id', async () => {
     const restaurant = await preCreateRestaurant();
 
-    expect(restaurant).toBeDefined();
-    expect(restaurant.usernames.length).toBe(1);
-
-    const newUserName = 'newValue';
-
-    const updatedRestaurant = await service.updateById(restaurant._id, {
-      $push: { usernames: newUserName },
-    });
-
-    expect(updatedRestaurant.usernames.length).toBe(2);
-    expect(updatedRestaurant.usernames[1]).toBe(newUserName);
-
     const newRestaurantName = ' new name';
-    const updatedRestaurant2 = await service.updateById(restaurant._id, {
+    const updatedRestaurant = await service.updateById(restaurant._id, {
       name: newRestaurantName,
     });
 
-    expect(updatedRestaurant.name).not.toBe(updatedRestaurant2.name);
-    expect(updatedRestaurant2.name).toBe(newRestaurantName);
+    expect(updatedRestaurant.name).toBe(newRestaurantName);
   });
 
   it('should add action into restaurant', async () => {
@@ -149,7 +154,7 @@ describe('RestaurantService', () => {
     const restaurant = await preCreateRestaurant();
 
     expect(restaurant).toBeDefined();
-    expect(restaurant.tables.length).toBe(1);
+    expect(restaurant.tables.length).toBe(2);
 
     const dto = new TableDto({ name: 'New table name' });
     const updatedRestaurant = await service.addTableIntoRestaurant(
@@ -158,8 +163,8 @@ describe('RestaurantService', () => {
     );
 
     expect(restaurant.tables.length).not.toBe(updatedRestaurant.tables.length);
-    expect(updatedRestaurant.tables.length).toBe(2);
-    expect(updatedRestaurant.tables[1].name).toBe(dto.name);
+    expect(updatedRestaurant.tables.length).toBe(3);
+    expect(updatedRestaurant.tables[2].name).toBe(dto.name);
   });
 
   it('should find restaurant by id', async () => {
@@ -229,5 +234,94 @@ describe('RestaurantService', () => {
         restaurant._id,
       ),
     ).toBe(false);
+  });
+
+  it('must add a new waiter to the table', async () => {
+    const restaurant = await preCreateRestaurant();
+
+    const userId = Types.ObjectId('569ed8269353e9f4c51617aa');
+    const user = new userModel({
+      _id: userId,
+      telegramId: '18547896586',
+      restaurantId: restaurant._id,
+      role: 'WAITER',
+    });
+    const updatedRestaurant1 = await service.assignWaitersToTable(
+      restaurant,
+      restaurant.tables[0],
+      user,
+    );
+
+    expect(updatedRestaurant1).toBeDefined();
+    expect(updatedRestaurant1._id).toStrictEqual(restaurant._id);
+    expect(updatedRestaurant1.tables[0].userIds.length).toBe(1);
+    expect(
+      Types.ObjectId(updatedRestaurant1.tables[0].userIds[0]),
+    ).toStrictEqual(userId);
+  });
+
+  it('must find all addons', async () => {
+    const restaurant = await preCreateRestaurant();
+
+    const addons = await service.findAllAddons(restaurant._id);
+
+    expect(addons).toBeDefined();
+    expect(addons.length).toBe(2);
+    expect(addons[0].name).toBe(restaurant.addons[0].name);
+    expect(addons[0].price).toBe(restaurant.addons[0].price);
+    expect(addons[1].name).toBe(restaurant.addons[1].name);
+    expect(addons[1].price).toBe(restaurant.addons[1].price);
+  });
+
+  it('should add addon to restaurant', async () => {
+    const restaurant = await preCreateRestaurant();
+
+    const addon = await service.addAddonIntoRestaurant(
+      restaurant._id,
+      new AddonDto({ name: 'Salt', price: 1 }),
+    );
+    const addons = await service.findAllAddons(restaurant._id);
+
+    expect(addon).toBeDefined();
+    expect(addons.length).toBe(3);
+    expect(addons[2].name).toBe(addon.name);
+    expect(addons[2].price).toBe(addon.price);
+  });
+
+  it('should find addon by name', async () => {
+    const restaurant = await preCreateRestaurant();
+
+    const addon = await service.addAddonIntoRestaurant(
+      restaurant._id,
+      new AddonDto({ name: 'Salt', price: 1 }),
+    );
+    const foundAddon = await service.findAddonById(addon._id);
+
+    expect(foundAddon).toBeDefined();
+    expect(foundAddon.name).toBe(addon.name);
+    expect(foundAddon.price).toBe(addon.price);
+  });
+
+  it('should check Addon Existing In Restaurant By Name', async () => {
+    const restaurant = await preCreateRestaurant();
+
+    const addon = await service.addAddonIntoRestaurant(
+      restaurant._id,
+      new AddonDto({ name: 'Salt', price: 1 }),
+    );
+    const foundAddon1 = await service.checkAddonExistingInRestaurantByName(
+      restaurant._id,
+      addon.name,
+    );
+
+    expect(foundAddon1).toBeDefined();
+    expect(foundAddon1).toBe(true);
+
+    const foundAddon2 = await service.checkAddonExistingInRestaurantByName(
+      restaurant._id,
+      'Sugar',
+    );
+
+    expect(foundAddon2).toBe(false);
   });
 });

@@ -2,11 +2,12 @@ import { Injectable, Logger, OnModuleInit } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import autobind from 'autobind-decorator';
 
-import { RestaurantService } from '../restaurant/restaurant.service';
-import { CreateMessageDto } from './dto/create-message.dto';
-import { TelegramService } from '../telegram/telegram.service';
-import { AnalyticsService } from '../analytics/analytics.service';
+import { RestaurantService } from 'src/restaurant/restaurant.service';
+import { TelegramService } from 'src/telegram/telegram.service';
+import { AnalyticsService } from 'src/analytics/analytics.service';
 import { AnalyticType } from '../analytics/enums/analytic-type.enum';
+import { UsersService } from '../users/users.service';
+import { Role } from '../users/enums/role.enum';
 
 const loggerContext = 'Restaurant';
 
@@ -18,6 +19,7 @@ export class MessageService implements OnModuleInit {
     private readonly logger: Logger,
     private readonly telegramService: TelegramService,
     private readonly analyticsService: AnalyticsService,
+    private readonly usersService: UsersService,
   ) {}
 
   onModuleInit() {
@@ -29,24 +31,61 @@ export class MessageService implements OnModuleInit {
 
   @autobind
   async handleStartCommand(msg, props) {
-    const restaurantId = props.match[1];
+    const [restaurantId, tableId, name] = props.match[1].split(
+      this.configService.get<string>('TELEGRAM_START_CMD_DELIMITER'),
+    );
     const restaurant = await this.restaurantService.findById(restaurantId);
+    const table = restaurant.tables.find((table) => table._id.equals(tableId));
+
+    const user = await this.usersService.findUserByUsernameInRestaurant(
+      name,
+      restaurantId,
+    );
+    if (+user?.telegramId === +msg.chat.id) {
+      await msg.reply.text(`Welcome back ${name}`);
+      return;
+    }
+
+    if (user) {
+      await msg.reply.text(
+        `Sorry, the name ${name} is already taken. Try to create a chat again`,
+      );
+      return;
+    }
+
+    const newUser = await this.usersService.creatAccount(
+      {
+        telegramId: msg.chat.id,
+        name,
+        restaurantId,
+      },
+      Role.WAITER,
+    );
+
+    const isUserAlreadyAssignedToTable = table.userIds.find((userId) =>
+      newUser._id.equals(userId),
+    );
+    if (isUserAlreadyAssignedToTable) {
+      return;
+    }
+    await this.restaurantService.assignWaitersToTable(
+      restaurant,
+      table,
+      newUser,
+    );
 
     this.logger.log(
       `Add new chat into restaurant, restaurantId: ${restaurantId}`,
       loggerContext,
     );
-    await this.analyticsService.create({
-      type: AnalyticType.NEW_WAITER,
-      restaurantId,
-    });
 
     await msg.reply.text(
       `You were added to the restaurant "${restaurant.name}" successfully`,
     );
 
-    return this.restaurantService.updateById(restaurantId, {
-      $push: { usernames: msg.chat.id },
+    await this.analyticsService.create({
+      type: AnalyticType.NEW_WAITER,
+      restaurantId,
     });
   }
 
@@ -64,32 +103,5 @@ export class MessageService implements OnModuleInit {
       message.message_id,
       text,
     );
-  }
-
-  @autobind
-  async sendMessage(dto: CreateMessageDto) {
-    const restaurant = await this.restaurantService.findById(dto.restaurantId);
-    const table = restaurant.tables.find((t) => t._id.equals(dto.tableId));
-    const action = restaurant.actions.find((a) => a._id.equals(dto.actionId));
-
-    const text = `${table.name} - ${action.message}`;
-    const replyMarkup = this.telegramService.createInlineKeyboard([
-      this.telegramService.createInlineButton('✅', 'confirm'),
-    ]);
-
-    this.logger.log(
-      `New message for restaurantId: ${restaurant._id}, tableId: ${table._id}}, action: ${action._id}, message: ${action.message}`,
-      loggerContext,
-    );
-    await this.analyticsService.create({
-      type: AnalyticType.ACTION_CALL,
-      restaurantId: restaurant._id,
-      tableId: table._id,
-      actionId: action._id,
-    });
-
-    for (const username of restaurant.usernames) {
-      await this.telegramService.sendMessage(username, text, { replyMarkup });
-    }
   }
 }
