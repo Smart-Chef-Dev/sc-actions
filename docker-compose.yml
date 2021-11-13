@@ -3,6 +3,7 @@ version: '3.3'
 services:
   mongodb:
     container_name: actions-db
+    restart: unless-stopped
     image: mongo:4.4-bionic
     command: mongod --serviceExecutor adaptive
     environment:
@@ -19,28 +20,14 @@ services:
     volumes:
       - ./mongo-init.sh:/docker-entrypoint-initdb.d/mongo-init.sh
       - mongodbdata:/data/db
-
-  client:
-    image: ghcr.io/smart-chef-dev/sc-actions-client/sc-actions-client:latest
-    restart: unless-stopped
-    ports:
-      - "80:80"
-      - "443:443"
-    volumes:
-      - ./data/certbot/conf:/etc/letsencrypt
-      - ./data/certbot/www:/var/www/certbot
-    command: "/bin/sh -c 'while :; do sleep 6h & wait $${!}; nginx -s reload; done & nginx -g \"daemon off;\"'"
-
-  certbot:
-    image: certbot/certbot
-    restart: unless-stopped
-    volumes:
-      - ./data/certbot/conf:/etc/letsencrypt
-      - ./data/certbot/www:/var/www/certbot
-    entrypoint: "/bin/sh -c 'trap exit TERM; while :; do certbot renew; sleep 12h & wait $${!}; done;'"
+    labels:
+      reproxy.enabled: no
 
   server:
     image: ghcr.io/smart-chef-dev/sc-actions/sc-actions:latest
+    restart: unless-stopped
+    hostname: api
+    container_name: api
     environment:
       - DOPPLER_TOKEN
       - DOPPLER_PROJECT
@@ -56,16 +43,47 @@ services:
       - JWT_SECRET
       - JWT_EXPIRES_IN
     volumes:
-    - resturants_data:/usr/src/app/public
+      - resturants_data:/usr/src/app/public
+    expose:
+      - ${API_PORT}
     ports:
       - ${API_PORT}:${API_PORT}
 
+  client:
+    image: ghcr.io/smart-chef-dev/sc-actions-client/sc-actions-client:latest
+    restart: unless-stopped
+    container_name: reproxy
+    command: /srv/reproxy --assets.spa
+    ports:
+      - "80:8080"
+      - "443:8443"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - /var/ssl:/srv/var/ssl
+    environment:
+      - TZ=Europe/London
+      - DOCKER_ENABLED=true
+      - DOCKER_AUTO=true
+      - DEBUG=true
+      - SSL_TYPE=auto
+      - SSL_ACME_FQDN=${DOMAIN_NAME}
+      - SSL_ACME_LOCATION=/srv/var/ssl
+      - LOGGER_STDOUT=true
+      - ASSETS_LOCATION=/www
+      - TIMEOUT_RESP_HEADER=640s
+      - TIMEOUT_WRITE=640s
+      - TIMEOUT_IDLE=640s
+      - TIMEOUT_DIAL=640s
+      - TIMEOUT_KEEP_ALIVE=640s
+      - MAX_SIZE=0
+    logging: &default_logging
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "5"
+    depends_on:
+      - server
 
 volumes:
   mongodbdata:
   resturants_data:
-
-networks:
-  default:
-    external:
-      name: mongo-network
