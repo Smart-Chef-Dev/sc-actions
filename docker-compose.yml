@@ -49,11 +49,11 @@ services:
     ports:
       - ${API_PORT}:${API_PORT}
 
-  client:
-    image: ghcr.io/smart-chef-dev/sc-actions-client/sc-actions-client:latest
+  reproxy:
+    image: ghcr.io/smart-chef-dev/sc-actions-client/sc-actions-client:master
     restart: unless-stopped
     container_name: reproxy
-    command: /srv/reproxy --assets.spa
+    hostname: reproxy
     ports:
       - "80:8080"
       - "443:8443"
@@ -62,6 +62,7 @@ services:
       - /var/ssl:/srv/var/ssl
     environment:
       - TZ=Europe/London
+      - ASSETS_SPA=true
       - DOCKER_ENABLED=true
       - DOCKER_AUTO=true
       - DEBUG=true
