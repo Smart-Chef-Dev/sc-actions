@@ -85,6 +85,15 @@ services:
     depends_on:
       - server
 
+  logger:
+    container_name: logger
+    hostname: logger
+    image: amir20/dozzle:latest
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    expose:
+      - 8080
+
 volumes:
   mongodbdata:
   resturants_data:
