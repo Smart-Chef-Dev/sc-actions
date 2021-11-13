@@ -3,16 +3,16 @@ import { Document } from 'mongoose';
 
 @Schema()
 export class Action extends Document {
-  @Prop({ required: true })
+  @Prop({ type: String, required: true })
   name: string;
 
-  @Prop({ required: true })
+  @Prop({ type: String, required: true })
   message: string;
 
-  @Prop()
+  @Prop({ type: String })
   type: string;
 
-  @Prop()
+  @Prop({ type: String })
   link: string;
 }
 

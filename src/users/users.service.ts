@@ -75,6 +75,10 @@ export class UsersService {
     return this.usersModel.findById(id);
   }
 
+  async findAllByRestaurantId(id: string): Promise<Users[]> {
+    return this.usersModel.find({ restaurantId: id });
+  }
+
   async checkIfRestaurantIsTiedToRestaurantAdmin(
     restaurantId: string,
   ): Promise<boolean> {

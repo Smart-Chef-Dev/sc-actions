@@ -3,13 +3,13 @@ import { Document } from 'mongoose';
 
 @Schema()
 export class Table extends Document {
-  @Prop({ required: true })
+  @Prop({ type: String })
   number: number;
 
-  @Prop({ required: true })
+  @Prop({ type: String, required: true })
   name: string;
 
-  @Prop([String])
+  @Prop({ type: [String], default: [] })
   userIds: string[];
 }
 
