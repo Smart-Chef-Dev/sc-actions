@@ -3,13 +3,13 @@ import { Document } from 'mongoose';
 
 @Schema()
 export class Addon extends Document {
-  @Prop({ required: true })
+  @Prop({ type: String, required: true })
   name: string;
 
-  @Prop()
+  @Prop({ type: Number })
   price: number;
 
-  @Prop()
+  @Prop({ type: Number })
   weight: number;
 }
 
