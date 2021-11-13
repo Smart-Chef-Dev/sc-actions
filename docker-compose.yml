@@ -93,6 +93,9 @@ services:
       - /var/run/docker.sock:/var/run/docker.sock
     expose:
       - 8080
+    labels:
+      reproxy.server: 'logger.smartchef.ai'
+      reproxy.route: '^/(.*)'
 
 volumes:
   mongodbdata:
