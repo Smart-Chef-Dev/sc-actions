@@ -94,8 +94,9 @@ services:
     expose:
       - 8080
     labels:
-      reproxy.server: 'logger.smartchef.ai'
-      reproxy.route: '^/(.*)'
+      reproxy.server: '*'
+      reproxy.route: '^/logger/(.*)'
+      reproxy.dest: '/$$1'
 
 volumes:
   mongodbdata:
