@@ -91,12 +91,10 @@ services:
     image: amir20/dozzle:latest
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
-    expose:
-      - 8080
+    ports:
+      - 8080:8080
     labels:
-      reproxy.server: '*'
-      reproxy.route: '^/logger/(.*)'
-      reproxy.dest: '/$$1'
+      reproxy.enabled: no
 
 volumes:
   mongodbdata:
