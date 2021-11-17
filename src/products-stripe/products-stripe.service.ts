@@ -6,15 +6,11 @@ import Stripe from 'stripe';
 export class ProductsStripeService {
   public constructor(@InjectStripe() private readonly stripeClient: Stripe) {}
 
-  findAll() {
-    return this.stripeClient.products.list({ active: true });
-  }
-
-  findAllPrice() {
-    return this.stripeClient.products.list({ active: true });
-  }
-
   findById(id: string) {
+    return this.stripeClient.products.retrieve(id);
+  }
+
+  findByPriceId(id: string) {
     return this.stripeClient.prices.retrieve(id);
   }
 }
