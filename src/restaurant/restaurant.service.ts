@@ -92,6 +92,7 @@ export class RestaurantService {
       tables: tables,
       actions: actions,
       addons: addons,
+      product: [],
     });
 
     return restaurant.save();

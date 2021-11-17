@@ -83,10 +83,6 @@ export class RestaurantController {
       throw new NotFoundException(text);
     }
 
-    for (const key in restaurant.productPriceId) {
-      await this.productsStripeService.findById(restaurant.productPriceId[key]);
-    }
-
     return res.status(HttpStatus.OK).json(restaurant);
   }
 
