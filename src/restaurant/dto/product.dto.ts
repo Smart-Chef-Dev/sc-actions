@@ -3,7 +3,7 @@ import { IsNotEmpty, IsString } from 'class-validator';
 export class ProductDto {
   @IsString()
   @IsNotEmpty()
-  readonly productId: string;
+  readonly id: string;
 
   @IsString()
   @IsNotEmpty()

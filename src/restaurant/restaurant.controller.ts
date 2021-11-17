@@ -348,14 +348,12 @@ export class RestaurantController {
     }
 
     const price = await this.productsStripeService.findByPriceId(dto.priceId);
-    if (price.product !== dto.productId) {
+    if (price.product !== dto.id) {
       throw new BadRequestException('The price is pegged to another product');
     }
 
     const restaurant = await this.restaurantService.findById(id);
-    const product = restaurant.product.filter(
-      (p) => p.productId !== dto.productId,
-    );
+    const product = restaurant.product.filter((p) => p.id !== dto.id);
 
     await this.restaurantService.updateById(id, {
       product: [...product, dto],

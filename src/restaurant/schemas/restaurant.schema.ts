@@ -28,7 +28,7 @@ export class Restaurant extends Document {
   @Prop()
   product: [
     {
-      productId: string;
+      id: string;
       priceId: string;
     },
   ];

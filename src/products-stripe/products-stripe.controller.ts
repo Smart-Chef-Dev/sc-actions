@@ -60,7 +60,7 @@ export class ProductsStripeController {
     let price = {};
     for (const key in restaurant.product) {
       product = await this.productsStripeService.findById(
-        restaurant.product[key].productId,
+        restaurant.product[key].id,
       );
       price = await this.productsStripeService.findByPriceId(
         restaurant.product[key].priceId,
