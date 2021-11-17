@@ -19,6 +19,7 @@ import { MenuItems, MenuItemsSchema } from '../menu/schemas/menuItems.shema';
 import { Addon, AddonSchema } from './schemas/addon.shema';
 import { Users, UsersSchema } from '../users/schemas/users.schema';
 import { UsersModule } from '../users/users.module';
+import { ProductsStripeService } from '../products-stripe/products-stripe.service';
 
 @Module({
   imports: [
@@ -42,6 +43,7 @@ import { UsersModule } from '../users/users.module';
     MenuService,
     ImagesService,
     UsersService,
+    ProductsStripeService,
   ],
   controllers: [RestaurantController],
   exports: [RestaurantService],

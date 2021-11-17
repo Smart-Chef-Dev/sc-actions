@@ -24,6 +24,9 @@ export class Restaurant extends Document {
 
   @Prop()
   addons: Addon[];
+
+  @Prop()
+  productPriceId: [string];
 }
 
 export const RestaurantSchema = SchemaFactory.createForClass(Restaurant);

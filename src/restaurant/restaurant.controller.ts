@@ -38,6 +38,7 @@ import { checkIfUserHasPermissionToChangeRestaurant } from '../utils/checkIfUser
 import { Users } from '../users/schemas/users.schema';
 import { JwtGuard } from '../guard/jwt.guard';
 import { LanguageEnum } from './enums/language.enum';
+import { ProductsStripeService } from '../products-stripe/products-stripe.service';
 
 @Controller('restaurant')
 export class RestaurantController {
@@ -49,6 +50,7 @@ export class RestaurantController {
     private readonly imagesService: ImagesService,
     private readonly menuService: MenuService,
     private readonly usersService: UsersService,
+    private readonly productsStripeService: ProductsStripeService,
   ) {}
 
   @Get()
@@ -79,6 +81,10 @@ export class RestaurantController {
       )}`;
 
       throw new NotFoundException(text);
+    }
+
+    for (const key in restaurant.productPriceId) {
+      await this.productsStripeService.findById(restaurant.productPriceId[key]);
     }
 
     return res.status(HttpStatus.OK).json(restaurant);

@@ -11,6 +11,10 @@ export class ProductsStripeService {
   }
 
   findAllPrice() {
-    return this.stripeClient.prices.list({ active: true });
+    return this.stripeClient.products.list({ active: true });
+  }
+
+  findById(id: string) {
+    return this.stripeClient.prices.retrieve(id);
   }
 }
