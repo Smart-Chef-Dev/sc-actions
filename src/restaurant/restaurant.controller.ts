@@ -12,6 +12,7 @@ import {
   ForbiddenException,
   Req,
   UseGuards,
+  BadRequestException,
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { ConfigService } from '@nestjs/config';
@@ -39,6 +40,8 @@ import { Users } from '../users/schemas/users.schema';
 import { JwtGuard } from '../guard/jwt.guard';
 import { LanguageEnum } from './enums/language.enum';
 import { ProductsStripeService } from '../products-stripe/products-stripe.service';
+import { Role } from '../users/enums/role.enum';
+import { ProductDto } from './dto/product.dto';
 
 @Controller('restaurant')
 export class RestaurantController {
@@ -328,5 +331,34 @@ export class RestaurantController {
     await this.imagesService.saveFile(pathFile, file.buffer);
 
     return pathFile;
+  }
+
+  @UseGuards(JwtGuard)
+  @Post(':id/product')
+  async addProduct(
+    @Param('id') id: string,
+    @Req() req,
+    @Body() dto: ProductDto,
+  ) {
+    await checkIsObjectIdValid(id);
+
+    const user: Users = req.user;
+    if (user.role !== Role.SUPER_ADMIN) {
+      throw new ForbiddenException();
+    }
+
+    const price = await this.productsStripeService.findById(dto.priceId);
+    if (price.product !== dto.productId) {
+      throw new BadRequestException('The price is pegged to another product');
+    }
+
+    const restaurant = await this.restaurantService.findById(id);
+    const product = restaurant.product.filter(
+      (p) => p.productId !== dto.productId,
+    );
+
+    await this.restaurantService.updateById(id, {
+      product: [...product, dto],
+    });
   }
 }
