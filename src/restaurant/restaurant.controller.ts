@@ -353,10 +353,10 @@ export class RestaurantController {
     }
 
     const restaurant = await this.restaurantService.findById(id);
-    const product = restaurant.product.filter((p) => p.id !== dto.id);
+    const product = restaurant.products.filter((p) => p.id !== dto.id);
 
     await this.restaurantService.updateById(id, {
-      product: [...product, dto],
+      products: [...product, dto],
     });
   }
 }

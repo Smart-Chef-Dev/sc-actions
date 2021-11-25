@@ -56,12 +56,12 @@ export class ProductsStripeController {
 
     let products = [];
     let prices = [];
-    for (const key in restaurant.product) {
+    for (const key in restaurant.products) {
       const product = await this.productsStripeService.findById(
-        restaurant.product[key].id,
+        restaurant.products[key].id,
       );
       const price = await this.productsStripeService.findByPriceId(
-        restaurant.product[key].priceId,
+        restaurant.products[key].priceId,
       );
 
       products = [...products, product];

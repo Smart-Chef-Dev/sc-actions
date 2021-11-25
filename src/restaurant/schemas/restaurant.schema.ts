@@ -26,7 +26,7 @@ export class Restaurant extends Document {
   addons: Addon[];
 
   @Prop()
-  product: [
+  products: [
     {
       id: string;
       priceId: string;
