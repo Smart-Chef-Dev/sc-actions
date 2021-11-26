@@ -54,24 +54,17 @@ export class ProductsStripeController {
       );
     }
 
-    let products = [];
-    let prices = [];
-    for (const key in restaurant.products) {
+    return restaurant.products.reduce(async (pv, currentValue) => {
+      const previousValue = await pv;
       const product = await this.productsStripeService.findById(
-        restaurant.products[key].id,
+        currentValue.id,
       );
       const price = await this.productsStripeService.findByPriceId(
-        restaurant.products[key].priceId,
+        currentValue.priceId,
       );
 
-      products = [...products, product];
-      prices = [...prices, price];
-    }
-
-    return {
-      products,
-      prices,
-    };
+      return [...previousValue, { ...product, price }];
+    }, Promise.resolve([]));
   }
 
   @UseGuards(JwtGuard)
