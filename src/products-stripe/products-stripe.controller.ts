@@ -1,7 +1,6 @@
 import {
   BadRequestException,
   Controller,
-  ForbiddenException,
   Get,
   Param,
   Post,
@@ -10,6 +9,7 @@ import {
 } from '@nestjs/common';
 import { Model } from 'mongoose';
 import { InjectModel } from '@nestjs/mongoose';
+import reduce from 'awaity/reduce';
 
 import { ProductsStripeService } from './products-stripe.service';
 import { UsersService } from '../users/users.service';
@@ -52,17 +52,20 @@ export class ProductsStripeController {
       );
     }
 
-    return restaurant.products.reduce(async (pv, currentValue) => {
-      const previousValue = await pv;
-      const product = await this.productsStripeService.findById(
-        currentValue.id,
-      );
-      const price = await this.productsStripeService.findByPriceId(
-        currentValue.priceId,
-      );
+    return reduce(
+      restaurant.products,
+      async (previousValue, currentValue) => {
+        const product = await this.productsStripeService.findById(
+          currentValue.id,
+        );
+        const price = await this.productsStripeService.findByPriceId(
+          currentValue.priceId,
+        );
 
-      return [...previousValue, { ...product, price }];
-    }, Promise.resolve([]));
+        return [...previousValue, { ...product, price }];
+      },
+      [],
+    );
   }
 
   @UseGuards(JwtGuard)
