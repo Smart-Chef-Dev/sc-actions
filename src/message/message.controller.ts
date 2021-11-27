@@ -15,6 +15,7 @@ import { RestaurantService } from 'src/restaurant/restaurant.service';
 import { TelegramService } from 'src/telegram/telegram.service';
 import { AnalyticsService } from 'src/analytics/analytics.service';
 import { MessageService } from './message.service';
+import { UsersService } from '../users/users.service';
 
 const loggerContext = 'Restaurant';
 
@@ -23,6 +24,7 @@ export class MessageController {
   constructor(
     private readonly messageService: MessageService,
     private readonly restaurantService: RestaurantService,
+    private readonly usersService: UsersService,
     private readonly logger: Logger,
     private readonly telegramService: TelegramService,
     private readonly analyticsService: AnalyticsService,
@@ -58,8 +60,15 @@ export class MessageController {
       this.telegramService.createInlineButton('✅', 'confirm'),
     ]);
 
+    const restaurantUserIds = (
+      await this.usersService.findAllByRestaurantId(restaurantId)
+    ).map((r) => r._id);
+    const targetUserIds = Array.from(
+      new Set([...restaurantUserIds, ...table.userIds]),
+    );
+
     await this.telegramService.sendMessageToAssignedWaiters(
-      table.userIds,
+      targetUserIds,
       text,
       {
         replyMarkup,

@@ -1,29 +1,32 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Document } from 'mongoose';
 
-import { Table } from './table.schema';
-import { Action } from './action.schema';
-import { Addon } from './addon.shema';
 import { Product } from './product.schema';
+import { Table, TableSchema } from './table.schema';
+import { Action, ActionSchema } from './action.schema';
+import { Addon, AddonSchema } from './addon.shema';
+
+const DEFAULT_LANGUAGE = 'ru';
+const DEFAULT_CURRENCY_CODE = 'RUB';
 
 @Schema()
 export class Restaurant extends Document {
-  @Prop({ required: true })
+  @Prop({ type: String, required: true })
   name: string;
 
-  @Prop()
+  @Prop({ type: String, default: DEFAULT_CURRENCY_CODE })
   currencyCode: string;
 
-  @Prop()
+  @Prop({ type: String, default: DEFAULT_LANGUAGE })
   language: string;
 
-  @Prop()
+  @Prop({ type: [TableSchema], default: [] })
   tables: Table[];
 
-  @Prop()
+  @Prop({ type: [ActionSchema], default: [] })
   actions: Action[];
 
-  @Prop()
+  @Prop({ type: [AddonSchema], default: [] })
   addons: Addon[];
 
   @Prop()

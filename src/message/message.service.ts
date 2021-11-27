@@ -8,6 +8,7 @@ import { AnalyticsService } from 'src/analytics/analytics.service';
 import { AnalyticType } from '../analytics/enums/analytic-type.enum';
 import { UsersService } from '../users/users.service';
 import { Role } from '../users/enums/role.enum';
+import { nanoid } from 'nanoid';
 
 const loggerContext = 'Restaurant';
 
@@ -34,29 +35,49 @@ export class MessageService implements OnModuleInit {
     const [restaurantId, tableId, name] = props.match[1].split(
       this.configService.get<string>('TELEGRAM_START_CMD_DELIMITER'),
     );
+    const telegramId = +msg.chat.id;
+
+    const replyText =
+      !tableId && !name
+        ? await this.addWaiterIntoRestaurant(restaurantId, telegramId)
+        : await this.addWaiterIntoRestaurantTable(
+            restaurantId,
+            tableId,
+            name,
+            +msg.chat.id,
+          );
+
+    if (replyText) {
+      await msg.reply.text(replyText);
+    }
+  }
+
+  @autobind
+  async addWaiterIntoRestaurantTable(
+    restaurantId: string,
+    tableId: string,
+    waiterName: string,
+    telegramId: number,
+  ): Promise<string> {
     const restaurant = await this.restaurantService.findById(restaurantId);
     const table = restaurant.tables.find((table) => table._id.equals(tableId));
 
     const user = await this.usersService.findUserByUsernameInRestaurant(
-      name,
+      waiterName,
       restaurantId,
     );
-    if (+user?.telegramId === +msg.chat.id) {
-      await msg.reply.text(`Welcome back ${name}`);
-      return;
+    if (+user?.telegramId === telegramId) {
+      return `Welcome back ${waiterName}`;
     }
 
     if (user) {
-      await msg.reply.text(
-        `Sorry, the name ${name} is already taken. Try to create a chat again`,
-      );
-      return;
+      return `Sorry, the name ${waiterName} is already taken. Try to create a chat again`;
     }
 
     const newUser = await this.usersService.creatAccount(
       {
-        telegramId: msg.chat.id,
-        name,
+        telegramId: telegramId.toString(),
+        name: waiterName,
         restaurantId,
       },
       Role.WAITER,
@@ -66,7 +87,7 @@ export class MessageService implements OnModuleInit {
       newUser._id.equals(userId),
     );
     if (isUserAlreadyAssignedToTable) {
-      return;
+      return '';
     }
     await this.restaurantService.assignWaitersToTable(
       restaurant,
@@ -79,14 +100,40 @@ export class MessageService implements OnModuleInit {
       loggerContext,
     );
 
-    await msg.reply.text(
-      `You were added to the restaurant "${restaurant.name}" successfully`,
+    await this.analyticsService.create({
+      type: AnalyticType.NEW_WAITER,
+      restaurantId,
+    });
+
+    return `You were added to the restaurant "${restaurant.name}" successfully`;
+  }
+
+  async addWaiterIntoRestaurant(
+    restaurantId: string,
+    telegramId: number,
+  ): Promise<string> {
+    const restaurant = await this.restaurantService.findById(restaurantId);
+
+    const newUser = await this.usersService.creatAccount(
+      {
+        telegramId: telegramId.toString(),
+        name: `UNTITLED_${nanoid()}`,
+        restaurantId,
+      },
+      Role.WAITER,
+    );
+
+    this.logger.log(
+      `Add new chat (${newUser.name}) into restaurant, restaurantId: ${restaurantId}`,
+      loggerContext,
     );
 
     await this.analyticsService.create({
       type: AnalyticType.NEW_WAITER,
       restaurantId,
     });
+
+    return `You were added to the restaurant "${restaurant.name}" successfully`;
   }
 
   @autobind
