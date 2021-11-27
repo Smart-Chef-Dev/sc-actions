@@ -1,7 +1,7 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Document } from 'mongoose';
 
-import { Product } from './product.schema';
+import { Product, ProductSchema } from './product.schema';
 import { Table, TableSchema } from './table.schema';
 import { Action, ActionSchema } from './action.schema';
 import { Addon, AddonSchema } from './addon.shema';
@@ -29,7 +29,7 @@ export class Restaurant extends Document {
   @Prop({ type: [AddonSchema], default: [] })
   addons: Addon[];
 
-  @Prop()
+  @Prop({ type: [ProductSchema], default: [] })
   products: Product[];
 }
 
