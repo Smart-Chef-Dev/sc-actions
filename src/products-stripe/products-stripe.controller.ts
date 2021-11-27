@@ -21,6 +21,8 @@ import { Restaurant } from '../restaurant/schemas/restaurant.schema';
 import { Action } from '../restaurant/schemas/action.schema';
 import { Table } from '../restaurant/schemas/table.schema';
 import { Addon } from '../restaurant/schemas/addon.shema';
+import { Roles } from 'src/decorators/roles.decorator';
+import { RolesGuard } from 'src/guard/roles.guard';
 
 @Controller('products-stripe')
 export class ProductsStripeController {
@@ -38,15 +40,11 @@ export class ProductsStripeController {
     private restaurantService: RestaurantService,
   ) {}
 
-  @UseGuards(JwtGuard)
+  @Roles(Role.RESTAURANT_ADMIN, Role.SUPER_ADMIN)
+  @UseGuards(JwtGuard, RolesGuard)
   @Get()
   async getRestaurantProducts(@Req() req) {
     const user: Users = req.user;
-
-    if (user.role !== Role.SUPER_ADMIN && user.role !== Role.RESTAURANT_ADMIN) {
-      throw new ForbiddenException();
-    }
-
     const restaurant = await this.restaurantService.findById(user.restaurantId);
     if (!restaurant) {
       throw new BadRequestException(
