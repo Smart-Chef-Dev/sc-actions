@@ -95,6 +95,7 @@ describe('RestaurantService', () => {
     expect(restaurant.name).toBe(dto.name);
     expect(restaurant.actions.length).toBe(0);
     expect(restaurant.tables.length).toBe(0);
+    expect(restaurant.products.length).toBe(0);
   });
 
   it('should create restaurant with actions and tables', async () => {
