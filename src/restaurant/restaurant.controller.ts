@@ -347,16 +347,23 @@ export class RestaurantController {
       throw new ForbiddenException();
     }
 
+    const restaurant = await this.restaurantService.findById(id);
+    const productAlreadyExists = restaurant.products.find(
+      (p) => p.id === dto.id,
+    );
+    if (productAlreadyExists) {
+      throw new BadRequestException(
+        'This product has already been added to the restaurant',
+      );
+    }
+
     const price = await this.productsStripeService.findByPriceId(dto.priceId);
     if (price.product !== dto.id) {
       throw new BadRequestException('The price is pegged to another product');
     }
 
-    const restaurant = await this.restaurantService.findById(id);
-    const product = restaurant.products.filter((p) => p.id !== dto.id);
-
     await this.restaurantService.updateById(id, {
-      products: [...product, dto],
+      products: [...restaurant.products, dto],
     });
   }
 }
