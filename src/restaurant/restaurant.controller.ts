@@ -42,6 +42,8 @@ import { LanguageEnum } from './enums/language.enum';
 import { ProductsStripeService } from '../products-stripe/products-stripe.service';
 import { Role } from '../users/enums/role.enum';
 import { ProductDto } from './dto/product.dto';
+import { Roles } from '../decorators/roles.decorator';
+import { RolesGuard } from '../guard/roles.guard';
 
 @Controller('restaurant')
 export class RestaurantController {
@@ -333,19 +335,11 @@ export class RestaurantController {
     return pathFile;
   }
 
-  @UseGuards(JwtGuard)
+  @Roles(Role.SUPER_ADMIN)
+  @UseGuards(JwtGuard, RolesGuard)
   @Post(':id/product')
-  async addProduct(
-    @Param('id') id: string,
-    @Req() req,
-    @Body() dto: ProductDto,
-  ) {
+  async addProduct(@Param('id') id: string, @Body() dto: ProductDto) {
     await checkIsObjectIdValid(id);
-
-    const user: Users = req.user;
-    if (user.role !== Role.SUPER_ADMIN) {
-      throw new ForbiddenException();
-    }
 
     const restaurant = await this.restaurantService.findById(id);
     const productAlreadyExists = restaurant.products.find(
