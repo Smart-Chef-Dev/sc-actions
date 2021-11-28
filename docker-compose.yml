@@ -24,7 +24,7 @@ services:
       reproxy.enabled: no
 
   server:
-    image: ghcr.io/smart-chef-dev/sc-actions/sc-actions:latest
+    image: ghcr.io/smart-chef-dev/sc-actions/sc-actions:${SERVER_VERSION}
     restart: unless-stopped
     hostname: api
     container_name: api
@@ -50,7 +50,7 @@ services:
       - ${API_PORT}:${API_PORT}
 
   reproxy:
-    image: ghcr.io/smart-chef-dev/sc-actions-client/sc-actions-client:master
+    image: ghcr.io/smart-chef-dev/sc-actions-client/sc-actions-client:${CLIENT_VERSION}
     restart: unless-stopped
     container_name: reproxy
     hostname: reproxy
