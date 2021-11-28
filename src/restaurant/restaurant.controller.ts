@@ -12,6 +12,7 @@ import {
   ForbiddenException,
   Req,
   UseGuards,
+  BadRequestException,
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { ConfigService } from '@nestjs/config';
@@ -38,6 +39,11 @@ import { checkIfUserHasPermissionToChangeRestaurant } from '../utils/checkIfUser
 import { Users } from '../users/schemas/users.schema';
 import { JwtGuard } from '../guard/jwt.guard';
 import { LanguageEnum } from './enums/language.enum';
+import { ProductsStripeService } from '../products-stripe/products-stripe.service';
+import { Role } from '../users/enums/role.enum';
+import { ProductDto } from './dto/product.dto';
+import { Roles } from '../decorators/roles.decorator';
+import { RolesGuard } from '../guard/roles.guard';
 
 @Controller('restaurant')
 export class RestaurantController {
@@ -49,6 +55,7 @@ export class RestaurantController {
     private readonly imagesService: ImagesService,
     private readonly menuService: MenuService,
     private readonly usersService: UsersService,
+    private readonly productsStripeService: ProductsStripeService,
   ) {}
 
   @Get()
@@ -326,5 +333,31 @@ export class RestaurantController {
     await this.imagesService.saveFile(pathFile, file.buffer);
 
     return pathFile;
+  }
+
+  @Roles(Role.SUPER_ADMIN)
+  @UseGuards(JwtGuard, RolesGuard)
+  @Post(':id/product')
+  async addProduct(@Param('id') id: string, @Body() dto: ProductDto) {
+    await checkIsObjectIdValid(id);
+
+    const restaurant = await this.restaurantService.findById(id);
+    const productAlreadyExists = restaurant.products.find(
+      (p) => p.id === dto.id,
+    );
+    if (productAlreadyExists) {
+      throw new BadRequestException(
+        'This product has already been added to the restaurant',
+      );
+    }
+
+    const price = await this.productsStripeService.findByPriceId(dto.priceId);
+    if (price.product !== dto.id) {
+      throw new BadRequestException('The price is pegged to another product');
+    }
+
+    await this.restaurantService.updateById(id, {
+      products: [...restaurant.products, dto],
+    });
   }
 }
