@@ -1,5 +1,5 @@
 recreate-dev:
-	ansible-playbook ./playbooks/init.yml --limit=sc-actions-dev
+	cd ./ansible && ansible-playbook ./playbooks/init.yml --limit=sc-actions-dev
 
 recreate-prod:
-	ansible-playbook ./playbooks/init.yml --limit=sc-actions
+	cd ./ansible && ansible-playbook ./playbooks/init.yml --limit=sc-actions
