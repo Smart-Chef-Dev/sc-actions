@@ -1,40 +1,10 @@
 ---
 - hosts: all
   tasks:
-    - name: Check project directory exists
-      stat:
-          path: "~/sc-actions"
-      register: project_directory
-
-    - name: "Stop compose if exists"
-      command: "doppler run -- docker-compose down"
-      when: project_directory.stat.exists and project_directory.stat.isdir
-      args:
-          chdir: "~/sc-actions"
-
-    - name: "Remove old folder"
-      command: "rm -r ~/sc-actions"
-      when: project_directory.stat.exists and project_directory.stat.isdir
-
-    - name: "Create project directory"
-      command: "mkdir ./sc-actions"
-
-    - name: "Download compose file"
-      command: "curl -O -L https://raw.githubusercontent.com/Smart-Chef-Dev/sc-actions/main/docker-compose.yml"
-      args:
-          chdir: "~/sc-actions"
-
-    - name: "Download mongo-init file"
-      command: "curl -O -L https://raw.githubusercontent.com/Smart-Chef-Dev/sc-actions/main/mongo-init.sh"
-      args:
-          chdir: "~/sc-actions"
-
-    - name: "Pull compose"
-      command: "doppler run -- docker-compose pull"
-      args:
-          chdir: "~/sc-actions"
-
-    - name: "Start compose"
-      command: "doppler run -- docker-compose up -d"
-      args:
-          chdir: "~/sc-actions"
+    - name: "Doppler installation"
+      shell: |
+        sudo apt-get update && sudo apt-get install -y apt-transport-https ca-certificates curl gnupg
+        curl -sLf --retry 3 --tlsv1.2 --proto "=https" 'https://packages.doppler.com/public/cli/gpg.DE2A7741A397C129.key' | sudo apt-key add -
+        echo "deb https://packages.doppler.com/public/cli/deb/debian any-version main" | sudo tee /etc/apt/sources.list.d/doppler-cli.list
+        sudo apt-get update && sudo apt-get install doppler
+      
