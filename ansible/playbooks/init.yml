@@ -22,7 +22,7 @@
     - name: Doppler login
       shell: |
         export HISTIGNORE='doppler*'
-        doppler configure set token '{{ service_tokens }}'
+        doppler configure set token '{{ doppler_service_tokens }}'
 
     - name: Add Docker GPG apt Key
       apt_key:
