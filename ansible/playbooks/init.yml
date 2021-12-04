@@ -1,14 +1,32 @@
 ---
 - hosts: all
+  become: true
   tasks:
-    - name: "Doppler installation"
+    - name: Doppler installation
       shell: |
         sudo apt-get update && sudo apt-get install -y apt-transport-https ca-certificates curl gnupg
         curl -sLf --retry 3 --tlsv1.2 --proto "=https" 'https://packages.doppler.com/public/cli/gpg.DE2A7741A397C129.key' | sudo apt-key add -
         echo "deb https://packages.doppler.com/public/cli/deb/debian any-version main" | sudo tee /etc/apt/sources.list.d/doppler-cli.list
         sudo apt-get update && sudo apt-get install doppler
 
-    - name: "Doppler login"
+    - name: Doppler login
       shell: |
         export HISTIGNORE='doppler*'
         doppler configure set token '{{ service_tokens }}'
+
+    - name: Install required system packages
+      apt: name={{ item }} state=latest update_cache=yes
+      loop: [ 'apt-transport-https', 'ca-certificates', 'curl', 'software-properties-common', 'python3-pip', 'virtualenv', 'python3-setuptools']
+
+    - name: Add Docker GPG apt Key
+      apt_key:
+        url: https://download.docker.com/linux/ubuntu/gpg
+        state: present
+
+    - name: Add Docker Repository
+      apt_repository:
+        repo: deb https://download.docker.com/linux/ubuntu bionic stable
+        state: present
+
+    - name: Update apt and install docker-ce
+      apt: update_cache=yes name=docker-ce state=latest
