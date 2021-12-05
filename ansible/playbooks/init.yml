@@ -23,7 +23,7 @@
         export HISTIGNORE='doppler*'
         doppler configure set token '{{ doppler_service_tokens }}'
       args:
-        path: "~/sc-actions"
+        chdir: "~/sc-actions"
 
     - name: Add Docker GPG apt Key
       apt_key:
