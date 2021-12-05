@@ -21,7 +21,7 @@
     - name: Doppler login
       shell: |
         export HISTIGNORE='doppler*'
-        doppler configure set token '{{ doppler_service_tokens }}'
+        doppler configure set token '{{ doppler_service_token }}'
       args:
         chdir: "~/sc-actions"
 
