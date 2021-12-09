@@ -1,40 +1,82 @@
 ---
 - hosts: all
   tasks:
+    - name: Install required system packages
+      apt: name={{ item }} state=latest update_cache=yes
+      loop: [ 'apt-transport-https', 'ca-certificates', 'curl', 'software-properties-common', 'python3-pip', 'virtualenv', 'python3-setuptools' ]
+
+    - name: Add Doppler apt Key
+      apt_key:
+        url: https://packages.doppler.com/public/cli/gpg.DE2A7741A397C129.key
+        state: present
+
+    - name: Add Doppler Repository
+      apt_repository:
+        repo: deb https://packages.doppler.com/public/cli/deb/debian any-version main
+        state: present
+
+    - name: Update apt and install doppler
+      apt: update_cache=yes name=doppler state=latest
+
+    - name: Doppler login
+      shell: |
+        export HISTIGNORE='doppler*'
+        doppler configure set token '{{ doppler_service_token }}'
+      args:
+        chdir: "~/sc-actions"
+
+    - name: Add Docker GPG apt Key
+      apt_key:
+        url: https://download.docker.com/linux/ubuntu/gpg
+        state: present
+
+    - name: Add Docker Repository
+      apt_repository:
+        repo: deb https://download.docker.com/linux/ubuntu bionic stable
+        state: present
+
+    - name: Update apt and install docker-ce
+      apt: update_cache=yes name=docker-ce state=latest
+
+    - name: Install docker-compose
+      shell: |
+        sudo curl -L https://github.com/docker/compose/releases/download/1.21.2/docker-compose-`uname -s`-`uname -m` -o /usr/local/bin/docker-compose
+        sudo chmod +x /usr/local/bin/docker-compose
+
     - name: Check project directory exists
       stat:
-          path: "~/sc-actions"
+        path: "~/sc-actions"
       register: project_directory
 
-    - name: "Stop compose if exists"
+    - name: Stop compose if exists
       command: "doppler run -- docker-compose down"
       when: project_directory.stat.exists and project_directory.stat.isdir
       args:
-          chdir: "~/sc-actions"
+        chdir: "~/sc-actions"
 
-    - name: "Remove old folder"
+    - name: Remove old folder
       command: "rm -r ~/sc-actions"
       when: project_directory.stat.exists and project_directory.stat.isdir
 
-    - name: "Create project directory"
+    - name: Create project directory
       command: "mkdir ./sc-actions"
 
-    - name: "Download compose file"
+    - name: Download compose file
       command: "curl -O -L https://raw.githubusercontent.com/Smart-Chef-Dev/sc-actions/main/docker-compose.yml"
       args:
-          chdir: "~/sc-actions"
+        chdir: "~/sc-actions"
 
-    - name: "Download mongo-init file"
+    - name: Download mongo-init file
       command: "curl -O -L https://raw.githubusercontent.com/Smart-Chef-Dev/sc-actions/main/mongo-init.sh"
       args:
-          chdir: "~/sc-actions"
+        chdir: "~/sc-actions"
 
-    - name: "Pull compose"
+    - name: Pull compose
       command: "doppler run -- docker-compose pull"
       args:
-          chdir: "~/sc-actions"
+        chdir: "~/sc-actions"
 
-    - name: "Start compose"
+    - name: Start compose
       command: "doppler run -- docker-compose up -d"
       args:
-          chdir: "~/sc-actions"
+        chdir: "~/sc-actions"
