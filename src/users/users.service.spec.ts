@@ -21,15 +21,22 @@ import { CreateUserDto } from './dto/create-user.dto';
 let mongod: MongoMemoryServer;
 
 describe('UsersService', () => {
+  let module: TestingModule;
   let jwtService: JwtService;
   let service: UsersService;
 
   mongoose.set('useCreateIndex', true);
 
+  afterEach(async () => {
+    await module.close();
+    await mongoose.disconnect();
+    await mongod.stop();
+  });
+
   beforeEach(async () => {
     mongod = new MongoMemoryServer();
 
-    const module: TestingModule = await Test.createTestingModule({
+    module = await Test.createTestingModule({
       imports: [
         MongooseModule.forRootAsync({
           useFactory: async () => ({
