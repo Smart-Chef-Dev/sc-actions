@@ -1,6 +1,6 @@
-name: Checks
+name: Lint
 
-on: [push]
+on: [pull_request]
 
 jobs:
   lint:
@@ -19,36 +19,8 @@ jobs:
       - name: Run ESLint
         run: npm run lint
 
-  test:
-    needs: lint
-    runs-on: ubuntu-latest
+      - name: Run test
+        run: npm run test
 
-    strategy:
-      matrix:
-        node-version: [ 14.x ]
-
-    steps:
-      - uses: actions/checkout@v2
-
-      - name: Use Node.js
-        uses: actions/setup-node@v1
-        with:
-          node-version: '14.x'
-      - run: npm ci
-      - run: npm run test
-
-  build:
-    needs: lint
-    runs-on: ubuntu-latest
-
-    steps:
-      - uses: actions/checkout@v2
-
-      - name: Run tests
-        run: |
-          if [ -f docker-compose.test.yml ]; then
-            docker-compose --file docker-compose.test.yml build
-            docker-compose --file docker-compose.test.yml run sut
-          else
-            docker build . --file Dockerfile
-          fi
+      - name: Run build
+        run: npm run build
