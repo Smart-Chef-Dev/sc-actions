@@ -1,19 +1,13 @@
-name: Docker
+name: Docker-publish
 
 on:
   push:
     branches:
       - main
       - develop
-    tags:
-      - v*
-
-env:
-  # TODO: Change variable to your image's name.
-  IMAGE_NAME: sc-actions
 
 jobs:
-    # Push image to GitHub Packages.
+  # Push image to GitHub Packages.
   # See also https://docs.docker.com/docker-hub/builds/
   push:
     needs: build
@@ -96,49 +90,3 @@ jobs:
 
           docker tag $IMAGE_NAME $IMAGE_ID:$VERSION
           docker push $IMAGE_ID:$VERSION
-
-  deploy-to-do:
-    needs: push
-    # The type of runner that the job will run on
-    runs-on: ubuntu-latest
-    if: github.ref == 'refs/heads/main'
-    # Steps represent a sequence of tasks that will be executed as part of the job
-    steps:
-      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
-      - uses: actions/checkout@v2
-
-      - name: Deploy to Digital Ocean droplet via SSH
-        uses: appleboy/ssh-action@v0.1.4
-        with:
-          host: ${{ secrets.HOST }}
-          username: ${{ secrets.USERNAME }}
-          password: ${{ secrets.PASSWORD }}
-          port: ${{ secrets.PORT }}
-          script: |
-            cd ./sc-actions/
-            docker-compose stop
-            docker pull docker.pkg.github.com/smart-chef-dev/sc-actions/sc-actions:latest
-            docker-compose up -d
-
-  deploy-to-do-dev:
-    needs: push-dev
-    # The type of runner that the job will run on
-    runs-on: ubuntu-latest
-    if: github.ref == 'refs/heads/develop'
-    # Steps represent a sequence of tasks that will be executed as part of the job
-    steps:
-      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
-      - uses: actions/checkout@v2
-
-      - name: Deploy to Digital Ocean droplet via SSH
-        uses: appleboy/ssh-action@v0.1.4
-        with:
-          host: ${{ secrets.HOST_DEV }}
-          username: ${{ secrets.USERNAME_DEV }}
-          password: ${{ secrets.PASSWORD_DEV }}
-          port: ${{ secrets.PORT_DEV }}
-          script: |
-            cd ./sc-actions/
-            docker-compose stop
-            docker pull docker.pkg.github.com/smart-chef-dev/sc-actions/sc-actions:develop
-            docker-compose up -d
