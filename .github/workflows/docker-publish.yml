@@ -6,6 +6,9 @@ on:
       - main
       - develop
 
+env:
+  IMAGE_NAME: sc-actions
+
 jobs:
   # Push image to GitHub Packages.
   # See also https://docs.docker.com/docker-hub/builds/
