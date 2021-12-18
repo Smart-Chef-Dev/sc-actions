@@ -1,0 +1,7 @@
+tasks:
+
+  - name: update-server
+    command: |
+      docker stop $(docker ps -a -q)
+      docker rm $(docker ps -a -q)
+      doppler run -- docker-compose up -d
