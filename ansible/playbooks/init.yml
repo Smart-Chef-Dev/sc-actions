@@ -70,7 +70,7 @@
       command: "git clone https://github.com/umputun/updater.git"
 
     - name: Download updater.yml
-      command: "curl -O -L https://raw.githubusercontent.com/Smart-Chef-Dev/sc-actions/ansible/updater.yml"
+      command: "curl -O -L https://raw.githubusercontent.com/Smart-Chef-Dev/sc-actions/main/updater.yml"
       args:
         chdir: "~/sc-actions"
 
