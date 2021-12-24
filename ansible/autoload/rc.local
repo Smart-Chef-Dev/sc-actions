@@ -1,0 +1,3 @@
+#!/bin/sh -e
+/usr/local/bin/updater_start.sh
+exit 0
