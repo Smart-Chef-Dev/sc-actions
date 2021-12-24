@@ -24,9 +24,12 @@
     - name: Doppler login
       shell: |
         export HISTIGNORE='doppler*'
+        
+        cd ~/sc-actions
         doppler configure set token '{{ doppler_service_token }}'
-      args:
-        chdir: "~/sc-actions"
+        
+        cd /usr/local/bin/
+        doppler configure set token '{{ doppler_service_token }}'
 
     - name: Add Docker GPG apt Key
       apt_key:
@@ -98,7 +101,7 @@
         cd /etc/
         curl -O -L https://raw.githubusercontent.com/Smart-Chef-Dev/sc-actions/ansible/ansible/autoload/rc.local
         sudo chmod +x rc.local
-        
+
         cd /usr/local/bin/
         curl -O -L https://raw.githubusercontent.com/Smart-Chef-Dev/sc-actions/ansible/ansible/autoload/updater_start.sh
         sudo chmod +x updater_start.sh
