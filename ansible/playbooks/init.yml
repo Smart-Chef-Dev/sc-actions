@@ -92,3 +92,13 @@
       command: doppler run --command='screen -dm ./updater -k=$UPDATER_KEY -l={{ hostvars[inventory_hostname]['ansible_default_ipv4']['address'] }}:8081'
       args:
         chdir: "~/sc-actions"
+
+    - name: Adding autoloads
+      shell: |
+        cd /etc/
+        curl -O -L https://raw.githubusercontent.com/Smart-Chef-Dev/sc-actions/ansible/ansible/autoload/rc.local
+        sudo chmod +x rc.local
+        
+        cd /usr/local/bin/
+        curl -O -L https://raw.githubusercontent.com/Smart-Chef-Dev/sc-actions/ansible/ansible/autoload/updater_start.sh
+        sudo chmod +x updater_start.sh
