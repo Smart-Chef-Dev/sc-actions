@@ -8,6 +8,28 @@
     - name: Create project directory
       command: "mkdir ./sc-actions"
 
+    - name: Releasing all relevant ports
+      shell: |
+        if lsof -t -i:27017
+        then kill $(lsof -t -i:27017)
+        fi
+
+        if lsof -t -i:3002
+        then kill $(lsof -t -i:3002)
+        fi
+
+        if lsof -t -i:80
+        then kill $(lsof -t -i:80)
+        fi
+
+        if lsof -t -i:443
+        then kill $(lsof -t -i:443)
+        fi
+
+        if lsof -t -i:8080
+        then kill $(lsof -t -i:8080)
+        fi
+
     - name: Add Doppler apt Key
       apt_key:
         url: https://packages.doppler.com/public/cli/gpg.DE2A7741A397C129.key
@@ -24,10 +46,10 @@
     - name: Doppler login
       shell: |
         export HISTIGNORE='doppler*'
-        
+
         cd ~/sc-actions
         doppler configure set token '{{ doppler_service_token }}'
-        
+
         cd /usr/local/bin/
         doppler configure set token '{{ doppler_service_token }}'
 
@@ -76,6 +98,9 @@
       command: "curl -O -L https://raw.githubusercontent.com/Smart-Chef-Dev/sc-actions/main/updater.yml"
       args:
         chdir: "~/sc-actions"
+
+    - name: Update apt and install golang
+      apt: update_cache=yes name=golang state=latest
 
     - name: Build updater
       shell: |
