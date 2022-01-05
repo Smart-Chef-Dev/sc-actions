@@ -27,3 +27,32 @@ jobs:
 
       - name: Run build
         run: npm run build
+
+    outputs:
+      job-status: ${{ job.status }}
+
+  notification:
+    if: ${{ always() }}
+    needs: [ lint ]
+
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Determination of status
+        run: |
+          if [[ ${{ needs.lint.outputs.job-status }} == success ]]; then
+            echo "status=🟢🟢🟢    SUCCESS    🟢🟢🟢" >> $GITHUB_ENV
+          else
+            echo "status=🔴🔴🔴    FAILURE    🔴🔴🔴">> $GITHUB_ENV
+          fi
+
+      - name: Send a message
+        if: ${{ needs.lint.outputs.job-status }} == success
+        uses: appleboy/telegram-action@master
+        with:
+          to: ${{ secrets.TELEGRAM_TO }}
+          token: ${{ secrets.TELEGRAM_TOKEN }}
+          message: |
+            ${{env.status}}
+            
+            Action: https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}
