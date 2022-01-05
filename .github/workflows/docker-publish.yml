@@ -69,6 +69,6 @@ jobs:
 
       - uses: yanzay/notify-telegram@v0.1.0
         with:
-          chat: ${{ secrets.TELEGRAM_CHANNEL }}
+          chat: @${{ secrets.TELEGRAM_CHANNEL }}
           token: ${{ secrets.TELEGRAM_TOKEN }}
           status: ${{env.status}}
