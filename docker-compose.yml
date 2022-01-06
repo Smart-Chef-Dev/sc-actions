@@ -27,7 +27,6 @@ services:
     image: ghcr.io/smart-chef-dev/sc-actions/sc-actions:${SERVER_VERSION}
     restart: unless-stopped
     hostname: api
-    network_mode: host
     container_name: api
     environment:
       - DOPPLER_TOKEN
