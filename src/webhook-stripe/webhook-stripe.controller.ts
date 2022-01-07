@@ -17,7 +17,7 @@ export class WebhookStripeController {
 
       if (
         !!user.subscription &&
-        user.subscription != event.data.object.subscription
+        user.subscription !== event.data.object.subscription
       ) {
         await this.usersService.deleteSubscriptions(user.subscription);
       }
