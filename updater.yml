@@ -2,7 +2,7 @@ tasks:
 
   - name: update-server
     command: |
-      docker stop $(docker ps -a -q)
-      docker rm $(docker ps -a -q)
-      docker rmi $(docker images -q)
+      doppler run -- docker-compose down
+      doppler run -- docker-compose pull
       doppler run -- docker-compose up -d
+      yes | docker image prune
