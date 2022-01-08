@@ -1,12 +1,14 @@
-name: Docker-publish
+name: Deploy-to-do
 
-on: [release]
+on:
+  release:
+    types: [released, edited]
 
 jobs:
   deploy-to-do:
+    if: ${{ github.event.release.target_commitish == 'main' }}
     runs-on: ubuntu-latest
 
-    if: github.ref == 'refs/heads/main'
     steps:
       - uses: actions/checkout@v2
 
@@ -16,10 +18,11 @@ jobs:
     outputs:
       job-status: ${{ job.status }}
 
+
   deploy-to-do-dev:
+    if: ${{ github.event.release.target_commitish == 'develop' }}
     runs-on: ubuntu-latest
 
-    if: github.ref == 'refs/heads/develop'
     steps:
       - uses: actions/checkout@v2
 
@@ -29,23 +32,23 @@ jobs:
     outputs:
       job-status: ${{ job.status }}
 
+
   notification:
     if: ${{ always() }}
     needs: [ deploy-to-do, deploy-to-do-dev ]
-
     runs-on: ubuntu-latest
 
     steps:
       - name: Determination of status
         run: |
-          if [[ ${{ needs.deploy-to-do.outputs.job-status }} == failure || ${{ needs.deploy-to-do-dev.outputs.job-status }} == failure ]]; then
+          if [[ '${{ needs.deploy-to-do.outputs.job-status }}' == 'failure'|| '${{ needs.deploy-to-do-dev.outputs.job-status}}' == 'failure' ]]; then
             echo "status=🔴🔴🔴FAILURE🔴🔴🔴" >> $GITHUB_ENV
           else
-            echo "status=🟢🟢🟢SUCCESS🟢🟢🟢">> $GITHUB_ENV
+            echo "status=🟢🟢🟢SUCCESS🟢🟢🟢" >> $GITHUB_ENV
           fi
 
       - uses: yanzay/notify-telegram@v0.1.0
         with:
-          chat: @${{ secrets.TELEGRAM_CHANNEL }}
+          chat: ${{ secrets.TELEGRAM_CHANNEL }}
           token: ${{ secrets.TELEGRAM_TOKEN }}
           status: ${{env.status}}
