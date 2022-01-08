@@ -6,28 +6,25 @@ on:
 
 jobs:
   deploy-to-do:
-    if: ${{ github.event.release.target_commitish == 'main' }}
     runs-on: ubuntu-latest
 
     steps:
       - uses: actions/checkout@v2
 
       - name: Start updater
-        run: curl http://${{ secrets.HOST }}:8081/update/update-server/${{ secrets.UPDATER_KEY }}
-
-    outputs:
-      job-status: ${{ job.status }}
-
-
-  deploy-to-do-dev:
-    if: ${{ github.event.release.target_commitish == 'develop' }}
-    runs-on: ubuntu-latest
-
-    steps:
-      - uses: actions/checkout@v2
-
-      - name: Start updater
-        run: curl http://${{ secrets.HOST_DEV }}:8081/update/update-server/${{ secrets.UPDATER_KEY }}
+        run: |
+          if [[ ${{github.event.release.target_commitish}} == 'main' ]]; then
+            HOST=${{ secrets.HOST }}
+          elif [[ ${{github.event.release.target_commitish}} == 'develop' ]]; then
+            HOST=${{ secrets.HOST_DEV }}
+          else
+            exit 1
+          fi
+          
+          UPDATER_RESULT=$(curl http://$HOST:8081/update/update-server/${{ secrets.UPDATER_KEY }})
+          if [[ $UPDATER_RESULT == 'failed command' ]]; then
+            exit 1 
+          fi
 
     outputs:
       job-status: ${{ job.status }}
@@ -35,13 +32,13 @@ jobs:
 
   notification:
     if: ${{ always() }}
-    needs: [ deploy-to-do, deploy-to-do-dev ]
+    needs: [ deploy-to-do ]
     runs-on: ubuntu-latest
 
     steps:
       - name: Determination of status
         run: |
-          if [[ '${{ needs.deploy-to-do.outputs.job-status }}' == 'failure'|| '${{ needs.deploy-to-do-dev.outputs.job-status}}' == 'failure' ]]; then
+          if [[ '${{ needs.deploy-to-do.outputs.job-status }}' == 'failure' ]]; then
             echo "status=🔴🔴🔴FAILURE🔴🔴🔴" >> $GITHUB_ENV
           else
             echo "status=🟢🟢🟢SUCCESS🟢🟢🟢" >> $GITHUB_ENV
