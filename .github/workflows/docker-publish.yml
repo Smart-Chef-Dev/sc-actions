@@ -55,20 +55,19 @@ jobs:
   notification:
     if: ${{ always() }}
     needs: [ push ]
-
     runs-on: ubuntu-latest
 
     steps:
       - name: Determination of status
         run: |
-          if [[ ${{ needs.push.outputs.job-status }} == failure ]]; then
+          if [[ '${{ needs.push.outputs.job-status }}' == 'failure' ]]; then
             echo "status=🔴🔴🔴FAILURE🔴🔴🔴" >> $GITHUB_ENV
           else
-            echo "status=🟢🟢🟢SUCCESS🟢🟢🟢">> $GITHUB_ENV
+            echo "status=🟢🟢🟢SUCCESS🟢🟢🟢" >> $GITHUB_ENV
           fi
 
       - uses: yanzay/notify-telegram@v0.1.0
         with:
-          chat: @${{ secrets.TELEGRAM_CHANNEL }}
+          chat: ${{ secrets.TELEGRAM_CHANNEL }}
           token: ${{ secrets.TELEGRAM_TOKEN }}
           status: ${{env.status}}
