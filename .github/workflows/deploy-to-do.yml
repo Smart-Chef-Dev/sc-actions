@@ -1,0 +1,51 @@
+name: Deploy-to-do
+
+on:
+  release:
+    types: [released, edited]
+
+jobs:
+  deploy-to-do:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Start updater
+        run: |
+          if [[ ${{github.event.release.target_commitish}} == 'main' ]]; then
+            HOST=${{ secrets.HOST }}
+          elif [[ ${{github.event.release.target_commitish}} == 'develop' ]]; then
+            HOST=${{ secrets.HOST_DEV }}
+          else
+            exit 1
+          fi
+          
+          UPDATER_RESULT=$(curl http://$HOST:8081/update/update-server/${{ secrets.UPDATER_KEY }})
+          if [[ $UPDATER_RESULT == 'failed command' ]]; then
+            exit 1 
+          fi
+
+    outputs:
+      job-status: ${{ job.status }}
+
+
+  notification:
+    if: ${{ always() }}
+    needs: [ deploy-to-do ]
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Determination of status
+        run: |
+          if [[ '${{ needs.deploy-to-do.outputs.job-status }}' == 'failure' ]]; then
+            echo "status=🔴🔴🔴FAILURE🔴🔴🔴" >> $GITHUB_ENV
+          else
+            echo "status=🟢🟢🟢SUCCESS🟢🟢🟢" >> $GITHUB_ENV
+          fi
+
+      - uses: yanzay/notify-telegram@v0.1.0
+        with:
+          chat: ${{ secrets.TELEGRAM_CHANNEL }}
+          token: ${{ secrets.TELEGRAM_TOKEN }}
+          status: ${{env.status}}

@@ -1,0 +1,29 @@
+name: Lint
+
+on: [pull_request]
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        node-version: [ 14.x ]
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Install modules
+        run: npm ci --dev
+
+      - name: Run ESLint
+        run: npm run lint
+
+      - name: Run prettier
+        run: npm run format
+
+      - name: Run test
+        run: npm run test
+
+      - name: Run build
+        run: npm run build

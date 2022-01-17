@@ -2,6 +2,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { MongooseModule } from '@nestjs/mongoose';
 import { Model, Mongoose, Types } from 'mongoose';
 import { MongoMemoryServer } from 'mongodb-memory-server';
+import * as mongoose from 'mongoose';
 
 import { CategoryService } from './category.service';
 import { Category, CategorySchema } from './schemas/category.schema';
@@ -13,13 +14,20 @@ import {
 let mongod: MongoMemoryServer;
 
 describe('CategoryService', () => {
+  let module: TestingModule;
   let service: CategoryService;
   let restaurantModel: Model<Restaurant>;
+
+  afterEach(async () => {
+    await module.close();
+    await mongoose.disconnect();
+    await mongod.stop();
+  });
 
   beforeEach(async () => {
     mongod = new MongoMemoryServer();
 
-    const module: TestingModule = await Test.createTestingModule({
+    module = await Test.createTestingModule({
       imports: [
         MongooseModule.forRootAsync({
           useFactory: async () => ({
