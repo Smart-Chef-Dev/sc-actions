@@ -95,6 +95,9 @@ export class UsersController {
     }
 
     await this.usersService.updateById(user.id, { subscription: null });
+    await this.restaurantService.updateById(user.restaurantId, {
+      isAccessDisabled: true,
+    });
     return this.usersService.deleteSubscriptions(user.subscription);
   }
 }
