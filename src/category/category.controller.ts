@@ -21,6 +21,7 @@ import { Users } from '../users/schemas/users.schema';
 import { checkIfUserHasPermissionToChangeRestaurant } from '../utils/checkIfUserHasPermissionToChangeRestaurant';
 import { MenuItemsDto } from 'src/menu/dto/menuItems';
 import { checkIsObjectIdValid } from 'src/utils/checkIsObjectIdValid';
+import { RestaurantService } from '../restaurant/restaurant.service';
 
 @Controller('category')
 export class CategoryController {
@@ -28,6 +29,7 @@ export class CategoryController {
     private readonly menuService: MenuService,
     private readonly categoryService: CategoryService,
     private readonly imagesService: ImagesService,
+    private readonly restaurantService: RestaurantService,
   ) {}
 
   @Get(':id/menu-item')
@@ -38,9 +40,15 @@ export class CategoryController {
   ) {
     await checkIsObjectIdValid(id);
 
-    const isCategoryExists = await this.categoryService.findById(id);
-    if (!isCategoryExists) {
+    const category = await this.categoryService.findById(id);
+    if (!category) {
       throw new NotFoundException();
+    }
+    const restaurant = await this.restaurantService.findById(
+      category.restaurant._id,
+    );
+    if (restaurant.isAccessDisabled) {
+      throw new ForbiddenException('The restaurant is blocked');
     }
 
     return !!page && !!limit

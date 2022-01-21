@@ -3,6 +3,7 @@ import {
   Body,
   Controller,
   Delete,
+  ForbiddenException,
   Get,
   NotFoundException,
   Param,
@@ -32,8 +33,20 @@ export class MenuController {
   ) {}
 
   @Get(':id')
-  findById(@Param('id') id: string) {
-    return this.menuService.findById(id);
+  async findById(@Param('id') id: string) {
+    const menuService = await this.menuService.findById(id);
+    if (!menuService) {
+      throw new NotFoundException();
+    }
+
+    const restaurant = await this.restaurantService.findById(
+      menuService.category.restaurant._id,
+    );
+    if (restaurant.isAccessDisabled) {
+      throw new ForbiddenException('The restaurant is blocked');
+    }
+
+    return menuService;
   }
 
   @UseGuards(JwtGuard)
