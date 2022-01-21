@@ -13,23 +13,9 @@ export class WebhookStripeController {
   @Post()
   async webhook(@Req() req, @Res() res) {
     const event = req.body;
-    //
-    // if (event.type === 'invoice.payment_succeeded') {
-    //   const user = await this.usersService.findByEmail(
-    //     event.data.object.customer_email,
-    //   );
-    //
-    //   if (user.subscription) {
-    //     await this.usersService.deleteSubscriptions(user.subscription);
-    //   }
-    //
-    //   await this.usersService.updateById(user._id, {
-    //     subscription: event.data.object.subscription,
-    //   });
-    // }
 
     switch (event.type) {
-      case 'invoice.payment_succeeded':
+      case 'invoice.payment_succeeded': {
         const user = await this.usersService.findByEmail(
           event.data.object.customer_email,
         );
@@ -46,9 +32,18 @@ export class WebhookStripeController {
         });
 
         break;
-      case 'invoice.payment_failed':
-        console.log('block the restaurant');
+      }
+      case 'invoice.payment_failed': {
+        const user = await this.usersService.findByEmail(
+          event.data.object.customer_email,
+        );
+
+        await this.restaurantService.updateById(user.restaurantId, {
+          isAccessDisabled: true,
+        });
+
         break;
+      }
     }
 
     return res.status(HttpStatus.OK).json();
