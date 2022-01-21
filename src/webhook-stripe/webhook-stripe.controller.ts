@@ -9,19 +9,39 @@ export class WebhookStripeController {
   @Post()
   async webhook(@Req() req, @Res() res) {
     const event = req.body;
+    //
+    // if (event.type === 'invoice.payment_succeeded') {
+    //   const user = await this.usersService.findByEmail(
+    //     event.data.object.customer_email,
+    //   );
+    //
+    //   if (user.subscription) {
+    //     await this.usersService.deleteSubscriptions(user.subscription);
+    //   }
+    //
+    //   await this.usersService.updateById(user._id, {
+    //     subscription: event.data.object.subscription,
+    //   });
+    // }
 
-    if (event.type === 'invoice.payment_succeeded') {
-      const user = await this.usersService.findByEmail(
-        event.data.object.customer_email,
-      );
+    switch (event.type) {
+      case 'invoice.payment_succeeded':
+        const user = await this.usersService.findByEmail(
+          event.data.object.customer_email,
+        );
 
-      if (user.subscription) {
-        await this.usersService.deleteSubscriptions(user.subscription);
-      }
+        if (user.subscription) {
+          await this.usersService.deleteSubscriptions(user.subscription);
+        }
 
-      await this.usersService.updateById(user._id, {
-        subscription: event.data.object.subscription,
-      });
+        await this.usersService.updateById(user._id, {
+          subscription: event.data.object.subscription,
+        });
+
+        break;
+      case 'invoice.payment_failed':
+        console.log('block the restaurant');
+        break;
     }
 
     return res.status(HttpStatus.OK).json();
