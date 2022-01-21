@@ -59,15 +59,18 @@ export class RestaurantController {
   ) {}
 
   @Get()
-  public async findAll(@Res() res) {
+  public async findAll() {
     const restaurants = await this.restaurantService.findAll();
 
-    return res.status(HttpStatus.OK).json(restaurants);
+    return restaurants.filter((r) => !r.isAccessDisabled);
   }
 
   @Get(':id')
   public async findById(@Param('id') id: string, @Res() res) {
     const restaurant = await this.restaurantService.findById(id);
+    if (restaurant.isAccessDisabled) {
+      throw new ForbiddenException('The restaurant is blocked');
+    }
 
     return res.status(HttpStatus.OK).json(restaurant);
   }
@@ -93,6 +96,11 @@ export class RestaurantController {
 
   @Get(':id/action')
   public async getRestaurantActions(@Param('id') id: string, @Res() res) {
+    const restaurant = await this.restaurantService.findById(id);
+    if (restaurant.isAccessDisabled) {
+      throw new ForbiddenException('The restaurant is blocked');
+    }
+
     const actions = await this.restaurantService.findAllActions(id);
     await this.analyticsService.create({
       type: AnalyticType.GET_ACTIONS,
@@ -123,6 +131,11 @@ export class RestaurantController {
 
   @Get(':id/table')
   public async getRestaurantTables(@Param('id') id: string, @Res() res) {
+    const restaurant = await this.restaurantService.findById(id);
+    if (restaurant.isAccessDisabled) {
+      throw new ForbiddenException('The restaurant is blocked');
+    }
+
     const tables = await this.restaurantService.findAllTables(id);
 
     return res
@@ -152,6 +165,10 @@ export class RestaurantController {
   @Get(':id/addon')
   public async getRestaurantAddons(@Param('id') id: string) {
     await checkIsObjectIdValid(id);
+    const restaurant = await this.restaurantService.findById(id);
+    if (restaurant.isAccessDisabled) {
+      throw new ForbiddenException('The restaurant is blocked');
+    }
 
     const isRestaurantExist = await this.restaurantService.findById(id);
     if (!isRestaurantExist) {
