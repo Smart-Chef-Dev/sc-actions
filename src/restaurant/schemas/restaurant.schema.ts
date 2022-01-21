@@ -20,6 +20,9 @@ export class Restaurant extends Document {
   @Prop({ type: String, default: DEFAULT_LANGUAGE })
   language: string;
 
+  @Prop({ type: Boolean, default: true })
+  isAccessDisabled: boolean;
+
   @Prop({ type: [TableSchema], default: [] })
   tables: Table[];
 
