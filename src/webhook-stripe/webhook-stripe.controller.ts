@@ -1,10 +1,14 @@
 import { Controller, HttpStatus, Post, Req, Res } from '@nestjs/common';
 
 import { UsersService } from '../users/users.service';
+import { RestaurantService } from '../restaurant/restaurant.service';
 
 @Controller('webhook-stripe')
 export class WebhookStripeController {
-  constructor(private readonly usersService: UsersService) {}
+  constructor(
+    private readonly usersService: UsersService,
+    private readonly restaurantService: RestaurantService,
+  ) {}
 
   @Post()
   async webhook(@Req() req, @Res() res) {
@@ -36,6 +40,9 @@ export class WebhookStripeController {
 
         await this.usersService.updateById(user._id, {
           subscription: event.data.object.subscription,
+        });
+        await this.restaurantService.updateById(user.restaurantId, {
+          isAccessDisabled: false,
         });
 
         break;
