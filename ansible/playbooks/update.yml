@@ -1,0 +1,32 @@
+---
+- hosts: all
+  tasks:
+    - name: Stop all containers
+      shell: "docker stop $(docker ps -a -q)"
+      args:
+        chdir: "~/sc-actions"
+
+    - name: Remove all containers
+      shell: "docker rm $(docker ps -a -q)"
+      args:
+        chdir: "~/sc-actions"
+
+    - name: Remove compose file
+      command: "rm docker-compose.yml"
+      args:
+        chdir: "~/sc-actions"
+
+    - name: Download compose file
+      command: "curl -O -L https://raw.githubusercontent.com/Smart-Chef-Dev/sc-actions/{{branch}}/docker-compose.yml"
+      args:
+        chdir: "~/sc-actions"
+
+    - name: Pull compose
+      command: "doppler run -- docker-compose pull"
+      args:
+        chdir: "~/sc-actions"
+
+    - name: Start compose
+      command: "doppler run -- docker-compose up -d"
+      args:
+        chdir: "~/sc-actions"

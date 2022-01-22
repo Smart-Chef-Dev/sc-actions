@@ -1,0 +1,8 @@
+tasks:
+
+  - name: update-server
+    command: |
+      doppler run -- docker-compose down
+      doppler run -- docker-compose pull
+      doppler run -- docker-compose up -d
+      yes | docker image prune
