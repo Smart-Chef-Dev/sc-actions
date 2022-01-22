@@ -8,28 +8,6 @@
     - name: Create project directory
       command: "mkdir ./sc-actions"
 
-    - name: Releasing all relevant ports
-      shell: |
-        if lsof -t -i:27017
-        then kill $(lsof -t -i:27017)
-        fi
-
-        if lsof -t -i:3002
-        then kill $(lsof -t -i:3002)
-        fi
-
-        if lsof -t -i:80
-        then kill $(lsof -t -i:80)
-        fi
-
-        if lsof -t -i:443
-        then kill $(lsof -t -i:443)
-        fi
-
-        if lsof -t -i:8080
-        then kill $(lsof -t -i:8080)
-        fi
-
     - name: Add Doppler apt Key
       apt_key:
         url: https://packages.doppler.com/public/cli/gpg.DE2A7741A397C129.key
