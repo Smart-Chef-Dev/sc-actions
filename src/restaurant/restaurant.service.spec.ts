@@ -332,7 +332,7 @@ describe('RestaurantService', () => {
     expect(restaurant.isAccessDisabled).toBe(true);
 
     try {
-      await service.checkingIfRestaurantIsBlocked(restaurant._id);
+      await service.checkIfRestaurantIsBlocked(restaurant._id);
     } catch (e) {
       expect(e).toBeDefined();
       expect(e.code).toBe(ScBusinessExceptions.RESTAURANT_DISABLED.code);

@@ -22,7 +22,7 @@ import { RestaurantService } from '../restaurant/restaurant.service';
 import { checkIfUserHasPermissionToChangeRestaurant } from '../utils/checkIfUserHasPermissionToChangeRestaurant';
 import { Users } from '../users/schemas/users.schema';
 import { JwtGuard } from '../guard/jwt.guard';
-import { ScBusinessExceptionFilter } from '../exception-filters/sc-business-exception.filter';
+import { ScBusinessExceptionFilter } from '../exception/sc-business-exception.filter';
 
 @UseFilters(new ScBusinessExceptionFilter())
 @Controller('menu')
@@ -41,7 +41,7 @@ export class MenuController {
       throw new NotFoundException();
     }
 
-    await this.restaurantService.checkingIfRestaurantIsBlocked(
+    await this.restaurantService.checkIfRestaurantIsBlocked(
       menuItem.category.restaurant._id,
     );
 

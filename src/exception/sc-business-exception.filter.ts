@@ -3,7 +3,7 @@ import { Response } from 'express';
 import {
   ScBusinessException,
   ScBusinessExceptions,
-} from '../exception/sc-business.exception';
+} from './sc-business.exception';
 
 @Catch(ScBusinessException)
 export class ScBusinessExceptionFilter implements ExceptionFilter {

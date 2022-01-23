@@ -45,7 +45,7 @@ import { Role } from '../users/enums/role.enum';
 import { ProductDto } from './dto/product.dto';
 import { Roles } from '../decorators/roles.decorator';
 import { RolesGuard } from '../guard/roles.guard';
-import { ScBusinessExceptionFilter } from '../exception-filters/sc-business-exception.filter';
+import { ScBusinessExceptionFilter } from '../exception/sc-business-exception.filter';
 
 @UseFilters(new ScBusinessExceptionFilter())
 @Controller('restaurant')
@@ -72,7 +72,7 @@ export class RestaurantController {
   public async findById(@Param('id') id: string, @Res() res) {
     const restaurant = await this.restaurantService.findById(id);
 
-    await this.restaurantService.checkingIfRestaurantIsBlocked(id);
+    await this.restaurantService.checkIfRestaurantIsBlocked(id);
 
     return res.status(HttpStatus.OK).json(restaurant);
   }
@@ -98,7 +98,7 @@ export class RestaurantController {
 
   @Get(':id/action')
   public async getRestaurantActions(@Param('id') id: string, @Res() res) {
-    await this.restaurantService.checkingIfRestaurantIsBlocked(id);
+    await this.restaurantService.checkIfRestaurantIsBlocked(id);
 
     const actions = await this.restaurantService.findAllActions(id);
     await this.analyticsService.create({
@@ -130,7 +130,7 @@ export class RestaurantController {
 
   @Get(':id/table')
   public async getRestaurantTables(@Param('id') id: string, @Res() res) {
-    await this.restaurantService.checkingIfRestaurantIsBlocked(id);
+    await this.restaurantService.checkIfRestaurantIsBlocked(id);
 
     const tables = await this.restaurantService.findAllTables(id);
 
@@ -161,7 +161,7 @@ export class RestaurantController {
   @Get(':id/addon')
   public async getRestaurantAddons(@Param('id') id: string) {
     await checkIsObjectIdValid(id);
-    await this.restaurantService.checkingIfRestaurantIsBlocked(id);
+    await this.restaurantService.checkIfRestaurantIsBlocked(id);
 
     const isRestaurantExist = await this.restaurantService.findById(id);
     if (!isRestaurantExist) {

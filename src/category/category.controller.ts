@@ -23,7 +23,7 @@ import { checkIfUserHasPermissionToChangeRestaurant } from '../utils/checkIfUser
 import { MenuItemsDto } from 'src/menu/dto/menuItems';
 import { checkIsObjectIdValid } from 'src/utils/checkIsObjectIdValid';
 import { RestaurantService } from '../restaurant/restaurant.service';
-import { ScBusinessExceptionFilter } from '../exception-filters/sc-business-exception.filter';
+import { ScBusinessExceptionFilter } from '../exception/sc-business-exception.filter';
 
 @UseFilters(new ScBusinessExceptionFilter())
 @Controller('category')
@@ -47,7 +47,7 @@ export class CategoryController {
     if (!category) {
       throw new NotFoundException();
     }
-    await this.restaurantService.checkingIfRestaurantIsBlocked(
+    await this.restaurantService.checkIfRestaurantIsBlocked(
       category.restaurant._id,
     );
 

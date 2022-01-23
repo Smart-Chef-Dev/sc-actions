@@ -207,9 +207,7 @@ export class RestaurantService {
     });
   }
 
-  public async checkingIfRestaurantIsBlocked(
-    restaurantId: string,
-  ): Promise<void> {
+  public async checkIfRestaurantIsBlocked(restaurantId: string): Promise<void> {
     const restaurant = await this.restaurantModel
       .findById(restaurantId)
       .select('isAccessDisabled');
