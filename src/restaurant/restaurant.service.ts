@@ -201,4 +201,14 @@ export class RestaurantService {
       $set: { tables: changedRestaurant },
     });
   }
+
+  public async checkingIfRestaurantIsBlocked(
+    restaurantId: string,
+  ): Promise<boolean> {
+    return (
+      await this.restaurantModel
+        .findById(restaurantId)
+        .select('isAccessDisabled')
+    ).isAccessDisabled;
+  }
 }
