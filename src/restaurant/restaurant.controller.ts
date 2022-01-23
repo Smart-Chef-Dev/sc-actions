@@ -211,6 +211,8 @@ export class RestaurantController {
       throw new NotFoundException();
     }
 
+    await this.restaurantService.checkIfRestaurantIsBlocked(id);
+
     return this.categoryService.findAll(id);
   }
 
@@ -301,6 +303,8 @@ export class RestaurantController {
     if (!isRestaurantExist) {
       throw new NotFoundException();
     }
+
+    await this.restaurantService.checkIfRestaurantIsBlocked(id);
 
     return this.menuService.findAll(id);
   }
