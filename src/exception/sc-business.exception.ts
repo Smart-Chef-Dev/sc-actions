@@ -8,7 +8,14 @@ export class ScBusinessException {
   }
 }
 
-export const ScBusinessExceptions = {
+interface IException {
+  [item: string]: {
+    code: number;
+    message: string;
+  };
+}
+
+export const ScBusinessExceptions: IException = {
   RESTAURANT_DISABLED: {
     code: 3000,
     message: 'The restaurant is blocked',

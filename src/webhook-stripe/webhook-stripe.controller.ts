@@ -2,6 +2,7 @@ import { Controller, HttpStatus, Post, Req, Res } from '@nestjs/common';
 
 import { UsersService } from '../users/users.service';
 import { RestaurantService } from '../restaurant/restaurant.service';
+import { EVENT } from './constants/event';
 
 @Controller('webhook-stripe')
 export class WebhookStripeController {
@@ -15,7 +16,7 @@ export class WebhookStripeController {
     const event = req.body;
 
     switch (event.type) {
-      case 'invoice.payment_succeeded': {
+      case EVENT.PAYMENT_SUCCEEDED: {
         const user = await this.usersService.findByEmail(
           event.data.object.customer_email,
         );
@@ -36,7 +37,7 @@ export class WebhookStripeController {
 
         break;
       }
-      case 'invoice.payment_failed': {
+      case EVENT.PAYMENT_FAILED: {
         const user = await this.usersService.findByEmail(
           event.data.object.customer_email,
         );
