@@ -13,6 +13,7 @@ import {
   Req,
   UseGuards,
   BadRequestException,
+  UseFilters,
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { ConfigService } from '@nestjs/config';
@@ -44,7 +45,9 @@ import { Role } from '../users/enums/role.enum';
 import { ProductDto } from './dto/product.dto';
 import { Roles } from '../decorators/roles.decorator';
 import { RolesGuard } from '../guard/roles.guard';
+import { ScBusinessExceptionFilter } from '../exception-filters/sc-business-exception.filter';
 
+@UseFilters(new ScBusinessExceptionFilter())
 @Controller('restaurant')
 export class RestaurantController {
   constructor(
@@ -69,11 +72,7 @@ export class RestaurantController {
   public async findById(@Param('id') id: string, @Res() res) {
     const restaurant = await this.restaurantService.findById(id);
 
-    const { isRestaurantBlocked, blockingErrorText } =
-      await this.restaurantService.checkingIfRestaurantIsBlocked(id);
-    if (isRestaurantBlocked) {
-      throw new ForbiddenException(blockingErrorText);
-    }
+    await this.restaurantService.checkingIfRestaurantIsBlocked(id);
 
     return res.status(HttpStatus.OK).json(restaurant);
   }
@@ -99,10 +98,7 @@ export class RestaurantController {
 
   @Get(':id/action')
   public async getRestaurantActions(@Param('id') id: string, @Res() res) {
-    const restaurant = await this.restaurantService.findById(id);
-    if (restaurant.isAccessDisabled) {
-      throw new ForbiddenException('The restaurant is blocked');
-    }
+    await this.restaurantService.checkingIfRestaurantIsBlocked(id);
 
     const actions = await this.restaurantService.findAllActions(id);
     await this.analyticsService.create({
@@ -134,10 +130,7 @@ export class RestaurantController {
 
   @Get(':id/table')
   public async getRestaurantTables(@Param('id') id: string, @Res() res) {
-    const restaurant = await this.restaurantService.findById(id);
-    if (restaurant.isAccessDisabled) {
-      throw new ForbiddenException('The restaurant is blocked');
-    }
+    await this.restaurantService.checkingIfRestaurantIsBlocked(id);
 
     const tables = await this.restaurantService.findAllTables(id);
 
@@ -168,10 +161,7 @@ export class RestaurantController {
   @Get(':id/addon')
   public async getRestaurantAddons(@Param('id') id: string) {
     await checkIsObjectIdValid(id);
-    const restaurant = await this.restaurantService.findById(id);
-    if (restaurant.isAccessDisabled) {
-      throw new ForbiddenException('The restaurant is blocked');
-    }
+    await this.restaurantService.checkingIfRestaurantIsBlocked(id);
 
     const isRestaurantExist = await this.restaurantService.findById(id);
     if (!isRestaurantExist) {

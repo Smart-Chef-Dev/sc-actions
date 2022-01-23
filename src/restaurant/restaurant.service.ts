@@ -12,6 +12,10 @@ import { LanguageEnum } from './enums/language.enum';
 import { Users } from '../users/schemas/users.schema';
 import { Addon } from './schemas/addon.shema';
 import { AddonDto } from './dto/addon.dto';
+import {
+  ScBusinessException,
+  ScBusinessExceptions,
+} from '../exception/sc-business.exception';
 
 @Injectable()
 export class RestaurantService {
@@ -203,17 +207,18 @@ export class RestaurantService {
     });
   }
 
-  public async checkingIfRestaurantIsBlocked(restaurantId: string): Promise<{
-    isRestaurantBlocked: boolean;
-    blockingErrorText: string;
-  }> {
+  public async checkingIfRestaurantIsBlocked(
+    restaurantId: string,
+  ): Promise<void> {
     const restaurant = await this.restaurantModel
       .findById(restaurantId)
       .select('isAccessDisabled');
 
-    return {
-      isRestaurantBlocked: restaurant.isAccessDisabled,
-      blockingErrorText: 'The restaurant is blocked',
-    };
+    if (restaurant.isAccessDisabled) {
+      throw new ScBusinessException(
+        ScBusinessExceptions.RESTAURANT_DISABLED.code,
+        ScBusinessExceptions.RESTAURANT_DISABLED.message,
+      );
+    }
   }
 }

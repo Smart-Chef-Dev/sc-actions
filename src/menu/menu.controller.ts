@@ -3,12 +3,12 @@ import {
   Body,
   Controller,
   Delete,
-  ForbiddenException,
   Get,
   NotFoundException,
   Param,
   Post,
   Req,
+  UseFilters,
   UseGuards,
 } from '@nestjs/common';
 
@@ -22,7 +22,9 @@ import { RestaurantService } from '../restaurant/restaurant.service';
 import { checkIfUserHasPermissionToChangeRestaurant } from '../utils/checkIfUserHasPermissionToChangeRestaurant';
 import { Users } from '../users/schemas/users.schema';
 import { JwtGuard } from '../guard/jwt.guard';
+import { ScBusinessExceptionFilter } from '../exception-filters/sc-business-exception.filter';
 
+@UseFilters(new ScBusinessExceptionFilter())
 @Controller('menu')
 export class MenuController {
   constructor(
@@ -39,13 +41,9 @@ export class MenuController {
       throw new NotFoundException();
     }
 
-    const { isRestaurantBlocked, blockingErrorText } =
-      await this.restaurantService.checkingIfRestaurantIsBlocked(
-        menuItem.category.restaurant._id,
-      );
-    if (isRestaurantBlocked) {
-      throw new ForbiddenException(blockingErrorText);
-    }
+    await this.restaurantService.checkingIfRestaurantIsBlocked(
+      menuItem.category.restaurant._id,
+    );
 
     return menuItem;
   }

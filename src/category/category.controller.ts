@@ -9,6 +9,7 @@ import {
   Post,
   Query,
   Req,
+  UseFilters,
   UseGuards,
 } from '@nestjs/common';
 
@@ -22,7 +23,9 @@ import { checkIfUserHasPermissionToChangeRestaurant } from '../utils/checkIfUser
 import { MenuItemsDto } from 'src/menu/dto/menuItems';
 import { checkIsObjectIdValid } from 'src/utils/checkIsObjectIdValid';
 import { RestaurantService } from '../restaurant/restaurant.service';
+import { ScBusinessExceptionFilter } from '../exception-filters/sc-business-exception.filter';
 
+@UseFilters(new ScBusinessExceptionFilter())
 @Controller('category')
 export class CategoryController {
   constructor(
@@ -44,13 +47,9 @@ export class CategoryController {
     if (!category) {
       throw new NotFoundException();
     }
-    const { isRestaurantBlocked, blockingErrorText } =
-      await this.restaurantService.checkingIfRestaurantIsBlocked(
-        category.restaurant._id,
-      );
-    if (isRestaurantBlocked) {
-      throw new ForbiddenException(blockingErrorText);
-    }
+    await this.restaurantService.checkingIfRestaurantIsBlocked(
+      category.restaurant._id,
+    );
 
     return !!page && !!limit
       ? this.menuService.findByCategoryIdInLimit(id, page, limit)
