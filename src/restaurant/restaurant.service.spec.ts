@@ -325,4 +325,15 @@ describe('RestaurantService', () => {
 
     expect(foundAddon2).toBe(false);
   });
+
+  it('should check if the restaurant is blocked', async () => {
+    const restaurant = await preCreateRestaurant();
+    expect(restaurant.isAccessDisabled).toBe(true);
+
+    const isRestaurantBlocked = await service.checkingIfRestaurantIsBlocked(
+      restaurant._id,
+    );
+    expect(isRestaurantBlocked).toBeDefined();
+    expect(isRestaurantBlocked).toBe(true);
+  });
 });
