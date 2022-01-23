@@ -1,0 +1,5 @@
+#!/bin/sh -e
+HOME=${HOME:-/root}
+export HOME
+/usr/local/bin/updater_start.sh
+exit 0

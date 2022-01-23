@@ -1,40 +1,110 @@
 ---
 - hosts: all
   tasks:
-    - name: Check project directory exists
-      stat:
-          path: "~/sc-actions"
-      register: project_directory
+    - name: Install required system packages
+      apt: name={{ item }} state=latest update_cache=yes
+      loop: [ 'apt-transport-https', 'ca-certificates', 'curl', 'software-properties-common', 'python3-pip', 'virtualenv', 'python3-setuptools' ]
 
-    - name: "Stop compose if exists"
-      command: "doppler run -- docker-compose down"
-      when: project_directory.stat.exists and project_directory.stat.isdir
-      args:
-          chdir: "~/sc-actions"
-
-    - name: "Remove old folder"
-      command: "rm -r ~/sc-actions"
-      when: project_directory.stat.exists and project_directory.stat.isdir
-
-    - name: "Create project directory"
+    - name: Create project directory
       command: "mkdir ./sc-actions"
 
-    - name: "Download compose file"
+    - name: Add Doppler apt Key
+      apt_key:
+        url: https://packages.doppler.com/public/cli/gpg.DE2A7741A397C129.key
+        state: present
+
+    - name: Add Doppler Repository
+      apt_repository:
+        repo: deb https://packages.doppler.com/public/cli/deb/debian any-version main
+        state: present
+
+    - name: Update apt and install doppler
+      apt: update_cache=yes name=doppler state=latest
+
+    - name: Doppler login
+      shell: |
+        export HISTIGNORE='doppler*'
+
+        cd ~/sc-actions
+        doppler configure set token '{{ doppler_service_token }}'
+
+        cd /usr/local/bin/
+        doppler configure set token '{{ doppler_service_token }}'
+
+    - name: Add Docker GPG apt Key
+      apt_key:
+        url: https://download.docker.com/linux/ubuntu/gpg
+        state: present
+
+    - name: Add Docker Repository
+      apt_repository:
+        repo: deb https://download.docker.com/linux/ubuntu bionic stable
+        state: present
+
+    - name: Update apt and install docker-ce
+      apt: update_cache=yes name=docker-ce state=latest
+
+    - name: Install docker-compose
+      shell: |
+        sudo curl -L https://github.com/docker/compose/releases/download/1.21.2/docker-compose-`uname -s`-`uname -m` -o /usr/local/bin/docker-compose
+        sudo chmod +x /usr/local/bin/docker-compose
+
+    - name: Download compose file
       command: "curl -O -L https://raw.githubusercontent.com/Smart-Chef-Dev/sc-actions/main/docker-compose.yml"
       args:
-          chdir: "~/sc-actions"
+        chdir: "~/sc-actions"
 
-    - name: "Download mongo-init file"
+    - name: Download mongo-init file
       command: "curl -O -L https://raw.githubusercontent.com/Smart-Chef-Dev/sc-actions/main/mongo-init.sh"
       args:
-          chdir: "~/sc-actions"
+        chdir: "~/sc-actions"
 
-    - name: "Pull compose"
+    - name: Pull compose
       command: "doppler run -- docker-compose pull"
       args:
-          chdir: "~/sc-actions"
+        chdir: "~/sc-actions"
 
-    - name: "Start compose"
+    - name: Start compose
       command: "doppler run -- docker-compose up -d"
       args:
-          chdir: "~/sc-actions"
+        chdir: "~/sc-actions"
+
+    - name: Clone updater repository
+      command: "git clone https://github.com/umputun/updater.git"
+
+    - name: Download updater.yml
+      command: "curl -O -L https://raw.githubusercontent.com/Smart-Chef-Dev/sc-actions/main/updater.yml"
+      args:
+        chdir: "~/sc-actions"
+
+    - name: Update apt and install golang
+      apt: update_cache=yes name=golang state=latest
+
+    - name: Build updater
+      shell: |
+        B=$(shell git rev-parse --abbrev-ref HEAD)
+        BRANCH=$(subst /,-,$(B))
+        GITREV=$(shell git describe --abbrev=7 --always --tags)
+        REV=$(GITREV)-$(BRANCH)-$(shell date +%Y%m%d-%H:%M:%S)
+        GOOS=linux GOARCH=amd64 CGO_ENABLED=0 go build -ldflags "-X main.revision=$(REV) -s -w" -o ~/sc-actions/updater
+      args:
+        chdir: "~/updater/app"
+
+    - name: Open port for updater
+      command:
+        iptables -A INPUT -p tcp --dport=8081 -j ACCEPT
+
+    - name: Run updater
+      command: doppler run --command='screen -dm ./updater -k=$UPDATER_KEY -l={{ hostvars[inventory_hostname]['ansible_default_ipv4']['address'] }}:8081'
+      args:
+        chdir: "~/sc-actions"
+
+    - name: Adding autoloads
+      shell: |
+        cd /etc/
+        curl -O -L https://raw.githubusercontent.com/Smart-Chef-Dev/sc-actions/ansible/ansible/autoload/rc.local
+        sudo chmod +x rc.local
+
+        cd /usr/local/bin/
+        curl -O -L https://raw.githubusercontent.com/Smart-Chef-Dev/sc-actions/ansible/ansible/autoload/updater_start.sh
+        sudo chmod +x updater_start.sh
