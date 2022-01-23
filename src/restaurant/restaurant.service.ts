@@ -93,6 +93,7 @@ export class RestaurantService {
       actions: actions,
       addons: addons,
       products: [],
+      isAccessDisabled: true,
     });
 
     return restaurant.save();
