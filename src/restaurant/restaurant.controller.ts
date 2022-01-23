@@ -13,6 +13,7 @@ import {
   Req,
   UseGuards,
   BadRequestException,
+  UseFilters,
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { ConfigService } from '@nestjs/config';
@@ -44,7 +45,9 @@ import { Role } from '../users/enums/role.enum';
 import { ProductDto } from './dto/product.dto';
 import { Roles } from '../decorators/roles.decorator';
 import { RolesGuard } from '../guard/roles.guard';
+import { ScBusinessExceptionFilter } from '../exception/sc-business-exception.filter';
 
+@UseFilters(new ScBusinessExceptionFilter())
 @Controller('restaurant')
 export class RestaurantController {
   constructor(
@@ -59,15 +62,17 @@ export class RestaurantController {
   ) {}
 
   @Get()
-  public async findAll(@Res() res) {
+  public async findAll() {
     const restaurants = await this.restaurantService.findAll();
 
-    return res.status(HttpStatus.OK).json(restaurants);
+    return restaurants.filter((r) => !r.isAccessDisabled);
   }
 
   @Get(':id')
   public async findById(@Param('id') id: string, @Res() res) {
     const restaurant = await this.restaurantService.findById(id);
+
+    await this.restaurantService.checkIfRestaurantIsBlocked(id);
 
     return res.status(HttpStatus.OK).json(restaurant);
   }
@@ -93,6 +98,8 @@ export class RestaurantController {
 
   @Get(':id/action')
   public async getRestaurantActions(@Param('id') id: string, @Res() res) {
+    await this.restaurantService.checkIfRestaurantIsBlocked(id);
+
     const actions = await this.restaurantService.findAllActions(id);
     await this.analyticsService.create({
       type: AnalyticType.GET_ACTIONS,
@@ -123,6 +130,8 @@ export class RestaurantController {
 
   @Get(':id/table')
   public async getRestaurantTables(@Param('id') id: string, @Res() res) {
+    await this.restaurantService.checkIfRestaurantIsBlocked(id);
+
     const tables = await this.restaurantService.findAllTables(id);
 
     return res
@@ -152,6 +161,7 @@ export class RestaurantController {
   @Get(':id/addon')
   public async getRestaurantAddons(@Param('id') id: string) {
     await checkIsObjectIdValid(id);
+    await this.restaurantService.checkIfRestaurantIsBlocked(id);
 
     const isRestaurantExist = await this.restaurantService.findById(id);
     if (!isRestaurantExist) {
@@ -200,6 +210,8 @@ export class RestaurantController {
     if (!isRestaurantExist) {
       throw new NotFoundException();
     }
+
+    await this.restaurantService.checkIfRestaurantIsBlocked(id);
 
     return this.categoryService.findAll(id);
   }
@@ -291,6 +303,8 @@ export class RestaurantController {
     if (!isRestaurantExist) {
       throw new NotFoundException();
     }
+
+    await this.restaurantService.checkIfRestaurantIsBlocked(id);
 
     return this.menuService.findAll(id);
   }

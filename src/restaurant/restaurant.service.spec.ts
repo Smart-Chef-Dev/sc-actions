@@ -15,6 +15,7 @@ import { ActionDto } from './dto/action.dto';
 import { TableDto } from './dto/table.dto';
 import { Addon, AddonSchema } from './schemas/addon.shema';
 import { AddonDto } from './dto/addon.dto';
+import { ScBusinessExceptions } from '../exception/sc-business.exception';
 
 let mongod: MongoMemoryServer;
 
@@ -324,5 +325,18 @@ describe('RestaurantService', () => {
     );
 
     expect(foundAddon2).toBe(false);
+  });
+
+  it('should check if the restaurant is blocked', async () => {
+    const restaurant = await preCreateRestaurant();
+    expect(restaurant.isAccessDisabled).toBe(true);
+
+    try {
+      await service.checkIfRestaurantIsBlocked(restaurant._id);
+    } catch (e) {
+      expect(e).toBeDefined();
+      expect(e.code).toBe(ScBusinessExceptions.RESTAURANT_DISABLED.code);
+      expect(e.message).toBe(ScBusinessExceptions.RESTAURANT_DISABLED.message);
+    }
   });
 });
