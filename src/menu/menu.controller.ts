@@ -34,19 +34,20 @@ export class MenuController {
 
   @Get(':id')
   async findById(@Param('id') id: string) {
-    const menuService = await this.menuService.findById(id);
-    if (!menuService) {
+    const menuItem = await this.menuService.findById(id);
+    if (!menuItem) {
       throw new NotFoundException();
     }
 
-    const restaurant = await this.restaurantService.findById(
-      menuService.category.restaurant._id,
-    );
-    if (restaurant.isAccessDisabled) {
-      throw new ForbiddenException('The restaurant is blocked');
+    const { isRestaurantBlocked, blockingErrorText } =
+      await this.restaurantService.checkingIfRestaurantIsBlocked(
+        menuItem.category.restaurant._id,
+      );
+    if (isRestaurantBlocked) {
+      throw new ForbiddenException(blockingErrorText);
     }
 
-    return menuService;
+    return menuItem;
   }
 
   @UseGuards(JwtGuard)

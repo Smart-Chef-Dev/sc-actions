@@ -203,13 +203,17 @@ export class RestaurantService {
     });
   }
 
-  public async checkingIfRestaurantIsBlocked(
-    restaurantId: string,
-  ): Promise<boolean> {
-    return (
-      await this.restaurantModel
-        .findById(restaurantId)
-        .select('isAccessDisabled')
-    ).isAccessDisabled;
+  public async checkingIfRestaurantIsBlocked(restaurantId: string): Promise<{
+    isRestaurantBlocked: boolean;
+    blockingErrorText: string;
+  }> {
+    const restaurant = await this.restaurantModel
+      .findById(restaurantId)
+      .select('isAccessDisabled');
+
+    return {
+      isRestaurantBlocked: restaurant.isAccessDisabled,
+      blockingErrorText: 'The restaurant is blocked',
+    };
   }
 }

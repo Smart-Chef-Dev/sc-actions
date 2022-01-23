@@ -330,10 +330,9 @@ describe('RestaurantService', () => {
     const restaurant = await preCreateRestaurant();
     expect(restaurant.isAccessDisabled).toBe(true);
 
-    const isRestaurantBlocked = await service.checkingIfRestaurantIsBlocked(
-      restaurant._id,
-    );
-    expect(isRestaurantBlocked).toBeDefined();
+    const { isRestaurantBlocked, blockingErrorText } =
+      await service.checkingIfRestaurantIsBlocked(restaurant._id);
     expect(isRestaurantBlocked).toBe(true);
+    expect(blockingErrorText).toBeDefined();
   });
 });

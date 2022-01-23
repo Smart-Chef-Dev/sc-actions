@@ -68,8 +68,11 @@ export class RestaurantController {
   @Get(':id')
   public async findById(@Param('id') id: string, @Res() res) {
     const restaurant = await this.restaurantService.findById(id);
-    if (restaurant.isAccessDisabled) {
-      throw new ForbiddenException('The restaurant is blocked');
+
+    const { isRestaurantBlocked, blockingErrorText } =
+      await this.restaurantService.checkingIfRestaurantIsBlocked(id);
+    if (isRestaurantBlocked) {
+      throw new ForbiddenException(blockingErrorText);
     }
 
     return res.status(HttpStatus.OK).json(restaurant);

@@ -44,11 +44,12 @@ export class CategoryController {
     if (!category) {
       throw new NotFoundException();
     }
-    const restaurant = await this.restaurantService.findById(
-      category.restaurant._id,
-    );
-    if (restaurant.isAccessDisabled) {
-      throw new ForbiddenException('The restaurant is blocked');
+    const { isRestaurantBlocked, blockingErrorText } =
+      await this.restaurantService.checkingIfRestaurantIsBlocked(
+        category.restaurant._id,
+      );
+    if (isRestaurantBlocked) {
+      throw new ForbiddenException(blockingErrorText);
     }
 
     return !!page && !!limit
