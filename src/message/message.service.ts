@@ -32,108 +32,71 @@ export class MessageService implements OnModuleInit {
 
   @autobind
   async handleStartCommand(msg, props) {
-    const [restaurantId, tableId, name] = props.match[1].split(
+    const [restaurantId, tableId, waiterName] = props.match[1].split(
       this.configService.get<string>('TELEGRAM_START_CMD_DELIMITER'),
     );
+
     const telegramId = +msg.chat.id;
 
-    const replyText =
-      !tableId && !name
-        ? await this.addWaiterIntoRestaurant(restaurantId, telegramId)
-        : await this.addWaiterIntoRestaurantTable(
-            restaurantId,
-            tableId,
-            name,
-            +msg.chat.id,
-          );
+    const replyText = await this.addWaiterIntoRestaurant(
+      restaurantId,
+      telegramId,
+      tableId,
+      waiterName,
+    );
 
     if (replyText) {
       await msg.reply.text(replyText);
     }
   }
 
-  @autobind
-  async addWaiterIntoRestaurantTable(
-    restaurantId: string,
-    tableId: string,
-    waiterName: string,
-    telegramId: number,
-  ): Promise<string> {
-    const restaurant = await this.restaurantService.findById(restaurantId);
-    const table = restaurant.tables.find((table) => table._id.equals(tableId));
-
-    const user = await this.usersService.findUserByUsernameInRestaurant(
-      waiterName,
-      restaurantId,
-    );
-    if (+user?.telegramId === telegramId) {
-      return `Welcome back ${waiterName}`;
-    }
-
-    if (user) {
-      return `Sorry, the name ${waiterName} is already taken. Try to create a chat again`;
-    }
-
-    const newUser = await this.usersService.creatAccount(
-      {
-        telegramId: telegramId.toString(),
-        name: waiterName,
-        restaurantId,
-      },
-      Role.WAITER,
-    );
-
-    const isUserAlreadyAssignedToTable = table.userIds.find((userId) =>
-      newUser._id.equals(userId),
-    );
-    if (isUserAlreadyAssignedToTable) {
-      return '';
-    }
-    await this.restaurantService.assignWaitersToTable(
-      restaurant,
-      table,
-      newUser,
-    );
-
-    this.logger.log(
-      `Add new chat into restaurant, restaurantId: ${restaurantId}`,
-      loggerContext,
-    );
-
-    await this.analyticsService.create({
-      type: AnalyticType.NEW_WAITER,
-      restaurantId,
-    });
-
-    return `You were added to the restaurant "${restaurant.name}" successfully`;
-  }
-
   async addWaiterIntoRestaurant(
     restaurantId: string,
     telegramId: number,
+    tableId: string,
+    waiterName: string,
   ): Promise<string> {
+    const user = await this.usersService.findByTelegramId(telegramId);
+    if (user) {
+      return `Welcome back!`;
+    }
     const restaurant = await this.restaurantService.findById(restaurantId);
+    if (!restaurant) {
+      return `A restaurant with this id will not be found!`;
+    }
+    const table = restaurant.tables.find((table) => table._id.equals(tableId));
+    if (tableId && !table) {
+      return `A table with this id will not be found!`;
+    }
 
     const newUser = await this.usersService.creatAccount(
       {
         telegramId: telegramId.toString(),
-        name: `UNTITLED_${nanoid()}`,
+        name: waiterName ?? `UNTITLED_${nanoid()}`,
         restaurantId,
       },
       Role.WAITER,
     );
+    if (tableId) {
+      await this.restaurantService.assignWaitersToTable(
+        restaurant,
+        table,
+        newUser,
+      );
+    }
 
     this.logger.log(
       `Add new chat (${newUser.name}) into restaurant, restaurantId: ${restaurantId}`,
       loggerContext,
     );
-
     await this.analyticsService.create({
       type: AnalyticType.NEW_WAITER,
       restaurantId,
     });
 
-    return `You were added to the restaurant "${restaurant.name}" successfully`;
+    return tableId
+      ? `You have been successfully added to the restaurant "${restaurant.name}". You will receive a message from the table "${table.name}"`
+      : `You have been successfully added to the restaurant "${restaurant.name}". You will receive messages from all tables`;
   }
 
   @autobind

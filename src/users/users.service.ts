@@ -71,6 +71,10 @@ export class UsersService {
     return this.usersModel.findOne({ email: email });
   }
 
+  async findByTelegramId(telegramId): Promise<Users> {
+    return this.usersModel.findOne({ telegramId: telegramId });
+  }
+
   async findById(id): Promise<Users> {
     return this.usersModel.findById(id);
   }

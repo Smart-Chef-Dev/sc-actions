@@ -235,4 +235,19 @@ describe('UsersService', () => {
 
     expect(createUsers).toBeDefined();
   });
+
+  it('should return the user with the specified telegramId', async () => {
+    const telegramId = '339889963';
+    const addedUser = await preCreateUsersWithRoleOfWaiter(
+      'UNTITLED_sF8830cV0bct5bir5_o3e',
+      restaurantId,
+      telegramId,
+    );
+
+    const user = await service.findByTelegramId(telegramId);
+
+    expect(user).toBeDefined();
+    expect(user.telegramId).toBe(addedUser.telegramId);
+    expect(user.restaurantId).toBe(addedUser.restaurantId);
+  });
 });

@@ -38,7 +38,6 @@ export class MessageController {
     @Param('actionId') actionId,
   ) {
     const restaurant = await this.restaurantService.findById(restaurantId);
-
     if (!restaurant) {
       throw new NotFoundException(
         `Restaurant with id(${restaurantId}) does not exist`,
@@ -46,7 +45,6 @@ export class MessageController {
     }
 
     const table = restaurant.tables.find((t) => t._id.equals(tableId));
-
     if (!table) {
       throw new NotFoundException(
         `The table with id (${tableId}) does not exist in the restaurant with id (${restaurantId}).`,
