@@ -32,15 +32,17 @@ export class MessageService implements OnModuleInit {
 
   @autobind
   async handleStartCommand(msg, props) {
-    const [restaurantId, tableId] = props.match[1].split(
+    const [restaurantId, tableId, waiterName] = props.match[1].split(
       this.configService.get<string>('TELEGRAM_START_CMD_DELIMITER'),
     );
+
     const telegramId = +msg.chat.id;
 
     const replyText = await this.addWaiterIntoRestaurant(
       restaurantId,
       telegramId,
       tableId,
+      waiterName,
     );
 
     if (replyText) {
@@ -52,6 +54,7 @@ export class MessageService implements OnModuleInit {
     restaurantId: string,
     telegramId: number,
     tableId: string,
+    waiterName: string,
   ): Promise<string> {
     const user = await this.usersService.findByTelegramId(telegramId);
     if (user) {
@@ -69,7 +72,7 @@ export class MessageService implements OnModuleInit {
     const newUser = await this.usersService.creatAccount(
       {
         telegramId: telegramId.toString(),
-        name: `UNTITLED_${nanoid()}`,
+        name: waiterName ?? `UNTITLED_${nanoid()}`,
         restaurantId,
       },
       Role.WAITER,
