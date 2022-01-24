@@ -24,6 +24,8 @@ jobs:
           UPDATER_RESULT=$(curl http://$HOST:8081/update/update-server/${{ secrets.UPDATER_KEY }})
           if [[ $UPDATER_RESULT == 'failed command' ]]; then
             exit 1 
+          elif [[ $UPDATER_RESULT == 'rejected' ]]; then
+            exit 1
           fi
 
     outputs:
