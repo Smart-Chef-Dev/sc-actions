@@ -39,7 +39,7 @@
     "@nestjs/jwt": "^7.2.0",
     "@nestjs/mapped-types": "1.0.0",
     "@nestjs/mongoose": "^8.0.0",
-    "@nestjs/platform-express": "^8.0.2",
+    "@nestjs/platform-express": "^8.3.0",
     "@nestjs/serve-static": "^2.2.2",
     "autobind-decorator": "^2.4.0",
     "bcrypt": "^5.0.1",
