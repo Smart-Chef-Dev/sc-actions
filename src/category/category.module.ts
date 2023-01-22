@@ -10,6 +10,7 @@ import { Category, CategorySchema } from './schemas/category.schema';
 import { MenuItems, MenuItemsSchema } from '../menu/schemas/menuItems.shema';
 import { Addon, AddonSchema } from '../restaurant/schemas/addon.shema';
 import { UsersModule } from '../users/users.module';
+import { RestaurantModule } from '../restaurant/restaurant.module';
 
 @Module({
   imports: [
@@ -19,6 +20,7 @@ import { UsersModule } from '../users/users.module';
       { name: Addon.name, schema: AddonSchema },
     ]),
     UsersModule,
+    RestaurantModule,
   ],
   providers: [CategoryService, MenuService, ImagesService],
   exports: [CategoryService],

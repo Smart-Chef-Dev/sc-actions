@@ -12,6 +12,8 @@ import {
   ForbiddenException,
   Req,
   UseGuards,
+  BadRequestException,
+  UseFilters,
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { ConfigService } from '@nestjs/config';
@@ -38,7 +40,14 @@ import { checkIfUserHasPermissionToChangeRestaurant } from '../utils/checkIfUser
 import { Users } from '../users/schemas/users.schema';
 import { JwtGuard } from '../guard/jwt.guard';
 import { LanguageEnum } from './enums/language.enum';
+import { ProductsStripeService } from '../products-stripe/products-stripe.service';
+import { Role } from '../users/enums/role.enum';
+import { ProductDto } from './dto/product.dto';
+import { Roles } from '../decorators/roles.decorator';
+import { RolesGuard } from '../guard/roles.guard';
+import { ScBusinessExceptionFilter } from '../exception/sc-business-exception.filter';
 
+@UseFilters(new ScBusinessExceptionFilter())
 @Controller('restaurant')
 export class RestaurantController {
   constructor(
@@ -49,18 +58,21 @@ export class RestaurantController {
     private readonly imagesService: ImagesService,
     private readonly menuService: MenuService,
     private readonly usersService: UsersService,
+    private readonly productsStripeService: ProductsStripeService,
   ) {}
 
   @Get()
-  public async findAll(@Res() res) {
+  public async findAll() {
     const restaurants = await this.restaurantService.findAll();
 
-    return res.status(HttpStatus.OK).json(restaurants);
+    return restaurants.filter((r) => !r.isAccessDisabled);
   }
 
   @Get(':id')
   public async findById(@Param('id') id: string, @Res() res) {
     const restaurant = await this.restaurantService.findById(id);
+
+    await this.restaurantService.checkIfRestaurantIsBlocked(id);
 
     return res.status(HttpStatus.OK).json(restaurant);
   }
@@ -86,6 +98,8 @@ export class RestaurantController {
 
   @Get(':id/action')
   public async getRestaurantActions(@Param('id') id: string, @Res() res) {
+    await this.restaurantService.checkIfRestaurantIsBlocked(id);
+
     const actions = await this.restaurantService.findAllActions(id);
     await this.analyticsService.create({
       type: AnalyticType.GET_ACTIONS,
@@ -116,6 +130,8 @@ export class RestaurantController {
 
   @Get(':id/table')
   public async getRestaurantTables(@Param('id') id: string, @Res() res) {
+    await this.restaurantService.checkIfRestaurantIsBlocked(id);
+
     const tables = await this.restaurantService.findAllTables(id);
 
     return res
@@ -145,6 +161,7 @@ export class RestaurantController {
   @Get(':id/addon')
   public async getRestaurantAddons(@Param('id') id: string) {
     await checkIsObjectIdValid(id);
+    await this.restaurantService.checkIfRestaurantIsBlocked(id);
 
     const isRestaurantExist = await this.restaurantService.findById(id);
     if (!isRestaurantExist) {
@@ -193,6 +210,8 @@ export class RestaurantController {
     if (!isRestaurantExist) {
       throw new NotFoundException();
     }
+
+    await this.restaurantService.checkIfRestaurantIsBlocked(id);
 
     return this.categoryService.findAll(id);
   }
@@ -285,6 +304,8 @@ export class RestaurantController {
       throw new NotFoundException();
     }
 
+    await this.restaurantService.checkIfRestaurantIsBlocked(id);
+
     return this.menuService.findAll(id);
   }
 
@@ -326,5 +347,31 @@ export class RestaurantController {
     await this.imagesService.saveFile(pathFile, file.buffer);
 
     return pathFile;
+  }
+
+  @Roles(Role.SUPER_ADMIN)
+  @UseGuards(JwtGuard, RolesGuard)
+  @Post(':id/product')
+  async addProduct(@Param('id') id: string, @Body() dto: ProductDto) {
+    await checkIsObjectIdValid(id);
+
+    const restaurant = await this.restaurantService.findById(id);
+    const productAlreadyExists = restaurant.products.find(
+      (p) => p.id === dto.id,
+    );
+    if (productAlreadyExists) {
+      throw new BadRequestException(
+        'This product has already been added to the restaurant',
+      );
+    }
+
+    const price = await this.productsStripeService.findByPriceId(dto.priceId);
+    if (price.product !== dto.id) {
+      throw new BadRequestException('The price is pegged to another product');
+    }
+
+    await this.restaurantService.updateById(id, {
+      products: [...restaurant.products, dto],
+    });
   }
 }

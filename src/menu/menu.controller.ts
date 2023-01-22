@@ -8,6 +8,7 @@ import {
   Param,
   Post,
   Req,
+  UseFilters,
   UseGuards,
 } from '@nestjs/common';
 
@@ -21,7 +22,9 @@ import { RestaurantService } from '../restaurant/restaurant.service';
 import { checkIfUserHasPermissionToChangeRestaurant } from '../utils/checkIfUserHasPermissionToChangeRestaurant';
 import { Users } from '../users/schemas/users.schema';
 import { JwtGuard } from '../guard/jwt.guard';
+import { ScBusinessExceptionFilter } from '../exception/sc-business-exception.filter';
 
+@UseFilters(new ScBusinessExceptionFilter())
 @Controller('menu')
 export class MenuController {
   constructor(
@@ -32,8 +35,17 @@ export class MenuController {
   ) {}
 
   @Get(':id')
-  findById(@Param('id') id: string) {
-    return this.menuService.findById(id);
+  async findById(@Param('id') id: string) {
+    const menuItem = await this.menuService.findById(id);
+    if (!menuItem) {
+      throw new NotFoundException();
+    }
+
+    await this.restaurantService.checkIfRestaurantIsBlocked(
+      menuItem.category.restaurant._id,
+    );
+
+    return menuItem;
   }
 
   @UseGuards(JwtGuard)
